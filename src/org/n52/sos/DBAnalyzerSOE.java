@@ -27,37 +27,17 @@
 package org.n52.sos;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.n52.om.observation.collections.GenericObservationCollection;
-import org.n52.om.sampling.SpatialSamplingFeature;
-import org.n52.oxf.valueDomains.time.ITimePosition;
-import org.n52.oxf.valueDomains.time.TimeFactory;
-import org.n52.sos.dataTypes.ObservationOffering;
-import org.n52.sos.dataTypes.Procedure;
-import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
-import org.n52.sos.db.AccessObservationGDB;
 import org.n52.util.ExceptionSupporter;
-import org.n52.util.logging.Log;
 
-import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.interop.extn.ArcGISExtension;
 import com.esri.arcgis.interop.extn.ServerObjectExtProperties;
-import com.esri.arcgis.server.IServerObjectExtension;
-import com.esri.arcgis.server.IServerObjectHelper;
-import com.esri.arcgis.server.SOAPRequestHandler;
-import com.esri.arcgis.server.json.JSONArray;
 import com.esri.arcgis.server.json.JSONObject;
-import com.esri.arcgis.system.IObjectConstruct;
 import com.esri.arcgis.system.IPropertySet;
-import com.esri.arcgis.system.IRESTRequestHandler;
 import com.esri.arcgis.system.ServerUtilities;
 
 /**
@@ -168,7 +148,7 @@ public class DBAnalyzerSOE extends SOSExt {
         LOGGER.info("Starting to handle REST request...");
 
         try {
-            return geoDB.getanalyzeDB().toString().getBytes("utf-8");
+            return geoDB.getAnalysisAccess().analyzeDB().toString().getBytes("utf-8");
                 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error while handle REST request", e);

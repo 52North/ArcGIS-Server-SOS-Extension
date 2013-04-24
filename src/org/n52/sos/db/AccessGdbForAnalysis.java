@@ -37,13 +37,13 @@ import com.esri.arcgis.server.json.JSONObject;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class AccessGDBAnalysis {
+public class AccessGdbForAnalysis {
 
-    static Logger LOGGER = Logger.getLogger(AccessGDBAnalysis.class.getName());
+    static Logger LOGGER = Logger.getLogger(AccessGdbForAnalysis.class.getName());
 
     private AccessGDB gdb;
 
-    public AccessGDBAnalysis(AccessGDB accessGDB) {
+    public AccessGdbForAnalysis(AccessGDB accessGDB) {
         this.gdb = accessGDB;
     }
     
