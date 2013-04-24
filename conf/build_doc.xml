@@ -1,16 +1,6 @@
-<!--
-Builds the 52°north WebGIS using the OX-Framework.
--->
 <project name="ESRI SOS" default="doc" basedir=".">
 	
-	<property name="dist" value="../dist" />
-	<property name="conf" value="./." />
-	<property name="doc" value="../doc" />
-	<property name="src" value="../src" />
-	<property name="lib" value="../lib" />
-	<property name="arcObjectLib" value="C:/Program Files (x86)/ArcGIS/Desktop10.1/java/lib" />
-	<property name="classes" value="../bin" />
-	<property name="build" value="../build" />
+	<property file="build.properties" />
 
 	<path id="build.classpath">
 		<fileset dir="${lib}">
