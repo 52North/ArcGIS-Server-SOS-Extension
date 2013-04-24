@@ -1,4 +1,8 @@
 ArcGIS-Server-SOS-Extension
 ===========================
 
-The Sensor Observation Service (SOS) extension for ArcGIS Server (10.1) is implemented as a 'Server Object Extension' (SOE). It allows querying of observations, metadata about procedures (= sensors), as well as descriptions of <i>features (of interest)</i> observed by the sensors. The interface is compliant with the SOS 2.0 standard from OGC.
+The Sensor Observation Service (SOS) extension for ArcGIS Server (10.1) is implemented as a 'Server Object Extension' (SOE).
+<br>
+It allows querying of <i>observations</i>, metadata about <i>procedures/sensors</i>, as well as descriptions of <i>features (of interest)</i> observed by the sensors.
+<br>
+The server's interface provides compliance with the <a href='http://www.opengeospatial.org/standards/sos'>SOS 2.0 standard</a> as well as the new <a href='http://help.arcgis.com/en/arcgisserver/10.0/apis/rest/index.html'>GeoServices REST API</a> from <a href='http://opengeospatial.org>OGC</a> as well as the Geoservices REST API developed by <a href='http://esri.com'>ESRI</a>.
