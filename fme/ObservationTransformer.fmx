@@ -1,0 +1,662 @@
+#! <?xml version="1.0" encoding="iso-8859-1" ?>
+#! <TRANSFORMER
+# TRANSFORMER_BEGIN ObservationTransformer,0,EEA_2_OM_GDB,{587F2625-9FAC-4591-BAAF-6CE2323A4965},"Embedded by Default",
+# TRANSFORMER_END
+#! FME_SERVER_SERVICES=""
+#! SHOW_BOOKMARKS="true"
+#! GRID_VISIBLE="false"
+#! SHOW_ANNOTATIONS="true"
+#! CATEGORY="EEA_2_OM_GDB"
+#! BLOCKED_LOOPING=""
+#! GRID_HEIGHT="50"
+#! FME_BUILD_NUM="6529"
+#! SHOW_INFO_NODES="true"
+#! DESCRIPTION=""
+#! GRID_SNAPTO="false"
+#! GRID_WIDTH="50"
+#! FMX_INSERT_MODE="Embedded by Default"
+#! VIEW_POSITION="0 0"
+#! MAX_LOOP_ITERATIONS=""
+#! ZOOM_SCALE="100"
+#! PASSWORD=""
+#! VIEW_PAGE_BREAKS="false"
+#! WORKSPACE_VERSION="1"
+#! TITLE="ObservationTransformer"
+#! ATTR_TYPE_ENCODING="SDF"
+#! ITERATION_COUNT_ATTR=""
+#! >
+#! <DATASETS>
+#! </DATASETS>
+#! <DATA_TYPES>
+#! </DATA_TYPES>
+#! <GEOM_TYPES>
+#! </GEOM_TYPES>
+#! <FEATURE_TYPES>
+#! </FEATURE_TYPES>
+#! <FMESERVER>
+#! </FMESERVER>
+#! <GLOBAL_PARAMETERS>
+#! <GLOBAL_PARAMETER
+#! GUI_LINE="GUI OPTIONAL TEXT Property_Prefix Prefix for Property id:"
+#! DEFAULT_VALUE="urn:ogc:def:phenomenon:OGC:1.0.30:"
+#! IS_STAND_ALONE="true"
+#! />
+#! </GLOBAL_PARAMETERS>
+#! <COMMENTS>
+#! </COMMENTS>
+#! <CONSTANTS>
+#! </CONSTANTS>
+#! <BOOKMARKS>
+#! </BOOKMARKS>
+#! <TRANSFORMERS>
+#! <TRANSFORMER
+#! IDENTIFIER="0"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="3373 -771"
+#! ORDER="19"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRenamer_3"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="Component,PROPERTY_DESCRIPTION,PROP_OBJECTID,OBJECTID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="1"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="2023 -471"
+#! ORDER="20"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRenamer"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="StationID,ID_VALUE,FEAT_OBJECTID,OBJECTID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="2"
+#! TYPE="StringReplacer"
+#! VERSION="3"
+#! POSITION="673 -96"
+#! ORDER="21"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="FIND_TEXT" PARM_VALUE="-"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="StringReplacer"/>
+#! <XFORM_PARM PARM_NAME="SRC_ATTRS" PARM_VALUE="MeasurementDateTimeUTC"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REPLACE_TEXT" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REGEXP" PARM_VALUE="no"/>
+#! <XFORM_PARM PARM_NAME="CASE" PARM_VALUE="no"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="3"
+#! TYPE="StringReplacer"
+#! VERSION="3"
+#! POSITION="1348 -96"
+#! ORDER="22"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="FIND_TEXT" PARM_VALUE=":"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="StringReplacer_2"/>
+#! <XFORM_PARM PARM_NAME="SRC_ATTRS" PARM_VALUE="MeasurementDateTimeUTC"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REPLACE_TEXT" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REGEXP" PARM_VALUE="no"/>
+#! <XFORM_PARM PARM_NAME="CASE" PARM_VALUE="no"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="4"
+#! TYPE="StringReplacer"
+#! VERSION="3"
+#! POSITION="2023 -96"
+#! ORDER="23"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="FIND_TEXT" PARM_VALUE="&lt;space&gt;"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="StringReplacer_3"/>
+#! <XFORM_PARM PARM_NAME="SRC_ATTRS" PARM_VALUE="MeasurementDateTimeUTC"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REPLACE_TEXT" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REGEXP" PARM_VALUE="no"/>
+#! <XFORM_PARM PARM_NAME="CASE" PARM_VALUE="no"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="5"
+#! TYPE="FeatureMerger"
+#! VERSION="8"
+#! POSITION="2698 -141"
+#! ORDER="24"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="COMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <OUTPUT_FEAT NAME="INCOMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <OUTPUT_FEAT NAME="EMPTY"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <OUTPUT_FEAT NAME="REFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="3"/>
+#! <OUTPUT_FEAT NAME="UNREFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="4"/>
+#! <OUTPUT_FEAT NAME="DUPLICATE_SUPPLIER"/>
+#! <FEAT_COLLAPSED COLLAPSED="5"/>
+#! <XFORM_PARM PARM_NAME="GROUP_BY" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REFEEATTR" PARM_VALUE="StationID"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="FeatureMerger"/>
+#! <XFORM_PARM PARM_NAME="MERGE_TYPE" PARM_VALUE="Attributes Only"/>
+#! <XFORM_PARM PARM_NAME="PROCESS_DUPS" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="BUILD_INCOMPLETE" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="REFERATTR" PARM_VALUE="StationID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="6"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="4048 -1221"
+#! ORDER="25"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRenamer_4"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="Component,OFFERING_NAME,OFF_OBJECTID,OBJECTID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="7"
+#! TYPE="FeatureMerger"
+#! VERSION="8"
+#! POSITION="4048 -516"
+#! ORDER="26"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="COMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <OUTPUT_FEAT NAME="INCOMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="1"/>
+#! <OUTPUT_FEAT NAME="EMPTY"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="2"/>
+#! <OUTPUT_FEAT NAME="REFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="3"/>
+#! <OUTPUT_FEAT NAME="UNREFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="4"/>
+#! <OUTPUT_FEAT NAME="DUPLICATE_SUPPLIER"/>
+#! <FEAT_COLLAPSED COLLAPSED="5"/>
+#! <XFORM_PARM PARM_NAME="GROUP_BY" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REFEEATTR" PARM_VALUE="Component"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="FeatureMerger_2"/>
+#! <XFORM_PARM PARM_NAME="MERGE_TYPE" PARM_VALUE="Attributes Only"/>
+#! <XFORM_PARM PARM_NAME="PROCESS_DUPS" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="BUILD_INCOMPLETE" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="REFERATTR" PARM_VALUE="_concatenated_Comp"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="8"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="4723 -1596"
+#! ORDER="27"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRenamer_2"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="Component,UNIQUE_ID,PROC_OBJECTID,OBJECTID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="9"
+#! TYPE="FeatureMerger"
+#! VERSION="8"
+#! POSITION="4723 -891"
+#! ORDER="28"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="COMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <OUTPUT_FEAT NAME="INCOMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="1"/>
+#! <OUTPUT_FEAT NAME="EMPTY"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="2"/>
+#! <OUTPUT_FEAT NAME="REFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="3"/>
+#! <OUTPUT_FEAT NAME="UNREFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="4"/>
+#! <OUTPUT_FEAT NAME="DUPLICATE_SUPPLIER"/>
+#! <FEAT_COLLAPSED COLLAPSED="5"/>
+#! <XFORM_PARM PARM_NAME="GROUP_BY" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REFEEATTR" PARM_VALUE="Component"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="FeatureMerger_3"/>
+#! <XFORM_PARM PARM_NAME="MERGE_TYPE" PARM_VALUE="Attributes Only"/>
+#! <XFORM_PARM PARM_NAME="PROCESS_DUPS" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="BUILD_INCOMPLETE" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="REFERATTR" PARM_VALUE="Component"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="10"
+#! TYPE="FeatureMerger"
+#! VERSION="8"
+#! POSITION="5398 -1266"
+#! ORDER="29"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="COMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <OUTPUT_FEAT NAME="INCOMPLETE"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="1"/>
+#! <OUTPUT_FEAT NAME="EMPTY"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="2"/>
+#! <OUTPUT_FEAT NAME="REFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="3"/>
+#! <OUTPUT_FEAT NAME="UNREFERENCED"/>
+#! <FEAT_COLLAPSED COLLAPSED="4"/>
+#! <OUTPUT_FEAT NAME="DUPLICATE_SUPPLIER"/>
+#! <FEAT_COLLAPSED COLLAPSED="5"/>
+#! <XFORM_PARM PARM_NAME="GROUP_BY" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="REFEEATTR" PARM_VALUE="Component"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="FeatureMerger_4"/>
+#! <XFORM_PARM PARM_NAME="MERGE_TYPE" PARM_VALUE="Attributes Only"/>
+#! <XFORM_PARM PARM_NAME="PROCESS_DUPS" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="BUILD_INCOMPLETE" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="REFERATTR" PARM_VALUE="Component"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="11"
+#! TYPE="AttributeRemover"
+#! VERSION="0"
+#! POSITION="6073 -1371"
+#! ORDER="30"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRemover"/>
+#! <XFORM_PARM PARM_NAME="REMOVE_ATTRS" PARM_VALUE="Altitude,AverageTimeMinutes,CODE_SPACE,CONTACT,City,Component,Country,DATA_TYPE,DESCRIPTION,Description,ID_VALUE,INTENDED_APPLICATION,LONG_NAME,Latitude,Longitude,PROCEDURE,ProviderURL,QAFlag,QCFlag,RecordCreatedUTC,RecordModifiedUTC,SAMPLED_FEATURE_URL,SERVICE,StationID,StationName,Street,geodb_oid"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="12"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="6748 -1446"
+#! ORDER="31"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRenamer_5"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="FEATURE,FEAT_OBJECTID,TIME_STAMP,MeasurementDateTimeUTC,UNIT_OF_MEASURE,MeasurementUnit,NUMERIC_VALUE,MeasurementValue,OFFERING,OFF_OBJECTID,PROCEDURE,PROC_OBJECTID,PROPERTY,PROP_OBJECTID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="13"
+#! TYPE="StringConcatenator"
+#! VERSION="5"
+#! POSITION="3373 -396"
+#! ORDER="32"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_concatenated_Comp" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <XFORM_PARM PARM_NAME="PARM_LINE" PARM_VALUE="urn:ogc:def:phenomenon:OGC:1.0.30:,&amp;Component"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="StringConcatenator"/>
+#! <XFORM_PARM PARM_NAME="VAL_ATTR" PARM_VALUE="_concatenated_Comp"/>
+#! </TRANSFORMER>
+#! </TRANSFORMERS>
+#! <SUBDOCUMENT_IOS>
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="14"
+#! NAME="READ_Property"
+#! POSITION="2700 -876"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="15"
+#! NAME="READ_Offering"
+#! POSITION="3375 -1251"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="16"
+#! NAME="CSV_FILE"
+#! POSITION="0 -126"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="17"
+#! NAME="READ_Feature"
+#! POSITION="1350 -501"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="18"
+#! NAME="WRITE_Observation"
+#! POSITION="7426 -1551"
+#! IS_SOURCE="false"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="19"
+#! NAME="READ_Procedure"
+#! POSITION="4050 -1626"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! </SUBDOCUMENT_IOS>
+#! <FEAT_LINKS>
+#! <FEAT_LINK
+#! IDENTIFIER="20"
+#! SOURCE_NODE="17"
+#! TARGET_NODE="1"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="21"
+#! SOURCE_NODE="15"
+#! TARGET_NODE="6"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="22"
+#! SOURCE_NODE="1"
+#! TARGET_NODE="5"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 1"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="23"
+#! SOURCE_NODE="0"
+#! TARGET_NODE="7"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 1"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="24"
+#! SOURCE_NODE="16"
+#! TARGET_NODE="2"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="25"
+#! SOURCE_NODE="2"
+#! TARGET_NODE="3"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="26"
+#! SOURCE_NODE="3"
+#! TARGET_NODE="4"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="27"
+#! SOURCE_NODE="4"
+#! TARGET_NODE="5"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="28"
+#! SOURCE_NODE="6"
+#! TARGET_NODE="9"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 1"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="29"
+#! SOURCE_NODE="7"
+#! TARGET_NODE="9"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="30"
+#! SOURCE_NODE="8"
+#! TARGET_NODE="10"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 1"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="31"
+#! SOURCE_NODE="19"
+#! TARGET_NODE="8"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="32"
+#! SOURCE_NODE="9"
+#! TARGET_NODE="10"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="33"
+#! SOURCE_NODE="11"
+#! TARGET_NODE="12"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="34"
+#! SOURCE_NODE="10"
+#! TARGET_NODE="11"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="35"
+#! SOURCE_NODE="12"
+#! TARGET_NODE="18"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="36"
+#! SOURCE_NODE="14"
+#! TARGET_NODE="0"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="37"
+#! SOURCE_NODE="5"
+#! TARGET_NODE="13"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="38"
+#! SOURCE_NODE="13"
+#! TARGET_NODE="7"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! </FEAT_LINKS>
+#! <BREAKPOINTS>
+#! </BREAKPOINTS>
+#! <ATTR_LINKS>
+#! </ATTR_LINKS>
+#! <SUBDOCUMENTS>
+#! </SUBDOCUMENTS>
+#! <LOOKUP_TABLES>
+#! </LOOKUP_TABLES>
+#! </TRANSFORMER>
+#! 
+DEFAULT_MACRO $(ObservationTransformer_WORKSPACE_NAME)_Property_Prefix urn:ogc:def:phenomenon:OGC:1.0.30:
+#! START_HEADER
+#! END_HEADER
+
+LOG_FILTER_MASK -1
+DEFAULT_MACRO WB_CURRENT_CONTEXT
+DEFAULT_MACRO ObservationTransformer_WORKSPACE_NAME ""
+INCLUDE [puts {MACRO WB_OLD_CONTEXT_$(ObservationTransformer_WORKSPACE_NAME) $(WB_CURRENT_CONTEXT)};          puts {MACRO WB_CURRENT_CONTEXT $(ObservationTransformer_WORKSPACE_NAME)}]
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(ObservationTransformer_WORKSPACE_NAME)_READ_Property Input Splitter"   INPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Property"   OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Property"
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(ObservationTransformer_WORKSPACE_NAME)_READ_Offering Input Splitter"   INPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Offering"   OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Offering"
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(ObservationTransformer_WORKSPACE_NAME)_CSV_FILE Input Splitter"   INPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_CSV_FILE"   OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_CSV_FILE"
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(ObservationTransformer_WORKSPACE_NAME)_READ_Feature Input Splitter"   INPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Feature"   OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Feature"
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(ObservationTransformer_WORKSPACE_NAME)_READ_Procedure Input Splitter"   INPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Procedure"   OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Procedure"
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Feature"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_OUTPUT"         @RenameAttributes(StationID,ID_VALUE,FEAT_OBJECTID,OBJECTID)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_4    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Offering"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_4_OUTPUT"         @RenameAttributes(Component,OFFERING_NAME,OFF_OBJECTID,OBJECTID)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_3    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Property"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_3_OUTPUT"         @RenameAttributes(Component,PROPERTY_DESCRIPTION,PROP_OBJECTID,OBJECTID)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_2    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_READ_Procedure"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_2_OUTPUT"         @RenameAttributes(Component,UNIQUE_ID,PROC_OBJECTID,OBJECTID)
+
+# -------------------------------------------------------------------------
+
+MACRO casemac
+INCLUDE [ if { {no} == {no} } { puts {MACRO casemac -nocase}} ]
+Tcl2 proc $(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_replacer {} {     set attrs [split \"MeasurementDateTimeUTC\" {,}];     set findValue [FME_DecodeTextOrAttr {-}];     set replaceValue [FME_DecodeTextOrAttr {}];     foreach attr $attrs {       set attrVal [FME_GetAttribute $attr];       set length [string length $attrVal];       if {$length > 0} {          if {{no} == {yes}} {             FME_SetAttribute $attr [regsub $(casemac) -all $findValue [FME_GetAttribute $attr] $replaceValue];          } else {             FME_SetAttribute $attr [string map $(casemac) [list $findValue $replaceValue] [FME_GetAttribute $attr]];          };       };     }; }
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_StringReplacer    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_CSV_FILE"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_OUTPUT"         @Tcl2($(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_replacer)
+
+# -------------------------------------------------------------------------
+
+MACRO casemac
+INCLUDE [ if { {no} == {no} } { puts {MACRO casemac -nocase}} ]
+Tcl2 proc $(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_2_replacer {} {     set attrs [split \"MeasurementDateTimeUTC\" {,}];     set findValue [FME_DecodeTextOrAttr {:}];     set replaceValue [FME_DecodeTextOrAttr {}];     foreach attr $attrs {       set attrVal [FME_GetAttribute $attr];       set length [string length $attrVal];       if {$length > 0} {          if {{no} == {yes}} {             FME_SetAttribute $attr [regsub $(casemac) -all $findValue [FME_GetAttribute $attr] $replaceValue];          } else {             FME_SetAttribute $attr [string map $(casemac) [list $findValue $replaceValue] [FME_GetAttribute $attr]];          };       };     }; }
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_2    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_OUTPUT"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_2_OUTPUT"         @Tcl2($(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_2_replacer)
+
+# -------------------------------------------------------------------------
+
+MACRO casemac
+INCLUDE [ if { {no} == {no} } { puts {MACRO casemac -nocase}} ]
+Tcl2 proc $(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_3_replacer {} {     set attrs [split \"MeasurementDateTimeUTC\" {,}];     set findValue [FME_DecodeTextOrAttr {<space>}];     set replaceValue [FME_DecodeTextOrAttr {}];     foreach attr $attrs {       set attrVal [FME_GetAttribute $attr];       set length [string length $attrVal];       if {$length > 0} {          if {{no} == {yes}} {             FME_SetAttribute $attr [regsub $(casemac) -all $findValue [FME_GetAttribute $attr] $replaceValue];          } else {             FME_SetAttribute $attr [string map $(casemac) [list $findValue $replaceValue] [FME_GetAttribute $attr]];          };       };     }; }
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_3    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_2_OUTPUT"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_3_OUTPUT"         @Tcl2($(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_3_replacer)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * ReferenceFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger    INPUT REFERENCER FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringReplacer_3_OUTPUT"    INPUT REFERENCEE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_OUTPUT"    REFERENCE_INFO ATTRIBUTES    REFERENCEE_FIELDS "StationID"    REFERENCER_FIELDS "StationID"    MERGE_ATTRIBUTES Yes    MANAGE_FME_TYPE Yes    MODE COMPLETE    PROCESS_DUPLICATE_REFERENCEES No    BUILD_INCOMPLETE_REFERENCERS No    OUTPUT COMPLETE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_COMPLETE"
+
+# -------------------------------------------------------------------------
+
+Tcl2 set {$(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_valList} [split urn:ogc:def:phenomenon:OGC:1.0.30:,&Component ,];
+# We use Tcl here instead of @Concatenate because Tcl is more flexible.
+Tcl2 proc $(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_concatter {} {     global {$(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_valList};     set val {};     foreach {valEnc} [set {$(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_valList}] {       append val [FME_DecodeTextOrAttr $valEnc];     };     FME_SetAttribute {_concatenated_Comp} $val; }
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_COMPLETE"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_OUTPUT"         @Tcl2($(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_concatter)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * ReferenceFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_2    INPUT REFERENCER FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_StringConcatenator_OUTPUT"    INPUT REFERENCEE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_3_OUTPUT"    REFERENCE_INFO ATTRIBUTES    REFERENCEE_FIELDS "Component"    REFERENCER_FIELDS "_concatenated_Comp"    MERGE_ATTRIBUTES Yes    MANAGE_FME_TYPE Yes    MODE COMPLETE    PROCESS_DUPLICATE_REFERENCEES No    BUILD_INCOMPLETE_REFERENCERS No    OUTPUT COMPLETE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_2_COMPLETE"
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * ReferenceFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_3    INPUT REFERENCER FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_2_COMPLETE"    INPUT REFERENCEE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_4_OUTPUT"    REFERENCE_INFO ATTRIBUTES    REFERENCEE_FIELDS "Component"    REFERENCER_FIELDS "Component"    MERGE_ATTRIBUTES Yes    MANAGE_FME_TYPE Yes    MODE COMPLETE    PROCESS_DUPLICATE_REFERENCEES No    BUILD_INCOMPLETE_REFERENCERS No    OUTPUT COMPLETE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_3_COMPLETE"
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * ReferenceFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_4    INPUT REFERENCER FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_3_COMPLETE"    INPUT REFERENCEE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_2_OUTPUT"    REFERENCE_INFO ATTRIBUTES    REFERENCEE_FIELDS "Component"    REFERENCER_FIELDS "Component"    MERGE_ATTRIBUTES Yes    MANAGE_FME_TYPE Yes    MODE COMPLETE    PROCESS_DUPLICATE_REFERENCEES No    BUILD_INCOMPLETE_REFERENCERS No    OUTPUT COMPLETE FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_4_COMPLETE"
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_AttributeRemover    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_FeatureMerger_4_COMPLETE"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRemover_OUTPUT"        @RemoveAttributes(Altitude,AverageTimeMinutes,CODE_SPACE,CONTACT,City,Component,Country,DATA_TYPE,DESCRIPTION,Description,ID_VALUE,INTENDED_APPLICATION,LONG_NAME,Latitude,Longitude,PROCEDURE,ProviderURL,QAFlag,QCFlag,RecordCreatedUTC,RecordModifiedUTC,SAMPLED_FEATURE_URL,SERVICE,StationID,StationName,Street,geodb_oid)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_5    INPUT  FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRemover_OUTPUT"    OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_5_OUTPUT"         @RenameAttributes(FEATURE,FEAT_OBJECTID,TIME_STAMP,MeasurementDateTimeUTC,UNIT_OF_MEASURE,MeasurementUnit,NUMERIC_VALUE,MeasurementValue,OFFERING,OFF_OBJECTID,PROCEDURE,PROC_OBJECTID,PROPERTY,PROP_OBJECTID)
+
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(ObservationTransformer_WORKSPACE_NAME)_WRITE_Observation Output Collector"   INPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_AttributeRenamer_5_OUTPUT"   OUTPUT FEATURE_TYPE "$(ObservationTransformer_WORKSPACE_NAME)_WRITE_Observation"
+INCLUDE [puts {MACRO WB_CURRENT_CONTEXT $(WB_OLD_CONTEXT_$(ObservationTransformer_WORKSPACE_NAME))}]

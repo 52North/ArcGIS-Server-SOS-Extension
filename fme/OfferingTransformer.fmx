@@ -1,0 +1,456 @@
+#! <?xml version="1.0" encoding="iso-8859-1" ?>
+#! <TRANSFORMER
+# TRANSFORMER_BEGIN OfferingTransformer,0,EEA_2_OM_GDB,{75CBCB30-CE01-4D13-B968-A3E8AE25C3C6},"Embedded by Default",
+# TRANSFORMER_END
+#! FME_SERVER_SERVICES=""
+#! SHOW_BOOKMARKS="true"
+#! GRID_VISIBLE="false"
+#! SHOW_ANNOTATIONS="true"
+#! CATEGORY="EEA_2_OM_GDB"
+#! BLOCKED_LOOPING=""
+#! GRID_HEIGHT="50"
+#! FME_BUILD_NUM="6529"
+#! SHOW_INFO_NODES="true"
+#! DESCRIPTION=""
+#! GRID_SNAPTO="false"
+#! GRID_WIDTH="50"
+#! FMX_INSERT_MODE="Embedded by Default"
+#! VIEW_POSITION="0 0"
+#! MAX_LOOP_ITERATIONS=""
+#! ZOOM_SCALE="100"
+#! PASSWORD=""
+#! VIEW_PAGE_BREAKS="false"
+#! WORKSPACE_VERSION="1"
+#! TITLE="OfferingTransformer"
+#! ATTR_TYPE_ENCODING="SDF"
+#! ITERATION_COUNT_ATTR=""
+#! >
+#! <DATASETS>
+#! </DATASETS>
+#! <DATA_TYPES>
+#! </DATA_TYPES>
+#! <GEOM_TYPES>
+#! </GEOM_TYPES>
+#! <FEATURE_TYPES>
+#! </FEATURE_TYPES>
+#! <FMESERVER>
+#! </FMESERVER>
+#! <GLOBAL_PARAMETERS>
+#! </GLOBAL_PARAMETERS>
+#! <COMMENTS>
+#! </COMMENTS>
+#! <CONSTANTS>
+#! </CONSTANTS>
+#! <BOOKMARKS>
+#! </BOOKMARKS>
+#! <TRANSFORMERS>
+#! <TRANSFORMER
+#! IDENTIFIER="0"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="1348 -553"
+#! ORDER="14"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="OffT_AttributeRenamer"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="OFFERING_NAME,Component"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="1"
+#! TYPE="DuplicateRemover"
+#! VERSION="1"
+#! POSITION="673 -523"
+#! ORDER="15"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="DUPLICATE"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <OUTPUT_FEAT NAME="UNIQUE"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_PARM PARM_NAME="KEYATTR" PARM_VALUE="Component"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="OffT_DuplicateRemover"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="2"
+#! TYPE="Matcher"
+#! VERSION="3"
+#! POSITION="2023 -568"
+#! ORDER="16"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <OUTPUT_FEAT NAME="SINGLE_MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="1"/>
+#! <OUTPUT_FEAT NAME="NOT_MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="2"/>
+#! <XFORM_PARM PARM_NAME="MATCH" PARM_VALUE="NONE"/>
+#! <XFORM_PARM PARM_NAME="MATCH_EXCEPT_ATTRS" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="SM_LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="OffT_Matcher"/>
+#! <XFORM_PARM PARM_NAME="MATCHATTRS" PARM_VALUE="OFFERING_NAME"/>
+#! <XFORM_PARM PARM_NAME="BLANK_AND_MISSING_DIFFER" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="MATCH_ALL" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="LENIENT_MATCH" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="DIFFATTRS" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="INTERIOR_VERTEX_TOLERANCE" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="CNT_ATTR" PARM_VALUE="_match_id"/>
+#! <XFORM_PARM PARM_NAME="EXTRA_VERTEX_TOLERANCE" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="3"
+#! TYPE="Matcher"
+#! VERSION="3"
+#! POSITION="4048 -868"
+#! ORDER="17"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <OUTPUT_FEAT NAME="SINGLE_MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="1"/>
+#! <OUTPUT_FEAT NAME="NOT_MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="2"/>
+#! <XFORM_PARM PARM_NAME="MATCH" PARM_VALUE="NONE"/>
+#! <XFORM_PARM PARM_NAME="MATCH_EXCEPT_ATTRS" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="SM_LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="OffT_Matcher_3"/>
+#! <XFORM_PARM PARM_NAME="MATCHATTRS" PARM_VALUE="OFFERING_NAME"/>
+#! <XFORM_PARM PARM_NAME="BLANK_AND_MISSING_DIFFER" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="MATCH_ALL" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="LENIENT_MATCH" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="DIFFATTRS" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="INTERIOR_VERTEX_TOLERANCE" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="CNT_ATTR" PARM_VALUE="_match_id"/>
+#! <XFORM_PARM PARM_NAME="EXTRA_VERTEX_TOLERANCE" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="4"
+#! TYPE="Matcher"
+#! VERSION="3"
+#! POSITION="3373 -643"
+#! ORDER="18"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="0"/>
+#! <OUTPUT_FEAT NAME="SINGLE_MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="1"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="1"/>
+#! <OUTPUT_FEAT NAME="NOT_MATCHED"/>
+#! <FEAT_COLLAPSED COLLAPSED="2"/>
+#! <XFORM_ATTR ATTR_NAME="_match_id" IS_USER_CREATED="false" FEAT_INDEX="2"/>
+#! <XFORM_PARM PARM_NAME="MATCH" PARM_VALUE="NONE"/>
+#! <XFORM_PARM PARM_NAME="MATCH_EXCEPT_ATTRS" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="SM_LIST_NAME" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="OffT_Matcher_2"/>
+#! <XFORM_PARM PARM_NAME="MATCHATTRS" PARM_VALUE="OFFERING_NAME"/>
+#! <XFORM_PARM PARM_NAME="BLANK_AND_MISSING_DIFFER" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="MATCH_ALL" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="LENIENT_MATCH" PARM_VALUE="No"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="DIFFATTRS" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="INTERIOR_VERTEX_TOLERANCE" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="CNT_ATTR" PARM_VALUE="_match_id"/>
+#! <XFORM_PARM PARM_NAME="EXTRA_VERTEX_TOLERANCE" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="5"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="3373 -1153"
+#! ORDER="19"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="OffT_AttributeRenamer_2"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="OFFERING_NAME,UNIQUE_ID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="6"
+#! TYPE="AttributeRemover"
+#! VERSION="0"
+#! POSITION="4723 -1003"
+#! ORDER="20"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRemover"/>
+#! <XFORM_PARM PARM_NAME="REMOVE_ATTRS" PARM_VALUE="Altitude,AverageTimeMinutes,CONTACT,City,Country,Description,INTENDED_APPLICATION,LONG_NAME,Latitude,Longitude,MeasurementDateTimeUTC,MeasurementUnit,MeasurementValue,PROCEDURE,ProviderURL,QAFlag,QCFlag,RecordCreatedUTC,RecordModifiedUTC,StationID,StationName,Street,_match_id,geodb_oid"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="7"
+#! TYPE="AttributeRenamer"
+#! VERSION="1"
+#! POSITION="6073 -1153"
+#! ORDER="21"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeRenamer"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="PROCEDURE,OBJECTID"/>
+#! </TRANSFORMER>
+#! <TRANSFORMER
+#! IDENTIFIER="8"
+#! TYPE="AttributeSetter"
+#! VERSION="2"
+#! POSITION="5398 -1078"
+#! ORDER="22"
+#! PARMS_EDITED="false"
+#! ENABLED="true"
+#! >
+#! <OUTPUT_FEAT NAME="OUTPUT"/>
+#! <FEAT_COLLAPSED COLLAPSED="0"/>
+#! <XFORM_PARM PARM_NAME="VAL" PARM_VALUE="1"/>
+#! <XFORM_PARM PARM_NAME="DEST_ATTR" PARM_VALUE="&amp;SERVICE"/>
+#! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
+#! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeSetter"/>
+#! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
+#! </TRANSFORMER>
+#! </TRANSFORMERS>
+#! <SUBDOCUMENT_IOS>
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="9"
+#! NAME="CVS_FILE"
+#! POSITION="0 -583"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="10"
+#! NAME="READ_Offering"
+#! POSITION="1350 -958"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="11"
+#! NAME="READ_Procedure"
+#! POSITION="2700 -1183"
+#! PUBLISHED="true"
+#! IS_SOURCE="true"
+#! />
+#! <SUBDOCUMENT_IO
+#! IDENTIFIER="12"
+#! NAME="WRITE_Offering"
+#! POSITION="6751 -1258"
+#! IS_SOURCE="false"
+#! />
+#! </SUBDOCUMENT_IOS>
+#! <FEAT_LINKS>
+#! <FEAT_LINK
+#! IDENTIFIER="13"
+#! SOURCE_NODE="9"
+#! TARGET_NODE="1"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="14"
+#! SOURCE_NODE="1"
+#! TARGET_NODE="0"
+#! SOURCE_PORT_DESC="fo 1"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="15"
+#! SOURCE_NODE="2"
+#! TARGET_NODE="4"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="16"
+#! SOURCE_NODE="0"
+#! TARGET_NODE="2"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="17"
+#! SOURCE_NODE="10"
+#! TARGET_NODE="2"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="18"
+#! SOURCE_NODE="2"
+#! TARGET_NODE="4"
+#! SOURCE_PORT_DESC="fo 2"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="19"
+#! SOURCE_NODE="10"
+#! TARGET_NODE="4"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS="2400 -600"
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="20"
+#! SOURCE_NODE="4"
+#! TARGET_NODE="3"
+#! SOURCE_PORT_DESC="fo 2"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="21"
+#! SOURCE_NODE="11"
+#! TARGET_NODE="5"
+#! SOURCE_PORT_DESC="0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="22"
+#! SOURCE_NODE="5"
+#! TARGET_NODE="3"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="23"
+#! SOURCE_NODE="3"
+#! TARGET_NODE="6"
+#! SOURCE_PORT_DESC="fo 1"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="24"
+#! SOURCE_NODE="7"
+#! TARGET_NODE="12"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="25"
+#! SOURCE_NODE="6"
+#! TARGET_NODE="8"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! <FEAT_LINK
+#! IDENTIFIER="26"
+#! SOURCE_NODE="8"
+#! TARGET_NODE="7"
+#! SOURCE_PORT_DESC="fo 0"
+#! TARGET_PORT_DESC="fi 0"
+#! ENABLED="true"
+#! EXTRA_POINTS=""
+#! />
+#! </FEAT_LINKS>
+#! <BREAKPOINTS>
+#! </BREAKPOINTS>
+#! <ATTR_LINKS>
+#! </ATTR_LINKS>
+#! <SUBDOCUMENTS>
+#! </SUBDOCUMENTS>
+#! <LOOKUP_TABLES>
+#! </LOOKUP_TABLES>
+#! </TRANSFORMER>
+#! 
+#! START_HEADER
+#! END_HEADER
+
+LOG_FILTER_MASK -1
+DEFAULT_MACRO WB_CURRENT_CONTEXT
+DEFAULT_MACRO OfferingTransformer_WORKSPACE_NAME ""
+INCLUDE [puts {MACRO WB_OLD_CONTEXT_$(OfferingTransformer_WORKSPACE_NAME) $(WB_CURRENT_CONTEXT)};          puts {MACRO WB_CURRENT_CONTEXT $(OfferingTransformer_WORKSPACE_NAME)}]
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(OfferingTransformer_WORKSPACE_NAME)_CVS_FILE Input Splitter"   INPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_CVS_FILE"   OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_CVS_FILE"
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(OfferingTransformer_WORKSPACE_NAME)_READ_Offering Input Splitter"   INPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Offering"   OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Offering_0"   OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Offering_1"
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(OfferingTransformer_WORKSPACE_NAME)_READ_Procedure Input Splitter"   INPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Procedure"   OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Procedure"
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_AttributeRenamer_2    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Procedure"    OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_AttributeRenamer_2_OUTPUT"         @RenameAttributes(OFFERING_NAME,UNIQUE_ID)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_DuplicateRemover_Match_Value_Extractor    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_CVS_FILE"    OUTPUT FEATURE_TYPE ___TODUPTEST___        __DUPTOCHECK__ @Concatenate(___$(OfferingTransformer_WORKSPACE_NAME)_OffT_DuplicateRemover_,fme_attribute_name,"Component")
+FACTORY_DEF * TestFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_DuplicateRemover    INPUT FEATURE_TYPE ___TODUPTEST___    TEST @Count(fme_attribute_name,__DUPTOCHECK__) > 0    OUTPUT FAILED FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_DuplicateRemover_UNIQUE"        @Count(fme_attribute_name,__DUPTOCHECK__)        @RemoveAttributes(__DUPTOCHECK__)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_AttributeRenamer    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_DuplicateRemover_UNIQUE"    OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_AttributeRenamer_OUTPUT"         @RenameAttributes(OFFERING_NAME,Component)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * MatchingFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_AttributeRenamer_OUTPUT"    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Offering_0"    MATCH_GEOMETRY NONE    MATCH_ATTRIBUTES OFFERING_NAME    MATCH_ALL_ATTRIBUTES No    BLANK_AND_MISSING_DIFFER No    LENIENT_GEOMETRY_MATCH No    ADD_TO_MATCHED _match_id @Count($(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher)    OUTPUT MATCHED FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_MATCHED"    OUTPUT NOT_MATCHED FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_NOT_MATCHED"
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * MatchingFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_2    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_MATCHED"    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_NOT_MATCHED"    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_READ_Offering_1"    MATCH_GEOMETRY NONE    MATCH_ATTRIBUTES OFFERING_NAME    MATCH_ALL_ATTRIBUTES No    BLANK_AND_MISSING_DIFFER No    LENIENT_GEOMETRY_MATCH No    ADD_TO_MATCHED _match_id @Count($(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_2)    OUTPUT NOT_MATCHED FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_2_NOT_MATCHED"
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * MatchingFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_3    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_2_NOT_MATCHED"    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_AttributeRenamer_2_OUTPUT"    MATCH_GEOMETRY NONE    MATCH_ATTRIBUTES OFFERING_NAME    MATCH_ALL_ATTRIBUTES No    BLANK_AND_MISSING_DIFFER No    LENIENT_GEOMETRY_MATCH No    ADD_TO_MATCHED _match_id @Count($(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_3)    OUTPUT SINGLE_MATCHED FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_3_SINGLE_MATCHED"
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_AttributeRemover    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_OffT_Matcher_3_SINGLE_MATCHED"    OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_AttributeRemover_OUTPUT"        @RemoveAttributes(Altitude,AverageTimeMinutes,CONTACT,City,Country,Description,INTENDED_APPLICATION,LONG_NAME,Latitude,Longitude,MeasurementDateTimeUTC,MeasurementUnit,MeasurementValue,PROCEDURE,ProviderURL,QAFlag,QCFlag,RecordCreatedUTC,RecordModifiedUTC,StationID,StationName,Street,_match_id,geodb_oid)
+
+# -------------------------------------------------------------------------
+
+Tcl2 proc $(OfferingTransformer_WORKSPACE_NAME)_AttributeSetter_doSetAttr {} {    if { [string range {&SERVICE} 0 0] == {&} } {          FME_SetAttribute [FME_DecodeText [string range {&SERVICE} 1 end]] [FME_DecodeTextOrAttr {1}]       } else {          FME_SetAttribute [FME_DecodeText {&SERVICE}] [FME_DecodeTextOrAttr {1}]    } }
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_AttributeSetter    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_AttributeRemover_OUTPUT"    OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_AttributeSetter_OUTPUT"         @Tcl2($(OfferingTransformer_WORKSPACE_NAME)_AttributeSetter_doSetAttr)
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * TeeFactory    FACTORY_NAME $(OfferingTransformer_WORKSPACE_NAME)_AttributeRenamer    INPUT  FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_AttributeSetter_OUTPUT"    OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_AttributeRenamer_OUTPUT"         @RenameAttributes(PROCEDURE,OBJECTID)
+
+FACTORY_DEF * TeeFactory   FACTORY_NAME "$(OfferingTransformer_WORKSPACE_NAME)_WRITE_Offering Output Collector"   INPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_AttributeRenamer_OUTPUT"   OUTPUT FEATURE_TYPE "$(OfferingTransformer_WORKSPACE_NAME)_WRITE_Offering"
+INCLUDE [puts {MACRO WB_CURRENT_CONTEXT $(WB_OLD_CONTEXT_$(OfferingTransformer_WORKSPACE_NAME))}]
