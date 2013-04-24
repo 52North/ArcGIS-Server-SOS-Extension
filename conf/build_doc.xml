@@ -1,0 +1,53 @@
+<!--
+Builds the 52°north WebGIS using the OX-Framework.
+-->
+<project name="ESRI SOS" default="doc" basedir=".">
+	
+	<property name="dist" value="../dist" />
+	<property name="conf" value="./." />
+	<property name="doc" value="../doc" />
+	<property name="src" value="../src" />
+	<property name="lib" value="../lib" />
+	<property name="arcObjectLib" value="C:/Program Files (x86)/ArcGIS/Desktop10.1/java/lib" />
+	<property name="classes" value="../bin" />
+	<property name="build" value="../build" />
+
+	<path id="build.classpath">
+		<fileset dir="${lib}">
+			<include name="*.jar" />
+		</fileset>
+
+		<fileset dir="${arcOnjectLib}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		
+		<delete dir="${doc}" />
+		
+		<tstamp>
+		    <format property="TIME" pattern="yyyy-MM-dd"/>
+		</tstamp>
+	</target>
+
+	<target name="doc" depends="init">
+
+		<javadoc packagenames="org.*" sourcepath="${src}" destdir="${doc}" author="true" version="true" use="true" windowtitle="52North' SOS Server Object Extension for ESRI's ArcGIS Server">
+			<classpath>
+				<path refid="build.classpath" />
+			</classpath>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://jakarta.apache.org/tomcat/tomcat-5.5-doc/servletapi/" />
+			<link href="http://xmlbeans.apache.org/docs/2.1.0/reference/" />
+			<link href="http://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcobjects/" />
+			<doctitle>
+				<![CDATA[<h1>52North' SOS Server Object Extension for ESRI's ArcGIS Server</h1>]]></doctitle>
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2011 <a href="http://www.52north.org">52North</a> Initiative for Geospatial Open Source Software GmbH. All rights reserved.</i>]]>
+			</bottom>
+
+		</javadoc>
+	</target>
+	
+</project>

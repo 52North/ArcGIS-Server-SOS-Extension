@@ -1,0 +1,85 @@
+
+<project name="SOE Builder" default="mkSOE" basedir=".">
+
+	<property name="soe.name" value="DBAnalyzerSOE" />
+	<property name="dist" value="../dist" />
+	<property name="conf" value="./." />
+	<property name="doc" value="../doc" />
+	<property name="src" value="../src" />
+	<property name="lib" value="../lib" />
+	<property name="arcObjectLib" value="C:/Program Files (x86)/ArcGIS/Desktop10.1/java/lib" />
+	<property name="classes" value="../bin" />
+	<property name="build" value="../build" />
+	<property name="extension.class" value="org.n52.sos.DBAnalyzerSOE" />
+	<property name="extension.id" value="${extension.class}" />
+	<property name="extension.library" value="DBAnalyzerSOE.jar" />
+	<property name="extension.displayName" value="DBAnalyzer SOE" />
+	<property name="extension.description" value="Analyzes the DB of the SOS extension" />
+	
+	<scriptdef name="generateguid" language="javascript">
+	    <attribute name="property" />
+	    <![CDATA[
+	    importClass( java.util.UUID );
+
+	    project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
+	    ]]>
+	</scriptdef>
+	<generateguid property="guid1" />
+	<echo message="${guid1}" />
+	
+	<target name="clean" description="removes the tempory directories used">
+		<delete dir="${build}" />
+		<delete dir="${dist}/${soe.name}.soe"/>
+	</target>
+	
+	<target name="init" depends="clean">
+		<tstamp>
+		    <format property="TIME" pattern="yyyy-MM-dd_HH:mm"/>
+		</tstamp>
+		
+	 	<mkdir dir="${dist}"/>
+	 	<mkdir dir="${build}/Install"/>
+		<mkdir dir="${build}/Resources"/>
+	</target>
+	
+	<target name="config" depends="init">
+		<copy file="${conf}/arcGisSos.properties" tofile="${classes}/arcGisSos.properties" overwrite="true">
+			<filterset>
+				<filter token="TIME_STAMP" value="${TIME}" />
+			</filterset>
+		</copy>
+		
+		<jar destfile="${build}/Install/${soe.name}.jar" manifest="${conf}/Manifest.mf">
+			<fileset dir="${classes}" />
+		</jar>
+		
+		<copy file="${conf}/Config.xml" tofile="${build}/Config.xml" overwrite="true">
+			<filterset>
+				<filter token="SOE_NAME" value="${soe.name}" />
+				<filter token="GENERATED_UUID" value="${guid1}" />
+				<filter token="TIME_TAG" value="${TIME}" />
+				<filter token="EXTENSION_CLASS" value="${extension.class}" />
+				<filter token="EXTENSION_ID" value="${extension.id}" />
+				<filter token="EXTENSION_LIBRARY" value="${extension.library}" />
+				<filter token="EXTENSION_DESCRIPTION" value="${extension.description}" />
+				<filter token="EXTENSION_DISPLAYNAME" value="${extension.displayName}" />
+			</filterset>
+		</copy>
+				
+		<copy file="${conf}/SOSExtension.wsdl" tofile="${build}/Resources/SOSExtension.wsdl" />
+		
+		<copy todir="${build}/Install">
+			<fileset dir="${lib}" />
+		</copy>
+	</target>
+	
+	<target name="mkSOE" depends="config" description="generates the SOE">
+		<jar destfile="${dist}/${soe.name}.soe">
+			<fileset dir="${build}" />
+		</jar>
+	</target>
+	
+	<!--
+	 TODO: Alternatively, we can directly update the SOE on the server with a new one, by first uploading the updated .soe file using the http://<server name>:6080/arcgis/admin/uploads/upload endpoint, then copying the upload id and pasting it in the text box of the http://<server name>:6080/arcgis/admin/services/types/extensions/update endpoint.
+	-->
+</project>

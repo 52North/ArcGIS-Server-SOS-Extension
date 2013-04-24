@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions 
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:arcgis="http://www.esri.com/schemas/ArcGIS/10.1"
+  xmlns:soe="http://52north.org/arcgisServerSOS"
+  xmlns:sosw="http://www.opengis.net/sos/2.0/wsdl"
+  xmlns:sos="http://www.opengis.net/sos/2.0"
+  targetNamespace="http://52north.org/arcgisServerSOS">
+  
+  <documentation>Sensor Observation Service SOE</documentation>
+  
+  <!-- ============================================== -->
+  <!-- ====================  Types ==================== -->
+  <!-- ============================================== -->
+  <types>
+    <xs:schema 
+    	targetNamespace="http://52north.org/arcgisServerSOS" 
+    	xmlns="http://52north.org/arcgisServerSOS"
+    	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="1.0">
+    <xs:annotation>
+      <xs:appinfo>
+        <jxb:schemaBindings>
+          <jxb:package name="52nArcGisSos.soe"/>
+        </jxb:schemaBindings>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:import namespace="http://www.esri.com/schemas/ArcGIS/10.1"/>
+      <xs:element name="insertObservation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="arg0" type="xs:string" minOccurs="1" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="insertObservationResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="arg" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+
+    <xs:schema 
+      targetNamespace="http://www.esri.com/schemas/ArcGIS/10.1" 
+      xmlns="http://www.esri.com/schemas/ArcGIS/10.1"
+      xmlns:jxb="http://java.sun.com/xml/ns/jaxb" 
+      jxb:version="1.0">
+    <xs:annotation>
+      <xs:appinfo>
+        <jxb:schemaBindings>
+          <jxb:package name="com.esri.arcgisws"/>
+        </jxb:schemaBindings>
+      </xs:appinfo>
+    </xs:annotation>
+    </xs:schema>
+    
+    <xs:schema 
+      elementFormDefault="qualified" 
+      targetNamespace="http://www.opengis.net/sos/2.0">
+      <xs:include schemaLocation="http://schemas.opengis.net/sos/2.0.0/sos.xs"/>
+    </xs:schema>
+  </types>
+
+  <!-- ================================================= -->
+  <!-- ====================  Messages ==================== -->
+  <!-- ================================================= -->
+  <message name="insertObservationIn">
+    <part name="parameters" element="soe:insertObservation" />
+  </message>
+  <message name="insertObservationOut">
+    <part name="parameters" element="soe:insertObservationResponse" />
+  </message>
+  <message name="InsertObservationResponseMessage">
+    <part name="body" element="sos:InsertObservationResponse"/>
+  </message>
+
+  <!-- ================================================= -->
+  <!-- ====================  Port Types ==================== -->
+  <!-- ================================================= -->
+  <portType name="ISosTransactionalSoap">
+    <operation name="insertObservation">
+      <input message="soe:insertObservationIn" />
+      <output message="soe:insertObservationOut" />
+    </operation>
+  </portType>
+  <portType name="ObservationInsertionInterface">
+    <operation name="InsertObservation">
+      <input message="sosw:InsertObservationRequestMessage"/>
+      <output message="sosw:InsertObservationResponseMessage"/>
+    </operation>
+  </portType>
+
+  <!-- ================================================= -->
+  <!-- ====================  Bindings ==================== -->
+  <!-- ================================================= -->
+  <binding name="ISosTransactionalSoapBinding" type="soe:ISosTransactionalSoap">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="insertObservation">
+      <soap:operation soapAction="" style="document" />
+        <input>
+          <soap:body use="literal" />
+        </input>
+        <output>
+          <soap:body use="literal" />
+        </output>
+    </operation>
+  </binding>
+
+  <!-- ================================================= -->
+  <!-- ====================  Service ==================== -->
+  <!-- ================================================= -->
+  <service name="#NAME#">
+    <port name="ISosTransactionalSoap" binding="soe:ISosTransactionalSoapBinding">
+      <soap:address location="#URL#"/>
+    </port>
+  </service>
+</definitions>
