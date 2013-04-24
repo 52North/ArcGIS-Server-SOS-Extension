@@ -110,10 +110,10 @@ public class OGCCapabilitiesEncoder {
             offering = offering.replace(OFFERING_IDENTIFIER, obsOff.getName());
             offering = offering.replace(OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure
             
-            ObservedProperty[] obsPropArray = obsOff.getObservedProperties();
+            String[] obsPropArray = obsOff.getObservedProperties();
             String obsPropElements = "";
             for (int i = 0; i < obsPropArray.length; i++) {
-                obsPropElements += "<swes:observableProperty>" + obsPropArray[i].getDescription() + "</swes:observableProperty>";
+                obsPropElements += "<swes:observableProperty>" + obsPropArray[i] + "</swes:observableProperty>";
             }
             offering = offering.replace(OFFERING_OBSERVABLE_PROPERTIES, obsPropElements);
             

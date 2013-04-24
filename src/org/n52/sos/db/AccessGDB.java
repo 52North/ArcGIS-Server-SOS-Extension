@@ -97,6 +97,7 @@ public class AccessGDB {
     private AccessGdbForFeatures featureAccess;
     private AccessGdbForProcedures procedureAccess;
     private AccessGdbForOfferings offeringAccess;
+    private AccessGdbForAnalysis analysisAccess;
     private InsertGdbForObservations observationInsert;
 
     /**
@@ -184,6 +185,7 @@ public class AccessGDB {
         featureAccess = new AccessGdbForFeatures(this);
         procedureAccess = new AccessGdbForProcedures(this);
         offeringAccess = new AccessGdbForOfferings(this);
+        analysisAccess = new AccessGdbForAnalysis(this);
         observationInsert = new InsertGdbForObservations(this);
     }
 
@@ -238,6 +240,10 @@ public class AccessGDB {
     
     public AccessGdbForOfferings getOfferingAccess() {
         return offeringAccess;
+    }
+    
+    public AccessGdbForAnalysis getAnalysisAccess() {
+        return analysisAccess;
     }
     
     public InsertGdbForObservations getObservationInsert() {
