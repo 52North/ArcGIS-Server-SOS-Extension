@@ -168,7 +168,7 @@ public class DBAnalyzerSOE extends SOSExt {
         LOGGER.info("Starting to handle REST request...");
 
         try {
-            return geoDB.analyzeDB().toString().getBytes("utf-8");
+            return geoDB.getanalyzeDB().toString().getBytes("utf-8");
                 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error while handle REST request", e);

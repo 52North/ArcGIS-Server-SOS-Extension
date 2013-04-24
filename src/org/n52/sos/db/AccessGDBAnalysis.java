@@ -62,7 +62,7 @@ public class AccessGDBAnalysis {
          */
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         queryDef.setTables(Table.OBSERVATION);
-        queryDef.setSubFields("COUNT(" + SubField.OBSERVATION_OBJECTID + ")");
+        queryDef.setSubFields("COUNT(" + SubField.OBSERVATION_ID + ")");
         queryDef.evaluate();
         ICursor cursor = queryDef.evaluate();
         IRow row;
@@ -74,26 +74,11 @@ public class AccessGDBAnalysis {
         }
         
         /*
-         * check number of offerings!
-         */
-        queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.OFFERING);
-        queryDef.setSubFields("COUNT(" + SubField.OFFERING_OBJECTID + ")");
-        queryDef.evaluate();
-        cursor = queryDef.evaluate();
-        while ((row = cursor.nextRow()) != null) {
-            Object offeringCount = row.getValue(0);
-            String offeringCountAsString = offeringCount.toString();
-            
-            json.append("offeringCount", offeringCountAsString);
-        }
-        
-        /*
          * check number of features!
          */
         queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.FEATURE);
-        queryDef.setSubFields("COUNT(" + SubField.FEATURE_OBJECTID + ")");
+        queryDef.setTables(Table.FEATUREOFINTEREST);
+        queryDef.setSubFields("COUNT(" + SubField.FEATUREOFINTEREST_ID + ")");
         queryDef.evaluate();
         cursor = queryDef.evaluate();
         while ((row = cursor.nextRow()) != null) {
@@ -108,7 +93,7 @@ public class AccessGDBAnalysis {
          */
         queryDef = gdb.getWorkspace().createQueryDef();
         queryDef.setTables(Table.PROCEDURE);
-        queryDef.setSubFields("COUNT(" + SubField.PROCEDURE_OBJECTID + ")");
+        queryDef.setSubFields("COUNT(" + SubField.PROCEDURE_ID + ")");
         queryDef.evaluate();
         cursor = queryDef.evaluate();
         while ((row = cursor.nextRow()) != null) {
@@ -123,7 +108,7 @@ public class AccessGDBAnalysis {
          */
         queryDef = gdb.getWorkspace().createQueryDef();
         queryDef.setTables(Table.PROPERTY);
-        queryDef.setSubFields("COUNT(" + SubField.PROPERTY_OBJECTID + ")");
+        queryDef.setSubFields("COUNT(" + SubField.PROPERTY_ID + ")");
         queryDef.evaluate();
         cursor = queryDef.evaluate();
         while ((row = cursor.nextRow()) != null) {
@@ -132,22 +117,6 @@ public class AccessGDBAnalysis {
             
             json.append("observedPropertyCount", observedPropertyCountAsString);
         }
-        
-        /*
-         * check number of contacts!
-         */
-        queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.CONTACT_DESCRIPTION);
-        queryDef.setSubFields("COUNT(" + SubField.CONTACT_DESCRIPTION_OBJECTID + ")");
-        queryDef.evaluate();
-        cursor = queryDef.evaluate();
-        while ((row = cursor.nextRow()) != null) {
-            Object contactCount = row.getValue(0);
-            String contactCountAsString = contactCount.toString();
-            
-            json.append("contactCount", contactCountAsString);
-        }
-        
         
         return json;
     }
