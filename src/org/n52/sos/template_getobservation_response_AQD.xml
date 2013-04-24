@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aqd="http://aqd.ec.europa.eu/aqd/0.3.6b" 
+	xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3rc3/" 
+	xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0rc3" 
+	xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/3.0rc3" 
+	xmlns:gml="http://www.opengis.net/gml/3.2" 
+	xmlns:ompr="http://inspire.ec.europa.eu/schemas/ompr/2.0rc3" 
+	xmlns:sam="http://www.opengis.net/sampling/2.0" 
+	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:gmd="http://www.isotc211.org/2005/gmd" 
+	xmlns:gco="http://www.isotc211.org/2005/gco" 
+	xmlns:om="http://www.opengis.net/om/2.0" 
+	xmlns:swe="http://www.opengis.net/swe/2.0" 
+	xmlns:am="http://inspire.ec.europa.eu/schemas/am/3.0rc3" 
+	xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" 
+	xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" 
+	xsi:schemaLocation="
+http://aqd.ec.europa.eu/aqd/0.3.6b http://dd.eionet.europa.eu/schemas/id2011850eu/AirQualityReporting_0.3.6b.xsd 
+http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd" 
+	gml:id="observation">
+
+	<gml:featureMember>
+		<aqd:AQD_ReportingHeader gml:id="ObservationReportingHeader">
+			<aqd:change>false</aqd:change>
+			<aqd:changeDescription>No change</aqd:changeDescription>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>ObservationReportingHeader</base:localId>
+					<base:namespace>http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/</base:namespace>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:reportingAuthority>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gco:CharacterString>Emily Connolly</gco:CharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gco:CharacterString>The Department for Environment, Food and Rural Affairs (Defra)</gco:CharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language xsi:nil="true" nilReason="missing" />
+											<gn:nativeness xsi:nil="true" nilReason="missing" />
+											<gn:nameStatus xsi:nil="true" nilReason="missing" />
+											<gn:sourceOfName xsi:nil="true" nilReason="missing" />
+											<gn:pronunciation xsi:nil="true" nilReason="missing" />
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Atmosphere and Local Environment Programme, 5E, Ergon House, 17 Smith Square, London SW1P 3JR</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing" />
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>London</ad:locatorDesignator>
+									<ad:postCode xsi:nil="false">SW1P 3JR</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>emily.connolly@defra.gsi.gov.uk</base2:electronicMailAddress>
+							<base2:telephoneVoice>+44 (0) 207 238 6951</base2:telephoneVoice>
+							<base2:website />
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</aqd:reportingAuthority>
+			<aqd:reportingPeriod>
+				<gml:TimePeriod gml:id="ReportingTimePeriod">
+					<!-- ARNE: does this equal aggregated 'phenomenonTime' of all observations? -->
+					<gml:beginPosition>...</gml:beginPosition> 
+					<gml:endPosition>...</gml:endPosition>
+				</gml:TimePeriod>
+			</aqd:reportingPeriod>
+			
+@observations@
+			
+		</aqd:AQD_ReportingHeader>
+	</gml:featureMember>
+</gml:FeatureCollection>

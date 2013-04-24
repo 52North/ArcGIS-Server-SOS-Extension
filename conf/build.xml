@@ -62,9 +62,10 @@
 				
 		<copy file="${conf}/SOSExtension.wsdl" tofile="${build}/Resources/SOSExtension.wsdl" />
 		
+		<!--
 		<copy todir="${build}/Install">
 			<fileset dir="${lib}" />
-		</copy>
+		</copy>-->
 	</target>
 	
 	<target name="mkSOE" depends="config" description="generates the SOE">

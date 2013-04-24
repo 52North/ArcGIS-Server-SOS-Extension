@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:Capabilities version="2.0.0"
+  xsi:schemaLocation="http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:swe="http://www.opengis.net/swe/2.0" 
+  xmlns:swes="http://www.opengis.net/swes/2.0" 
+  xmlns:ows="http://www.opengis.net/ows/1.1" 
+  xmlns:sos="http://www.opengis.net/sos/2.0" 
+  xmlns:fes="http://www.opengis.net/fes/2.0" 
+  xmlns:gml="http://www.opengis.net/gml/3.2" 
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+
+	<!-- ServiceIdentification contains general information about the service like title, type and version as well as information about supported profiles of the service-->
+	<ows:ServiceIdentification>
+		<ows:Title>@service-title@</ows:Title>
+		<ows:Abstract>@service-description@</ows:Abstract>				
+		<ows:Keywords>
+			@service-keywords@
+		</ows:Keywords>
+		<ows:ServiceType codeSpace="http://opengeospatial.net">OGC:SOS</ows:ServiceType>
+		<ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+		<ows:Profile>http://www.opengis.net/spec/SOS/2.0/conf/gfoi</ows:Profile>
+		<ows:Profile>http://www.opengis.net/spec/SOS/2.0/conf/soap</ows:Profile>
+		<ows:Profile>http://www.opengis.net/spec/OMXML/2.0/conf/samplingPoint</ows:Profile>
+		<ows:Profile>http://www.opengis.net/spec/OMXML/2.0/conf/observation</ows:Profile>
+		<ows:Fees>NONE</ows:Fees>
+		<ows:AccessConstraints>NONE</ows:AccessConstraints>
+	</ows:ServiceIdentification>
+	<!-- ServiceProvider section contains information about service provider like contact, adress, etc. -->
+	<ows:ServiceProvider>
+		<ows:ProviderName>@provider-name@</ows:ProviderName>
+		<ows:ProviderSite xlink:href="@provider-site@"/>
+		<ows:ServiceContact>
+			<ows:ContactInfo>
+				<ows:Phone>
+					<ows:Voice>@provider-phone@</ows:Voice>
+					<ows:Facsimile>@provider-fax@</ows:Facsimile>
+				</ows:Phone>
+				<ows:Address>
+					<ows:DeliveryPoint>@provider-delivery-point@</ows:DeliveryPoint>
+					<ows:City>@provider-city@</ows:City>
+					<ows:PostalCode>@provider-postal-code@</ows:PostalCode>
+					<ows:Country>@provider-country@</ows:Country>
+					<ows:ElectronicMailAddress>@provider-email@</ows:ElectronicMailAddress>
+				</ows:Address>
+			</ows:ContactInfo>
+			<ows:Role/>
+		</ows:ServiceContact>
+	</ows:ServiceProvider>
+	
+	<!-- the filterCapabilities section lists the filters and operands which are supported in the observation, result and feature retrieval operations -->
+	<sos:filterCapabilities>
+		<fes:Filter_Capabilities>
+			<fes:Conformance>
+				<fes:Constraint name="ImplementsQuery">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsAdHocQuery">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsFunctions">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsMinStandardFilter">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsStandardFilter">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsMinSpatialFilter">
+					<ows:NoValues/>
+					<ows:DefaultValue>true</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsSpatialFilter">
+					<ows:NoValues/>
+					<ows:DefaultValue>true</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsMinTemporalFilter">
+					<ows:NoValues/>
+					<ows:DefaultValue>true</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsTemporalFilter">
+					<ows:NoValues/>
+					<ows:DefaultValue>true</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsVersionNav">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsSorting">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+				<fes:Constraint name="ImplementsExtendedOperators">
+					<ows:NoValues/>
+					<ows:DefaultValue>false</ows:DefaultValue>
+				</fes:Constraint>
+			</fes:Conformance>
+			<fes:Spatial_Capabilities>
+				<fes:GeometryOperands>
+					<fes:GeometryOperand name="gml:Point"/>
+					<fes:GeometryOperand name="gml:Polygon"/>
+				</fes:GeometryOperands>
+				<fes:SpatialOperators>
+					<fes:SpatialOperator name="BBOX"/>
+					<fes:SpatialOperator name="Intersects"/>
+					<fes:SpatialOperator name="Within"/>
+				</fes:SpatialOperators>
+			</fes:Spatial_Capabilities>
+			<fes:Temporal_Capabilities>
+				<fes:TemporalOperands>
+					<fes:TemporalOperand name="gml:TimePeriod"/>
+					<fes:TemporalOperand name="gml:TimeInstant"/>
+				</fes:TemporalOperands>
+				<fes:TemporalOperators>
+					<fes:TemporalOperator name="During"/>
+					<fes:TemporalOperator name="After"/>
+					<fes:TemporalOperator name="TEquals"/>
+				</fes:TemporalOperators>
+			</fes:Temporal_Capabilities>
+		</fes:Filter_Capabilities>
+	</sos:filterCapabilities>
+	<!-- The contents section contains information about the observations offered by the service. The observations are group per sensor(-system) into observation offerings.-->
+	<sos:contents>
+		<sos:Contents>
+@contents-offerings@
+			<sos:responseFormat>http://www.opengis.net/om/2.0</sos:responseFormat>
+			<sos:responseFormat>http://www.w3.org/1999/02/22-rdf-syntax-ns</sos:responseFormat>
+			<sos:observationType>http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement</sos:observationType>
+		</sos:Contents>
+	</sos:contents>
+</sos:Capabilities>

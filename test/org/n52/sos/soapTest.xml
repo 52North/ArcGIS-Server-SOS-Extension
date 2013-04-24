@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<soe:insertObservation
+			xmlns:soe="http://www.soe.arcgissamples"
+			xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+			<arg0>1</arg0> <!-- offering ID -->
+			<arg1>2012-08-23T15:45:00</arg1> <!-- time stamp in ISO 8601 format -->
+			<arg2>112</arg2> <!-- feature id -->
+			<arg3>1</arg3> <!-- obsProp id -->
+			<arg4>1</arg4> <!-- procedure id -->
+			<arg6>23</arg6>
+		</soe:insertObservation>
+	</soap:Body>
+</soap:Envelope>

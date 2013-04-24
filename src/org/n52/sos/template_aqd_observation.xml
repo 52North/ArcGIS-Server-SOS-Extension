@@ -1,0 +1,65 @@
+			<aqd:content>
+				<om:OM_Observation gml:id="@observation-id@">
+					<om:phenomenonTime>
+						<gml:TimePeriod gml:id="phenomenonTime-@observation-id@">
+							<gml:beginPosition>@observation-phentime-start@</gml:beginPosition>
+							<gml:endPosition>@observation-phentime-end@</gml:endPosition>
+						</gml:TimePeriod>
+					</om:phenomenonTime>
+					<om:resultTime>
+						<gml:TimeInstant gml:id="resultTime-@observation-id@">
+							<gml:timePosition>@observation-phentime-end@</gml:timePosition>
+						</gml:TimeInstant>
+					</om:resultTime>
+					<om:procedure xlink:href="@observation-procedure@" />
+					<om:parameter>
+						<om:NamedValue>
+							<om:name xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/processParameters/SP" />
+							<om:value>@observation-sampling-point@</om:value>
+						</om:NamedValue>
+					</om:parameter>
+					<om:observedProperty xlink:href="@observation-property@" />
+					<om:featureOfInterest xlink:href="@observation-feature@" />
+					<om:resultQuality gco:nilReason="inapplicable"/>	
+					<om:result>
+						<swe:DataArray>
+							<swe:elementCount>
+								<swe:Count>
+									<swe:value>@element-count@</swe:value>
+								</swe:Count>
+							</swe:elementCount>
+							<swe:elementType name="Components">
+								<swe:DataRecord>
+									<swe:field name="StartTime">
+										<swe:Time definition="http://www.opengis.net/def/property/OGC/0/SamplingTime">
+											<swe:uom xlink:href="http://www.opengis.net/def/uom/ISO-8601/0/Gregorian" />
+										</swe:Time>
+									</swe:field>
+									<swe:field name="EndTime">
+										<swe:Time definition="http://www.opengis.net/def/property/OGC/0/SamplingTime">
+											<swe:uom xlink:href="http://www.opengis.net/def/uom/ISO-8601/0/Gregorian" />
+										</swe:Time>
+									</swe:field>
+									<swe:field name="Verification">
+										<swe:Category definition="http://dd.eionet.europa.eu/vocabularies/aq/observationverification"/>
+									</swe:field>
+									<swe:field name="Validity">
+										<swe:Category definition="http://dd.eionet.europa.eu/vocabularies/aq/observationvalidity"/>
+									</swe:field>
+									<swe:field name="ObservedProperty">
+										<swe:Quantity definition="@observation-property@">
+											<swe:uom xlink:href="@observation-ucum@" />
+										</swe:Quantity>
+									</swe:field>
+								</swe:DataRecord>
+							</swe:elementType>
+							<swe:encoding>
+								<swe:TextEncoding decimalSeparator="." tokenSeparator="," blockSeparator="@@" />
+							</swe:encoding>
+							<swe:values>
+								@values@
+							</swe:values>
+						</swe:DataArray>
+					</om:result>
+				</om:OM_Observation>
+			</aqd:content>

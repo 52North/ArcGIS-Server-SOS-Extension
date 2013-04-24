@@ -1,0 +1,77 @@
+<sos:observationData>
+	<om:OM_Observation gml:id="@observation-id@">
+		<om:phenomenonTime>
+			<gml:TimePeriod gml:id="phenomenonTime-@observation-id@">
+				<gml:beginPosition>@observation-phentime-start@</gml:beginPosition>
+				<gml:endPosition>@observation-phentime-end@</gml:endPosition>
+			</gml:TimePeriod>
+		</om:phenomenonTime>
+		<om:resultTime>
+			<gml:TimeInstant gml:id="resultTime-@observation-id@">
+				<gml:timePosition>@observation-phentime-end@</gml:timePosition>
+			</gml:TimeInstant>
+		</om:resultTime>
+		<om:procedure xlink:href="@observation-procedure@" />
+		<om:parameter>
+			<om:NamedValue>
+				<om:name xlink:href="samplingPoint-@observation-id@" />
+				<om:value>?????</om:value>
+			</om:NamedValue>
+		</om:parameter>
+		<om:observedProperty xlink:href="@observation-property@" />
+		<om:featureOfInterest xlink:href="@observation-feature@" />
+		<om:result xsi:type="swe:DataArrayType">
+			<swe:elementCount>
+				<swe:Count>
+					<swe:value>@element-count@</swe:value>
+				</swe:Count>
+			</swe:elementCount>
+			<swe:elementType name="Components">
+				<swe:DataRecord>
+					<swe:field name="startTime">
+						<swe:Time definition="urn:ogc:property:time:iso8601">
+							<swe:uom code="hour" />
+						</swe:Time>
+					</swe:field>
+					<swe:field name="endTime">
+						<swe:Time definition="urn:ogc:property:time:iso8601">
+							<swe:uom code="hour" />
+						</swe:Time>
+					</swe:field>
+					<swe:field name="validityStatus">
+						<swe:Quantity definition="Validity">
+							<swe:uom code="Codelist" />
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="verificationStatus">
+						<swe:Quantity definition="Verification">
+							<swe:uom code="Codelist" />
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="ObservedProperty">
+						<swe:Quantity definition="@observation-property@">
+							<swe:uom code="@observation-ucum@" />
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="dataCapture">
+						<swe:Quantity definition="validDataInObservation">
+							<swe:uom code="percentage" />
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="ObservedProperty">
+						<swe:Quantity definition="timeCoverageInObservation">
+							<swe:uom code="percentage" />
+						</swe:Quantity>
+					</swe:field>
+				</swe:DataRecord>
+			</swe:elementType>
+			<swe:encoding>
+				<swe:TextEncoding decimalSeparator="."
+					tokenSeparator="," blockSeparator="@@" />
+			</swe:encoding>
+			<swe:values>
+				@values@
+	  </swe:values>
+		</om:result>
+	</om:OM_Observation>
+</sos:observationData>

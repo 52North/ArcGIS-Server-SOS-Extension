@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<swes:DescribeSensorResponse
+	xsi:schemaLocation="http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd" 
+	xmlns="http://www.opengis.net/sensorML/2.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+	xmlns:swe="http://www.opengis.net/swe/2.0" 
+	xmlns:swes="http://www.opengis.net/swes/2.0" 
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd"
+	xmlns:gco="http://www.isotc211.org/2005/gco">
+	<swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/2.0</swes:procedureDescriptionFormat>
+	@procedures@
+</swes:DescribeSensorResponse>
+
