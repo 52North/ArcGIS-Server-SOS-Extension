@@ -28,8 +28,6 @@ import java.util.logging.Logger;
 import junit.framework.TestCase;
 
 import org.n52.sos.db.AccessGDB;
-import org.n52.sos.db.AccessObservationGDB;
-import org.n52.sos.db.InsertGdbForObservations;
 
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.AoInitialize;
@@ -38,8 +36,7 @@ import com.esri.arcgis.system.esriLicenseProductCode;
 import com.esri.arcgis.system.esriLicenseStatus;
 
 /**
- * @author Arne
- *
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class EsriBaseTest extends TestCase {
 

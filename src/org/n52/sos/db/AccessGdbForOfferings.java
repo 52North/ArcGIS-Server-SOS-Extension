@@ -131,40 +131,47 @@ public class AccessGdbForOfferings {
                 
                 LOGGER.info("Working on offering " + offerings.indexOf(offering) + " out of " + offerings.size());
                 
-                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                // request the timeperiod
-                LOGGER.info("Request observations for Offering " + offering.getId() + " to get timeperiod");
-                
-                IQueryDef queryDefTime = gdb.getWorkspace().createQueryDef();
-                
-                // set tables
-                queryDefTime.setTables(Table.OBSERVATION);
-                queryDefTime.setTables(Table.VALUE);
-                                
-                // set sub fields
-                List<String> subFieldsOff = new ArrayList<String>();
-                subFieldsOff.add("MIN(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
-                subFieldsOff.add("MAX(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MAXTIME");
-                queryDefTime.setSubFields(gdb.createCommaSeparatedList(subFieldsOff));
-                queryDefTime.setWhereClause(SubField.OBSERVATION_FK_PROCEDURE + " = " + offering.getId());
-
-                ICursor cursorOffering = queryDefTime.evaluate();
-                
-                IRow nextRow = cursorOffering.nextRow();
-                
-                Object startValue = nextRow.getValue(0);
-                Object endValue = nextRow.getValue(1);
-                
-                // start time stamp
-                ITimePosition startTime = gdb.createTimePosition(startValue);                
-
-                // end time stamp
-                ITimePosition endTime = gdb.createTimePosition(endValue);
-                
-                // add time extent to offering
-                if (startTime != null && endTime != null) {
-                    offering.setTimeExtent(new TimePeriod(startTime, endTime));
-                }
+//                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                // request the timeperiod
+//                LOGGER.info("Request timeperiod for Offering " + offering.getId());
+//                
+//                IQueryDef queryDefTime = gdb.getWorkspace().createQueryDef();
+//                
+//                // set tables
+//                queryDefTime.setTables(Table.OBSERVATION);
+//                queryDefTime.setTables(Table.VALUE);
+//                queryDefTime.setTables(Table.PROCEDURE);
+//                                
+//                // set sub fields
+//                List<String> subFieldsOff = new ArrayList<String>();
+//                subFieldsOff.add("MIN(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
+//                subFieldsOff.add("MAX(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MAXTIME");
+//                queryDefTime.setSubFields(gdb.createCommaSeparatedList(subFieldsOff));
+//                
+//                String queryDefTimeWhereClause = "";
+//                queryDefTimeWhereClause += gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE);
+//                queryDefTimeWhereClause += (" AND ");
+//                queryDefTimeWhereClause += (gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
+//                queryDefTime.setWhereClause(queryDefTimeWhereClause);
+//                LOGGER.info("Where clause := " + queryDefTime.getWhereClause());
+//                
+//                ICursor cursorOffering = queryDefTime.evaluate();
+//                
+//                IRow nextRow = cursorOffering.nextRow();
+//                
+//                Object startValue = nextRow.getValue(0);
+//                Object endValue = nextRow.getValue(1);
+//                
+//                // start time stamp
+//                ITimePosition startTime = gdb.createTimePosition(startValue);                
+//
+//                // end time stamp
+//                ITimePosition endTime = gdb.createTimePosition(endValue);
+//                
+//                // add time extent to offering
+//                if (startTime != null && endTime != null) {
+//                    offering.setTimeExtent(new TimePeriod(startTime, endTime));
+//                }
                 
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 // set observed property
@@ -176,6 +183,7 @@ public class AccessGdbForOfferings {
                 List<String> tablesProp = new ArrayList<String>();
                 tablesProp.add(Table.OBSERVATION);
                 tablesProp.add(Table.PROPERTY);
+                tablesProp.add(Table.PROCEDURE);
                 queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
                 LOGGER.info("Tables clause := " + queryDefProp.getTables());
 
@@ -189,7 +197,9 @@ public class AccessGdbForOfferings {
                 StringBuffer whereClauseProp = new StringBuffer();
                 whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
                 whereClauseProp.append(" AND ");
-                whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + offering.getId());
+                whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
+                whereClauseProp.append(" AND ");
+                whereClauseProp.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
                 queryDefProp.setWhereClause(whereClauseProp.toString());
                 LOGGER.info("Where clause := " + queryDefProp.getWhereClause());
 
@@ -226,7 +236,9 @@ public class AccessGdbForOfferings {
                 StringBuffer whereClauseFoi = new StringBuffer();
                 whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
                 whereClauseFoi.append(" AND ");
-                whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + offering.getId());
+                whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
+                whereClauseFoi.append(" AND ");
+                whereClauseFoi.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
                 queryDefFoi.setWhereClause(whereClauseFoi.toString());
                 LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
 
