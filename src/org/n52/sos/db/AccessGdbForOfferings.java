@@ -26,6 +26,7 @@ package org.n52.sos.db;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -33,7 +34,7 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimePeriod;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ObservedProperty;
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Log;
 
 import com.esri.arcgis.geodatabase.Fields;
@@ -59,24 +60,6 @@ public class AccessGdbForOfferings {
         this.gdb = accessGDB;
     }
     
-//    /**
-//     * DUMMY
-//     */
-//    public Collection<ObservationOffering> getObservationOfferings() 
-//    {
-//        LOGGER.info("Creating new ObservationOfferings.");
-//        
-//        List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
-//        
-//        try {
-//            Envelope envelope = new Envelope();
-//            ObservationOffering offering = new ObservationOffering("id", "name", new String[] { "observedProperties" }, "procedureIdentifier", envelope, new TimePeriod("2013-01-01/2013-03-31"));
-//            offerings.add(offering);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return offerings;
-//    }
     
     /**
      * This method can be used to retrieve all {@link ObservationOffering}s
@@ -87,6 +70,8 @@ public class AccessGdbForOfferings {
      */
     public Collection<ObservationOffering> getObservationOfferings() throws IOException
     {
+        LOGGER.info("getObservationOfferings() is called.");
+        
         if (observationOfferingsCache == null) { //TODO Do we need to update this cache at some point?
             
             List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
@@ -128,7 +113,7 @@ public class AccessGdbForOfferings {
 
             for (ObservationOffering offering : offerings) {
                 
-//                LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
+                LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
                 
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 // request the timeperiod
@@ -146,7 +131,7 @@ public class AccessGdbForOfferings {
                 List<String> subFieldsOff = new ArrayList<String>();
                 subFieldsOff.add("MIN(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
                 subFieldsOff.add("MAX(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MAXTIME");
-//                queryDefTime.setSubFields(gdb.createCommaSeparatedList(subFieldsOff));
+                queryDefTime.setSubFields(gdb.createCommaSeparatedList(subFieldsOff));
                 
                 // create where clause with joins and constraints
                 StringBuffer whereClauseTime = new StringBuffer();
@@ -155,20 +140,21 @@ public class AccessGdbForOfferings {
                 whereClauseTime.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
                 queryDefTime.setWhereClause(whereClauseTime.toString());
 //                LOGGER.info("Where clause := " + queryDefTime.getWhereClause());
-                
+
                 ICursor cursorOffering = queryDefTime.evaluate();
                 
                 IRow nextRow = cursorOffering.nextRow();
                 
-                // WARNING: 'nextRow == null' means: no observations associated with procedure/offering
+                Object startValue = nextRow.getValue(0);
+                Object endValue = nextRow.getValue(1);
+                    
                 boolean noObservationsForOffering = false;
-                if (nextRow == null) {
+                if (startValue == null || endValue == null) {
                     noObservationsForOffering = true;
                 }
-                // 'nextRow != null' means: observations are available and we can get min and max time. 
                 else {
-                    Object startValue = nextRow.getValue(0);
-                    Object endValue = nextRow.getValue(1);
+//                    LOGGER.info("start time: " + startValue);
+//                    LOGGER.info("end time: " + endValue);
                     
                     // start time stamp
                     ITimePosition startTime = gdb.createTimePosition(startValue);                
@@ -194,13 +180,13 @@ public class AccessGdbForOfferings {
                     tablesProp.add(Table.PROPERTY);
                     tablesProp.add(Table.PROCEDURE);
                     queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
-    //                LOGGER.info("Tables clause := " + queryDefProp.getTables());
+//                    LOGGER.info("Tables clause := " + queryDefProp.getTables());
     
                     // set sub fields
                     List<String> subFieldsProp = new ArrayList<String>();
                     subFieldsProp.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
                     queryDefProp.setSubFields(gdb.createCommaSeparatedList(subFieldsProp));
-    //                LOGGER.info("Subfields clause := " + queryDefProp.getSubFields());
+//                    LOGGER.info("Subfields clause := " + queryDefProp.getSubFields());
     
                     // create where clause with joins and constraints
                     StringBuffer whereClauseProp = new StringBuffer();
@@ -210,19 +196,27 @@ public class AccessGdbForOfferings {
                     whereClauseProp.append(" AND ");
                     whereClauseProp.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
                     queryDefProp.setWhereClause(whereClauseProp.toString());
-    //                LOGGER.info("Where clause := " + queryDefProp.getWhereClause());
+//                    LOGGER.info("Where clause := " + queryDefProp.getWhereClause());
     
                     // evaluate the database query
                     ICursor cursorProp = queryDefProp.evaluate();
-    
+                    
                     fields = (Fields) cursorProp.getFields();
-    
                     List<String> obsProps = new ArrayList<String>();
                     while ((row = cursorProp.nextRow()) != null) {
                         String obsPropID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
                         obsProps.add(obsPropID);
                     }
-                    offering.setObservedProperties(Utilities.toArray(obsProps));
+                    
+                    // copy obsProps list to String Array:
+                    String[] obsPropsArray = new String[obsProps.size()];
+                    int i=0;
+                    for (Iterator<String> iterator = obsProps.iterator(); iterator.hasNext();) {
+                        obsPropsArray[i] = (String) iterator.next();
+                        i++;
+                    }
+                    
+                    offering.setObservedProperties(obsPropsArray);
                 }
                 // no observations associated with this offering/procedure yet, so an empty String array is attached:
                 else {
@@ -234,19 +228,19 @@ public class AccessGdbForOfferings {
                 
                 if (noObservationsForOffering == false) {
                     IQueryDef queryDefFoi = gdb.getWorkspace().createQueryDef();
-    
+                    
                     // set tables
                     List<String> tablesFoi = new ArrayList<String>();
                     tablesFoi.add(Table.OBSERVATION);
                     tablesFoi.add(Table.FEATUREOFINTEREST);
                     tablesFoi.add(Table.PROCEDURE);
                     queryDefFoi.setTables(gdb.createCommaSeparatedList(tablesFoi));
-    
+                    
                     // set sub fields
                     List<String> subFieldsFoi = new ArrayList<String>();
                     subFieldsFoi.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
                     queryDefFoi.setSubFields(gdb.createCommaSeparatedList(subFieldsFoi));
-    
+                    
                     // create the where clause with joins and constraints
                     StringBuffer whereClauseFoi = new StringBuffer();
                     whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
@@ -255,11 +249,11 @@ public class AccessGdbForOfferings {
                     whereClauseFoi.append(" AND ");
                     whereClauseFoi.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
                     queryDefFoi.setWhereClause(whereClauseFoi.toString());
-    //                LOGGsER.info("Where clause := " + queryDefFoi.getWhereClause());
+//                    LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
     
                     // evaluate the database query
                     ICursor cursorFoi = queryDefFoi.evaluate();
-    
+                    
                     List<Point> points = new ArrayList<Point>();
                     fields = (Fields) cursorFoi.getFields();
                     while ((row = cursorFoi.nextRow()) != null) {

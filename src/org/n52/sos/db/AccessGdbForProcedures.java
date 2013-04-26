@@ -80,14 +80,7 @@ public class AccessGdbForProcedures {
         LOGGER.info("Subfields clause := " + queryDef.getSubFields());
         
         // evaluate the database query
-        ICursor cursor = null;
-        
-        try {
-            cursor = queryDef.evaluate();
-        }
-        catch (Exception e) {
-            LOGGER.severe(e.getLocalizedMessage());
-        }
+        ICursor cursor = queryDef.evaluate();
         
         Fields fields = (Fields) cursor.getFields();
         IRow row;

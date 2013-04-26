@@ -179,9 +179,14 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         this.sosContactPersonEmail = (String) propertySet.getProperty("contactPersonEmail");
         
         LOGGER.info("Read property 'urlSosExtension': " + this.urlSosExtension);
-        
-        // create database access
-        this.geoDB = new AccessGDB(this);
+     
+        try {
+            // create database access
+            this.geoDB = new AccessGDB(this);
+        } catch (Exception e) {
+            LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
+            throw e;
+        }
     }
     
     /*************************************************************************************
@@ -270,21 +275,24 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         featuresQueryOp.put(ServerUtilities.createOperation("query", "feature, observedProperty, procedure, spatialFilter", "json", false));
         featuresObject.put("operations", featuresQueryOp);
 */
+        
         // create a schema object for the GetCapabilities operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetCapabilities", "service, request", "json, xml", false));
-/*                
-        // create a schema object for the DescribeSensor operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
-*/                
+        
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, responseFormat", "json, xml", false));
         
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
+
 /*
         // create a schema object for the GetFeatureOfInterest operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
-*/
+               
+        // create a schema object for the DescribeSensor operation:
+        ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
+*/      
+        
         // include all resource objects into 'resources' array:
         JSONArray resourceArray = new JSONArray();
         resourceArray.put(observationsObject);
@@ -295,29 +303,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         return arcGisSos.toString();
     }
-
-    
-//    protected static String createSchema() throws IOException, AutomationException {
-//        JSONObject arcGisSos = ServerUtilities.createResource("ArcGIS_SOS_Extension", "An_SOS_extension_for_ArcGIS_Server", false, false);
-//        JSONArray ogcOperationArray = new JSONArray();
-//        
-//        // create a schema object for the 'observations' resource:
-//        JSONObject observationsObject = ServerUtilities.createResource("observations", "description of observations resource", false, false);
-//        JSONArray observationsQueryOp = new JSONArray();
-//        observationsQueryOp.put(ServerUtilities.createOperation("query", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, where", "json", false));
-//        observationsObject.put("operations", observationsQueryOp);
-//        
-//        // create a schema object for the DescribeSensor operation:
-//        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, responseFormat", "json, xml", false));
-//        
-//        // include all resource objects into 'resources' array:
-//        JSONArray resourceArray = new JSONArray();
-//        resourceArray.put(observationsObject);
-//        arcGisSos.put("resources", resourceArray);
-//        arcGisSos.put("operations", ogcOperationArray);
-//        
-//        return arcGisSos.toString();
-//    }
     
     /**
      * This method handles REST requests by determining whether an operation or

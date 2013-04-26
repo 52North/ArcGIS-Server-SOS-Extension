@@ -32,7 +32,7 @@ import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ObservedProperty;
 import org.n52.sos.dataTypes.ServiceDescription;
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Log;
 
 /**
@@ -72,7 +72,7 @@ public class OGCCapabilitiesEncoder {
         
         // replace variables in Capabilities document template:
         
-        String templateCapabilites = Utilities.readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
+        String templateCapabilites = CommonUtilities.readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
         
         templateCapabilites = templateCapabilites.replace(SERVICE_TITLE, sd.getTitle());        
         templateCapabilites = templateCapabilites.replace(SERVICE_DESCRIPTION, sd.getDescription());
@@ -101,7 +101,7 @@ public class OGCCapabilitiesEncoder {
         // replace variables in ObservationOffering template and add to Capabilities document:
         
         String allOfferings = "";
-        String templateOffering = Utilities.readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
+        String templateOffering = CommonUtilities.readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
         for (Iterator<ObservationOffering> iterator = obsOfferings.iterator(); iterator.hasNext();) {
             String offering = templateOffering;
             

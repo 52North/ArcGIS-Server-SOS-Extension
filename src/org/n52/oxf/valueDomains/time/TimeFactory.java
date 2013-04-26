@@ -25,6 +25,9 @@ package org.n52.oxf.valueDomains.time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
+
+import org.n52.sos.JSONEncoder;
 
 /**
  * Creates an appropriate ITime object, (--> TimePeriod or TimePosition)
@@ -32,7 +35,7 @@ import java.util.Date;
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class TimeFactory {
-
+    
     public static ITime createTime(Date timePos)
     {
         DateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");

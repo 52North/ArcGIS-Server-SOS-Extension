@@ -29,7 +29,7 @@ import java.util.Collection;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservedProperty;
 import org.n52.sos.dataTypes.Procedure;
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.geometry.IEnvelope;
 
@@ -59,17 +59,17 @@ public class OGCProcedureEncoder {
     private static String CONTACT_EMAIL   = "@contact-email@";
     
     public static String encodeProceduresAsSensorML20(Collection<Procedure> procedureCollection) throws IOException {
-        String responseTemplate = Utilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
+        String responseTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
         
-        String procedureTemplate = Utilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
+        String procedureTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
         
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }
     
     public static String encodeProceduresAsSensorML101(Collection<Procedure> procedureCollection) throws IOException {
-        String responseTemplate = Utilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
+        String responseTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
         
-        String procedureTemplate = Utilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
+        String procedureTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
         
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }

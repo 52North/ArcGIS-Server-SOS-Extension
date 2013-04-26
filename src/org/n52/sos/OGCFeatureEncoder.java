@@ -28,7 +28,7 @@ import java.util.Collection;
 
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.geometry.Point;
 
@@ -54,9 +54,9 @@ public class OGCFeatureEncoder {
 
     public static String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
                 
-        String responseTemplate = Utilities.readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
+        String responseTemplate = CommonUtilities.readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
         
-        String featureTemplate = Utilities.readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
+        String featureTemplate = CommonUtilities.readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
         
         String allFeatures = "";
         

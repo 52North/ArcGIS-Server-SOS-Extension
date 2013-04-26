@@ -42,7 +42,7 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.oxf.valueDomains.time.TimePosition;
 import org.n52.sos.Constants;
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Log;
 
 import com.esri.arcgis.geodatabase.Fields;
@@ -153,7 +153,7 @@ public class AccessGdbForObservations {
             // get the IDs of all features which are within the specified
             // spatialFilter:
             Collection<String> featureList = gdb.queryFeatureIDsForSpatialFilter(spatialFilter);
-            String[] featureArray = Utilities.toArray(featureList);
+            String[] featureArray = CommonUtilities.toArray(featureList);
             
             if (featureList.size() > 0) {
                 // append the list of feature IDs:

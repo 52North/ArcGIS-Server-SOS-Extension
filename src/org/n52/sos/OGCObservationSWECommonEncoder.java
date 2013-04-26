@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -74,7 +74,7 @@ public class OGCObservationSWECommonEncoder {
         String encodedObservations = "";
 
         // read template for SWE Common Encoding:
-        String observationTemplate = Utilities.readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_om_observation_swe_common.xml"));
+        String observationTemplate = CommonUtilities.readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_om_observation_swe_common.xml"));
         
         Set<String> obsIdSet = idObsList.keySet();
         for (String obsId : obsIdSet) {
@@ -106,7 +106,7 @@ public class OGCObservationSWECommonEncoder {
 
     public static String wrapInSOAPEnvelope(String result) throws IOException
     {
-        String responseTemplate = Utilities.readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_OM.xml"));
+        String responseTemplate = CommonUtilities.readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_OM.xml"));
 
         responseTemplate = responseTemplate.replace(OBSERVATIONS, result);
 

@@ -40,13 +40,12 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class Utilities {
+public class CommonUtilities {
     
-    static Logger LOGGER = Logger.getLogger(Utilities.class.getName());
+    static Logger LOGGER = Logger.getLogger(CommonUtilities.class.getName());
     
     public static String[] toArray(Collection<String> stringCollection) {
         String[] sArray = new String[stringCollection.size()];
-        
         int i=0;
         for (Iterator<String> iterator = stringCollection.iterator(); iterator.hasNext();) {
             sArray[i] = (String) iterator.next();
@@ -145,5 +144,22 @@ public class Utilities {
         }
         
         return hostConfig;
+    }
+    
+    /**
+     * produces a single String representation of a stringArray.
+     */
+    public static String arrayToString(String[] stringArray) {
+        StringBuffer stringRep = new StringBuffer();
+        stringRep.append("[");
+        for (int i = 0; i < stringArray.length; i++) {
+            stringRep.append(stringArray[i]);
+            
+            if (i < stringArray.length) {
+                stringRep.append(",");
+            }
+        }
+        stringRep.append("]");
+        return stringRep.toString();
     }
 }
