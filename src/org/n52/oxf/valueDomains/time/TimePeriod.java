@@ -33,7 +33,8 @@ package org.n52.oxf.valueDomains.time;
  */
 public class TimePeriod implements ITimePeriod {
 
-    public static String PERIOD_PATTERN = ".+/.+/.+";
+    public static String PERIOD_PATTERN_WITH_RESOLUTION = ".+/.+/.+";
+    public static String PERIOD_PATTERN = ".+/.+";
     private ITimePosition start;
     private ITimePosition end;
     private ITimeResolution resolution;
@@ -66,11 +67,16 @@ public class TimePeriod implements ITimePeriod {
         if (period == null) {
             throw new NullPointerException();
         }
-        if (period.matches(PERIOD_PATTERN)) {
+        if (period.matches(PERIOD_PATTERN_WITH_RESOLUTION)) {
             String[] periodParts = period.split("/");
             start = new TimePosition(periodParts[0]);
             end = new TimePosition(periodParts[1]);
             resolution = new TimeResolution(periodParts[2]);
+        }
+        else if (period.matches(PERIOD_PATTERN)) {
+            String[] periodParts = period.split("/");
+            start = new TimePosition(periodParts[0]);
+            end = new TimePosition(periodParts[1]);
         }
         else {
             throw new IllegalArgumentException("period does not match ISO compliant time pattern, received: " + period);
