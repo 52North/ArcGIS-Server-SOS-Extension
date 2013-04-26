@@ -23,13 +23,19 @@
 
 package org.n52.sos.db;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.n52.sos.EsriBaseTest;
-import org.n52.sos.JSONEncoder;
+import org.n52.sos.OGCCapabilitiesEncoder;
+import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
+import org.n52.sos.dataTypes.ServiceDescription;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -45,7 +51,19 @@ public class AccessGdbForOfferingsTest extends EsriBaseTest {
         try {
             Collection<ObservationOffering> offerings = gdb.getOfferingAccess().getObservationOfferings();
             
-            System.out.println(JSONEncoder.encodeObservationOfferings(offerings));
+//            System.out.println(JSONEncoder.encodeObservationOfferings(offerings));
+            
+            List<String> procedureIDs = new ArrayList();
+            procedureIDs.add("procedureID");
+            ContactDescription serviceContact = new ContactDescription("", "", "", "", "", "", "", "", "", "");
+            ServiceDescription serviceDescription = new ServiceDescription("title", "description", new String[]{"keyword"}, "providerName", "providerSite", new ContactDescription[]{serviceContact}, procedureIDs); 
+            String caps = OGCCapabilitiesEncoder.encodeCapabilities(serviceDescription, offerings);
+            
+            OutputStream out = new FileOutputStream("c:/temp/capabilities.xml");
+            out.write(caps.getBytes());
+            out.flush();
+            out.close();
+            
         } catch (Exception e) {
             e.printStackTrace();
             fail();
