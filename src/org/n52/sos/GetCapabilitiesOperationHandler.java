@@ -26,7 +26,7 @@ import java.util.Collection;
 
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
-import org.n52.sos.db.AccessObservationGDB;
+import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -46,7 +46,7 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
      * @return
      * @throws Exception
      */
-    public byte[] invokeOGCOperation(AccessObservationGDB geoDB, JSONObject inputObject, String[] responseProperties) throws Exception
+    public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject, String[] responseProperties) throws Exception
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
         
@@ -56,7 +56,7 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 //        }
         
         ServiceDescription serviceDesc = geoDB.getServiceDescription();
-        Collection<ObservationOffering> obsOfferings = geoDB.getObservationOfferings();
+        Collection<ObservationOffering> obsOfferings = geoDB.getOfferingAccess().getObservationOfferings();
         
         String capabilitiesDocument = OGCCapabilitiesEncoder.encodeCapabilities(serviceDesc, obsOfferings);
                 

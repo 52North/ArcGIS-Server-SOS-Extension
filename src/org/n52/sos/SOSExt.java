@@ -269,10 +269,10 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         JSONArray featuresQueryOp = new JSONArray();
         featuresQueryOp.put(ServerUtilities.createOperation("query", "feature, observedProperty, procedure, spatialFilter", "json", false));
         featuresObject.put("operations", featuresQueryOp);
-
+*/
         // create a schema object for the GetCapabilities operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetCapabilities", "service, request", "json, xml", false));
-                
+/*                
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
 */                
@@ -280,7 +280,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, responseFormat", "json, xml", false));
         
         // create a schema object for the DescribeSensor operation:
-        // TODO: first show this operation, when it is supported?
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
 /*
         // create a schema object for the GetFeatureOfInterest operation:

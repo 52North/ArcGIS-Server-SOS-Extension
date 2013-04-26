@@ -135,21 +135,6 @@ public class JSONEncoder {
 
         return json;
     }
-    
-    /**
-     * creates a JSON representation of a {@link ObservedProperty}.
-     * 
-     */
-    public static JSONObject encodeObservedProperty(ObservedProperty o)
-    {
-        JSONObject json = new JSONObject();
-
-        json.put("dataType", o.getDataType());
-        json.put("definition", o.getDescription());
-        json.put("uom", o.getUnitOfMeasurement());
-
-        return json;
-    }
 
     /**
      * creates a JSON representation of an {@link ObservationOffering}.
@@ -164,8 +149,8 @@ public class JSONEncoder {
         json.put("name", o.getName());
 
         JSONArray observedPropertiesArray = new JSONArray();
-        for (ObservedProperty op : o.getObservedProperties()) {
-            observedPropertiesArray.put(encodeObservedProperty(op));
+        for (String opID : o.getObservedProperties()) {
+            observedPropertiesArray.put(opID);
         }
         json.put("observedProperties", observedPropertiesArray);
 
