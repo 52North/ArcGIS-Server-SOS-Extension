@@ -42,7 +42,7 @@ public class TableTest {
     {
         // Load properties for data access
         props = new Properties();
-        props.load(AccessObservationGDB.class.getResourceAsStream("/arcGisSos.properties"));
+        props.load(AccessGDB.class.getResourceAsStream("/arcGisSos.properties"));
     }
 
     @Test

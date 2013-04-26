@@ -65,17 +65,16 @@ public class JSONEncoderTest {
         outputs[0] = new ObservedProperty("http://co", "numeric", "mg/m3");
         outputs[1] = new ObservedProperty("http://ozone", "numeric", "ug/m3");
         
-        this.p1 = new Procedure("1", "p123", "name", "description", "intendedApp", "sensorType", null, contact, outputs);
-        ArrayList<Procedure> procedures = new ArrayList<Procedure>();
-        procedures.add(p1);
-        
         this.f1 = new Feature(new Identifier(new URI("http://myserver.org"), "feature987"), "name", "desc", "http://mysampledfeature", null);
         ArrayList<Feature> features = new ArrayList<Feature>();
         features.add(f1);
         
+        ArrayList<String> procedures = new ArrayList<String>();
+        procedures.add("p123");
+        
         this.sd = new ServiceDescription("title", "description", new String[] { "keyword1", "keyword2" }, "providerName", "www.providerSite.de", null, procedures);
         
-        this.o1 = new MultiValueObservation(new Identifier(null, "123"), "thermometer", "temperature", "feature1", "deg", TimeFactory.createTime("2013-04-03T13:00"));
+        this.o1 = new MultiValueObservation(new Identifier(null, "123"), "thermometer", "temperature", "feature1", "samplingFeature1", "deg", TimeFactory.createTime("2013-04-03T13:00"));
         this.o1.getResult().addResultValue(new MeasureResult(new TimePosition("2013-04-03T14:00"), new TimePosition("2013-04-03T15:00"), "1", "1", "0", 123.0));
         this.o1.getResult().addResultValue(new MeasureResult(new TimePosition("2013-04-03T15:00"), new TimePosition("2013-04-03T16:00"), "1", "1", "0", 456.0));
         this.o1.getResult().addResultValue(new MeasureResult(new TimePosition("2013-04-03T16:00"), new TimePosition("2013-04-03T17:00"), "1", "1", "0", 789.0));

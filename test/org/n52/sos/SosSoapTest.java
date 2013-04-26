@@ -24,7 +24,7 @@ package org.n52.sos;
 
 import java.io.IOException;
 
-import org.n52.util.Utilities;
+import org.n52.util.CommonUtilities;
 
 /**
  * @author Arne
@@ -40,9 +40,9 @@ public class SosSoapTest {
 
         String url = "http://" + serverName + ":6080/arcgis/services/" + serviceName + "/MapServer/" + soapExt;
         
-        String query = Utilities.readText(SosSoapTest.class.getResourceAsStream("soapTest.xml")); 
+        String query = CommonUtilities.readText(SosSoapTest.class.getResourceAsStream("soapTest.xml")); 
         
-        String result = Utilities.readText(Utilities.sendPostMessage(url, query));
+        String result = CommonUtilities.readText(CommonUtilities.sendPostMessage(url, query));
         
         System.out.println("result: " + result);
     }
