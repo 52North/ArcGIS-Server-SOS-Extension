@@ -34,7 +34,7 @@ import org.n52.util.CommonUtilities;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class AQDObservationEncoder {
+public class AQDObservationEncoder extends AbstractEncoder {
 
     /*
      * definition of anchor variables within template files:
@@ -74,7 +74,7 @@ public class AQDObservationEncoder {
         String encodedObservations = "";
 
         // read template for SWE Common Encoding:
-        String observationTemplate = CommonUtilities.readText(AQDObservationEncoder.class.getResourceAsStream("template_aqd_observation.xml"));
+        String observationTemplate = readText(AQDObservationEncoder.class.getResourceAsStream("template_aqd_observation.xml"));
         
         Set<String> obsIdSet = idObsList.keySet();
         for (String obsId : obsIdSet) {
@@ -106,7 +106,7 @@ public class AQDObservationEncoder {
 
     public static String wrapInEnvelope(String result) throws IOException
     {
-        String responseTemplate = CommonUtilities.readText(AQDObservationEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
+        String responseTemplate = readText(AQDObservationEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
 
         responseTemplate = responseTemplate.replace(OBSERVATIONS, result);
 

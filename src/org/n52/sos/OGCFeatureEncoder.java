@@ -35,7 +35,7 @@ import com.esri.arcgis.geometry.Point;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class OGCFeatureEncoder {
+public class OGCFeatureEncoder extends AbstractEncoder {
 
     /*
      * definition of anchor variables within template files:
@@ -54,9 +54,9 @@ public class OGCFeatureEncoder {
 
     public static String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
                 
-        String responseTemplate = CommonUtilities.readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
+        String responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
         
-        String featureTemplate = CommonUtilities.readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
+        String featureTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
         
         String allFeatures = "";
         

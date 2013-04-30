@@ -113,7 +113,7 @@ public class AccessGDB {
     public AccessGDB() throws AutomationException, IOException {
 
         LOGGER.info("Creating AccessGDB.");
-
+        
         init("/arcGisSosLocal.properties");
         
         // Load property for data access
@@ -223,6 +223,7 @@ public class AccessGDB {
 
             this.serviceDescription = new ServiceDescription(title, description, keywordArray, providerName, providerSite, new ContactDescription[]{serviceContact}, procedureIdList); 
         }
+        
         return this.serviceDescription;
     }
 

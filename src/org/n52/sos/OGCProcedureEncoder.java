@@ -36,7 +36,7 @@ import com.esri.arcgis.geometry.IEnvelope;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class OGCProcedureEncoder {
+public class OGCProcedureEncoder extends AbstractEncoder {
 
     /*
      * definition of anchor variables within template files:
@@ -59,17 +59,17 @@ public class OGCProcedureEncoder {
     private static String CONTACT_EMAIL   = "@contact-email@";
     
     public static String encodeProceduresAsSensorML20(Collection<Procedure> procedureCollection) throws IOException {
-        String responseTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
+        String responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
         
-        String procedureTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
+        String procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
         
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }
     
     public static String encodeProceduresAsSensorML101(Collection<Procedure> procedureCollection) throws IOException {
-        String responseTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
+        String responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
         
-        String procedureTemplate = CommonUtilities.readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
+        String procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
         
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }

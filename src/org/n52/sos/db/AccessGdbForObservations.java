@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -153,7 +154,7 @@ public class AccessGdbForObservations {
             // get the IDs of all features which are within the specified
             // spatialFilter:
             Collection<String> featureList = gdb.queryFeatureIDsForSpatialFilter(spatialFilter);
-            String[] featureArray = CommonUtilities.toArray(featureList);
+            String[] featureArray = toArray(featureList);
             
             if (featureList.size() > 0) {
                 // append the list of feature IDs:
@@ -518,5 +519,15 @@ public class AccessGdbForObservations {
         } else {
             throw new IllegalArgumentException("Error while parsing the temporal filter.");
         }
+    }
+    
+    private static String[] toArray(Collection<String> stringCollection) {
+        String[] sArray = new String[stringCollection.size()];
+        int i=0;
+        for (Iterator<String> iterator = stringCollection.iterator(); iterator.hasNext();) {
+            sArray[i] = (String) iterator.next();
+            i++;
+        }
+        return sArray;
     }
 }

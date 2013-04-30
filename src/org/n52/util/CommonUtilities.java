@@ -22,14 +22,9 @@
  */
 package org.n52.util;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -43,45 +38,6 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 public class CommonUtilities {
     
     static Logger LOGGER = Logger.getLogger(CommonUtilities.class.getName());
-    
-    public static String[] toArray(Collection<String> stringCollection) {
-        String[] sArray = new String[stringCollection.size()];
-        int i=0;
-        for (Iterator<String> iterator = stringCollection.iterator(); iterator.hasNext();) {
-            sArray[i] = (String) iterator.next();
-            i++;
-        }
-        return sArray;
-    }
-    
-    public static String readText(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String line;
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; (line = br.readLine()) != null; i++) {
-
-            // if not first line --> append "\n"
-            if (i > 0) {
-                sb.append("\n");
-            }
-
-            sb.append(line);
-        }
-        br.close();
-
-        return sb.toString();
-    }
-
-    public static String readText(URL url) throws IOException
-    {
-        return readText(url.openStream());
-    }
-
-    @SuppressWarnings("deprecation")
-    public static String readText(File file) throws IOException
-    {
-        return readText(file.toURL());
-    }
     
     /**
      * sends a POST-request using org.apache.commons.httpclient.HttpClient.

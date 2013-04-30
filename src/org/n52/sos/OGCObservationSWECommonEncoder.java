@@ -23,19 +23,27 @@
 
 package org.n52.sos;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
 import org.n52.util.CommonUtilities;
+import org.n52.util.ExceptionSupporter;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class OGCObservationSWECommonEncoder {
+public class OGCObservationSWECommonEncoder extends AbstractEncoder {
 
+    private static Logger LOGGER = Logger.getLogger(OGCObservationSWECommonEncoder.class.getName());
+    
     /*
      * definition of anchor variables within template files:
      */
@@ -61,6 +69,7 @@ public class OGCObservationSWECommonEncoder {
 
     private static String VALUES = "@values@";
 
+    
     /**
      * This operation encodes the observations contained in the
      * idObsList parameter in the compact SWE Common format.
@@ -73,8 +82,14 @@ public class OGCObservationSWECommonEncoder {
     {
         String encodedObservations = "";
 
-        // read template for SWE Common Encoding:
-        String observationTemplate = CommonUtilities.readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_om_observation_swe_common.xml"));
+        String observationTemplate = null;
+        try {
+            // read template for SWE Common Encoding:
+            observationTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_om_observation_swe_common.xml"));
+        } catch (Exception e) {
+            LOGGER.severe("There was a problem while reading the template: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
+            throw e;
+        }
         
         Set<String> obsIdSet = idObsList.keySet();
         for (String obsId : obsIdSet) {
@@ -106,7 +121,7 @@ public class OGCObservationSWECommonEncoder {
 
     public static String wrapInSOAPEnvelope(String result) throws IOException
     {
-        String responseTemplate = CommonUtilities.readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_OM.xml"));
+        String responseTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_OM.xml"));
 
         responseTemplate = responseTemplate.replace(OBSERVATIONS, result);
 
