@@ -60,6 +60,24 @@ public class AccessGdbForOfferings {
         this.gdb = accessGDB;
     }
     
+  /**
+  * DUMMY
+  */
+ public Collection<ObservationOffering> getObservationOfferings() 
+ {
+     LOGGER.info("Creating DUMMY ObservationOfferings.");
+     
+     List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
+     
+     try {
+         Envelope envelope = new Envelope();
+         ObservationOffering offering = new ObservationOffering("id", "name", new String[] { "observedProperties" }, "procedureIdentifier", envelope, new TimePeriod("2013-01-01/2013-03-31"));
+         offerings.add(offering);
+     } catch (Exception e) {
+         e.printStackTrace();
+     }
+     return offerings;
+ }
     
     /**
      * This method can be used to retrieve all {@link ObservationOffering}s
@@ -68,11 +86,14 @@ public class AccessGdbForOfferings {
      * @return all offerings from the Geodatabase
      * @throws IOException
      */
-    public Collection<ObservationOffering> getObservationOfferings() throws IOException
+    public Collection<ObservationOffering> getObservationOfferings_NOTUSED() throws IOException
     {
         LOGGER.info("getObservationOfferings() is called.");
         
-        if (observationOfferingsCache == null) { //TODO Do we need to update this cache at some point?
+        if (observationOfferingsCache != null) { //TODO Do we need to update this cache at some point?
+            LOGGER.info("Using Offerings cache.");
+        }
+        else { 
             
             List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
             

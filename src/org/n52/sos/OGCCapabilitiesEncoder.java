@@ -38,7 +38,7 @@ import org.n52.util.logging.Log;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class OGCCapabilitiesEncoder {
+public class OGCCapabilitiesEncoder extends AbstractEncoder {
 
     private static Logger LOGGER = Logger.getLogger(OGCCapabilitiesEncoder.class.getName());
 
@@ -72,7 +72,7 @@ public class OGCCapabilitiesEncoder {
         
         // replace variables in Capabilities document template:
         
-        String templateCapabilites = CommonUtilities.readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
+        String templateCapabilites = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
         
         templateCapabilites = templateCapabilites.replace(SERVICE_TITLE, sd.getTitle());        
         templateCapabilites = templateCapabilites.replace(SERVICE_DESCRIPTION, sd.getDescription());
@@ -101,7 +101,7 @@ public class OGCCapabilitiesEncoder {
         // replace variables in ObservationOffering template and add to Capabilities document:
         
         String allOfferings = "";
-        String templateOffering = CommonUtilities.readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
+        String templateOffering = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
         for (Iterator<ObservationOffering> iterator = obsOfferings.iterator(); iterator.hasNext();) {
             String offering = templateOffering;
             

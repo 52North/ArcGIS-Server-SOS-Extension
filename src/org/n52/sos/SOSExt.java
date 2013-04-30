@@ -28,7 +28,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
@@ -40,7 +39,6 @@ import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.ExceptionSupporter;
-import org.n52.util.logging.Log;
 
 import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.interop.AutomationException;
@@ -151,34 +149,38 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         
         // TODO --> read in maxNumOfResults from Manager
         
-        LOGGER.info("Reading properties...");
-        
-        String specifiedUrlSosExtension = (String) propertySet.getProperty("urlSosExtension");
-        // cut off '/' if necessary:
-        if(specifiedUrlSosExtension.charAt(specifiedUrlSosExtension.length() - 1) == '/') {
-            this.urlSosExtension = specifiedUrlSosExtension.substring(0, specifiedUrlSosExtension.length() - 1);
+        try {
+            LOGGER.info("Reading properties...");
+            
+            String specifiedUrlSosExtension = (String) propertySet.getProperty("urlSosExtension");
+            // cut off '/' if necessary:
+            if(specifiedUrlSosExtension.charAt(specifiedUrlSosExtension.length() - 1) == '/') {
+                this.urlSosExtension = specifiedUrlSosExtension.substring(0, specifiedUrlSosExtension.length() - 1);
+            }
+            else {
+                this.urlSosExtension = specifiedUrlSosExtension;
+            }
+            
+            this.sosTitle = (String) propertySet.getProperty("title");
+            this.sosDescription = (String) propertySet.getProperty("description");
+            this.sosKeywords = (String) propertySet.getProperty("keywords");
+            this.sosProviderName = (String) propertySet.getProperty("providerName");        
+            this.sosProviderSite = (String) propertySet.getProperty("providerSite");
+            this.sosContactPersonName = (String) propertySet.getProperty("contactPersonName");
+            this.sosContactPersonPosition = (String) propertySet.getProperty("contactPersonPosition");
+            this.sosContactPersonPhone = (String) propertySet.getProperty("contactPersonPhone");
+            this.sosContactPersonFax = (String) propertySet.getProperty("contactPersonFax");
+            this.sosContactPersonAddress = (String) propertySet.getProperty("contactPersonAddress");
+            this.sosContactPersonCity = (String) propertySet.getProperty("contactPersonCity");
+            this.sosContactPersonAdminArea = (String) propertySet.getProperty("contactPersonAdminArea");
+            this.sosContactPersonPostalCode = (String) propertySet.getProperty("contactPersonPostalCode");
+            this.sosContactPersonCountry = (String) propertySet.getProperty("contactPersonCountry");
+            this.sosContactPersonEmail = (String) propertySet.getProperty("contactPersonEmail");
+            
+        } catch (Exception e) {
+            LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
+            throw e;
         }
-        else {
-            this.urlSosExtension = specifiedUrlSosExtension;
-        }
-        
-        this.sosTitle = (String) propertySet.getProperty("title");
-        this.sosDescription = (String) propertySet.getProperty("description");
-        this.sosKeywords = (String) propertySet.getProperty("keywords");
-        this.sosProviderName = (String) propertySet.getProperty("providerName");        
-        this.sosProviderSite = (String) propertySet.getProperty("providerSite");
-        this.sosContactPersonName = (String) propertySet.getProperty("contactPersonName");
-        this.sosContactPersonPosition = (String) propertySet.getProperty("contactPersonPosition");
-        this.sosContactPersonPhone = (String) propertySet.getProperty("contactPersonPhone");
-        this.sosContactPersonFax = (String) propertySet.getProperty("contactPersonFax");
-        this.sosContactPersonAddress = (String) propertySet.getProperty("contactPersonAddress");
-        this.sosContactPersonCity = (String) propertySet.getProperty("contactPersonCity");
-        this.sosContactPersonAdminArea = (String) propertySet.getProperty("contactPersonAdminArea");
-        this.sosContactPersonPostalCode = (String) propertySet.getProperty("contactPersonPostalCode");
-        this.sosContactPersonCountry = (String) propertySet.getProperty("contactPersonCountry");
-        this.sosContactPersonEmail = (String) propertySet.getProperty("contactPersonEmail");
-        
-        LOGGER.info("Read property 'urlSosExtension': " + this.urlSosExtension);
      
         try {
             // create database access
@@ -360,11 +362,65 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             if (operationName.length() == 0) {
                 return getResource(resourceName, operationInput);
             } else {
-                // invoke REST operation on specified resource
-                return invokeRESTOperation(capabilities, resourceName, operationName, operationInput, outputFormat, requestProperties, responseProperties);
+                
+                if (geoDB == null) {
+                    throw new RuntimeException ("Database connection null.");
+                }
+                
+                // extract operation input parameters to Map:
+                JSONObject inputObject = new JSONObject(operationInput);
+
+                // handle: observations/query
+                if (resourceName.equals("observations") && operationName.equalsIgnoreCase("query")) {
+                    return invokeObservationQueryOperation(inputObject, outputFormat, responseProperties);
+                }
+                /*
+                // handle: observations/diagram
+                else if (resourceName.equals("observations") && operationName.equalsIgnoreCase("diagram")) {
+                    return invokeObservationDiagramOperation(inputObject, outputFormat, responseProperties);
+                }
+                */
+
+                // handle: features/query
+                else if (resourceName.equals("features") && operationName.equalsIgnoreCase("query")) {
+                    return invokeFeatureQueryOperation(inputObject);
+                }
+
+                // handle: procedures/query
+                else if (resourceName.equals("procedures") && operationName.equalsIgnoreCase("query")) {
+                    return invokeProcedureQueryOperation(inputObject);
+                }
+                
+                // handle: /GetCapabilities
+                else if (operationName.equalsIgnoreCase("GetCapabilities")) {
+                    return new GetCapabilitiesOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
+                }
+
+                // handle: /GetObservation
+                else if (operationName.equalsIgnoreCase("GetObservation")) {
+                    return new GetObservationOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
+                }
+                
+                // handle: /GetObservationByID
+                else if (operationName.equalsIgnoreCase("GetObservationByID")) {
+                    return new GetObservationByIDOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
+                }
+                
+                // handle: /DescribeSensor
+                else if (operationName.equalsIgnoreCase("DescribeSensor")) {
+                    return new DescribeSensorOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
+                }
+                
+                // handle: /GetFeatureOfInterest
+                else if (operationName.equalsIgnoreCase("GetFeatureOfInterest")) {
+                    return new GetFeatureOfInterestOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
+                }
+                else {
+                    throw new Exception("Operation '" + operationName + "' on resource '" + resourceName + "' not supported.");
+                }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error while handle REST request", e);
+            LOGGER.severe("Error while handle REST request: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             
             // send out error:
             return ServerUtilities.sendError(3, "An exception occurred: " + e.toString(), ExceptionSupporter.createStringArrayFromStackTrace(e.getStackTrace())).getBytes("utf-8");
@@ -375,96 +431,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     /*************************************************************************************
      * Private, supporting & helper methods:
      *************************************************************************************/
-
-    /**
-     * Invokes specified REST operation on specified REST resource
-     * 
-     * @param capabilities
-     *            The capabilities supported by the SOE.
-     * @param resourceName
-     *            Name of the resource being addressed relative to the root SOE
-     *            resource. If empty, its assumed that root resource is being
-     *            addressed. E.g.: "procedures/mysensor123". For resource
-     *            requests, the operationName parameter of this method will be
-     *            an empty string ("").
-     * @param operationName
-     *            Name of the operation being invoked. If empty, description of
-     *            resource is returned.
-     * @param operationInput
-     *            Input parameters to the operation specified by operationName
-     *            parameter, encoded as a JSON formatted string.
-     * @param outputFormat
-     *            OutputFormat of operation. The value of the format parameter f
-     *            of the REST API.
-     * 
-     */
-    protected byte[] invokeRESTOperation(String capabilities,
-            String resourceName,
-            String operationName,
-            String operationInput,
-            String outputFormat,
-            String requestProperties,
-            String[] responseProperties) throws Exception
-    {
-        LOGGER.info("Start invokeRESTOperation.");
-
-        if (geoDB == null) {
-            throw new RuntimeException ("Database connection null.");
-        }
-        
-        // extract operation input parameters to Map:
-        JSONObject inputObject = new JSONObject(operationInput);
-
-        // handle: observations/query
-        if (resourceName.equals("observations") && operationName.equalsIgnoreCase("query")) {
-            return invokeObservationQueryOperation(inputObject, outputFormat, responseProperties);
-        }
-        /*
-        // handle: observations/diagram
-        else if (resourceName.equals("observations") && operationName.equalsIgnoreCase("diagram")) {
-            return invokeObservationDiagramOperation(inputObject, outputFormat, responseProperties);
-        }
-        */
-
-        // handle: features/query
-        else if (resourceName.equals("features") && operationName.equalsIgnoreCase("query")) {
-            return invokeFeatureQueryOperation(inputObject);
-        }
-
-        // handle: procedures/query
-        else if (resourceName.equals("procedures") && operationName.equalsIgnoreCase("query")) {
-            return invokeProcedureQueryOperation(inputObject);
-        }
-        
-        // handle: /GetCapabilities
-        else if (operationName.equalsIgnoreCase("GetCapabilities")) {
-            return new GetCapabilitiesOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-        }
-
-        // handle: /GetObservation
-        else if (operationName.equalsIgnoreCase("GetObservation")) {
-            return new GetObservationOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-        }
-        
-        // handle: /GetObservationByID
-        else if (operationName.equalsIgnoreCase("GetObservationByID")) {
-            return new GetObservationByIDOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-        }
-        
-        // handle: /DescribeSensor
-        else if (operationName.equalsIgnoreCase("DescribeSensor")) {
-            return new DescribeSensorOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-        }
-        
-        // handle: /GetFeatureOfInterest
-        else if (operationName.equalsIgnoreCase("GetFeatureOfInterest")) {
-            return new GetFeatureOfInterestOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-        }
-        
-        else {
-            throw new Exception("Operation '" + operationName + "' on resource '" + resourceName + "' not supported.");
-        }
-    }
 
     /*
     protected byte[] invokeObservationDiagramOperation(JSONObject inputObject,
