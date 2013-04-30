@@ -3,11 +3,11 @@
 
 	<property file="build.properties" />
 	
-	<property name="soe.name" value="ArcGisSos" />
+	<property name="soe.name" value="52nArcGisSos" />
 	<property name="extension.class" value="org.n52.sos.SOSExt" />
 	<property name="extension.id" value="${extension.class}" />
 	<property name="extension.library" value="${soe.name}.jar" />
-	<property name="extension.displayName" value="SOSExt" />
+	<property name="extension.displayName" value="SOS" />
 	<property name="extension.description" value="Sensor Observation Service (SOS) extension for ArcGIS Server" />
 	
 	<scriptdef name="generateguid" language="javascript">
