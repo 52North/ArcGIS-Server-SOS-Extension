@@ -127,7 +127,7 @@ public class AccessGdbForProcedures {
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
         LOGGER.info("Subfields clause := " + queryDef.getSubFields());
 
-        StringBuffer whereClause = new StringBuffer();
+        StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
             whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
             

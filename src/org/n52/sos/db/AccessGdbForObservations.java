@@ -71,7 +71,7 @@ public class AccessGdbForObservations {
     public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws Exception
     {
         // create the where clause with joins and constraints
-        StringBuffer whereClauseParameterAppend = new StringBuffer();
+        StringBuilder whereClauseParameterAppend = new StringBuilder();
 
         // joins from OBSERVATION
         whereClauseParameterAppend.append(" AND ");
@@ -122,7 +122,7 @@ public class AccessGdbForObservations {
             String where) throws Exception
     {
         
-        StringBuffer whereClauseParameterAppend = new StringBuffer();
+        StringBuilder whereClauseParameterAppend = new StringBuilder();
         
         // build query for offerings
         if (offerings != null) {
@@ -228,7 +228,7 @@ public class AccessGdbForObservations {
         LOGGER.info("Subfields clause := " + queryDef.getSubFields());
         
         // create the where clause with joins and constraints
-        StringBuffer whereClause = new StringBuffer();
+        StringBuilder whereClause = new StringBuilder();
 
         // joins from OBSERVATION
         whereClause.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST, Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));

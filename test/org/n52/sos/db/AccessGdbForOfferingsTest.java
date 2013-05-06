@@ -47,7 +47,9 @@ public class AccessGdbForOfferingsTest extends EsriBaseTest {
     @Test
     public void testGetObservationOfferings()
     {
-        System.out.println("test");
+        long millis = System.currentTimeMillis();
+        
+        System.out.println("start.");
         try {
             Collection<ObservationOffering> offerings = gdb.getOfferingAccess().getObservationOfferings();
             
@@ -68,6 +70,8 @@ public class AccessGdbForOfferingsTest extends EsriBaseTest {
             e.printStackTrace();
             fail();
         }
+        
+        LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
     }
 
     public static void main(String[] args) throws Exception

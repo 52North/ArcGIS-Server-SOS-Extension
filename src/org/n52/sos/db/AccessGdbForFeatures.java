@@ -116,7 +116,7 @@ public class AccessGdbForFeatures {
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
 
         // create the where clause with joins and constraints
-        StringBuffer whereClause = new StringBuffer();
+        StringBuilder whereClause = new StringBuilder();
 
         // joins
         whereClause.append(concatTableAndField(Table.OFFERING, SubField.OFFERING_OBJECTID) + " = " + concatTableAndField(Table.FOI_OFF, SubField.FOI_OFF_OFFERING_ID));

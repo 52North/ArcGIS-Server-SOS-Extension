@@ -338,7 +338,7 @@ public class TimePosition implements ITimePosition {
     }
 
     public String toISO8601Format() {
-        StringBuffer isoDate = new StringBuffer();
+        StringBuilder isoDate = new StringBuilder();
         isoDate.append(Long.toString(getYear()));
         if (this.getMonth() != NOT_SET) {
             isoDate.append("-");
@@ -419,7 +419,7 @@ public class TimePosition implements ITimePosition {
      */
     @Override
     public String toString() {
-        StringBuffer ordinaryDate = new StringBuffer();
+        StringBuilder ordinaryDate = new StringBuilder();
 
         if (this.getDay() != NOT_SET) {
             ordinaryDate.append(this.getDay());

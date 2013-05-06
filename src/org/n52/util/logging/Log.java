@@ -98,7 +98,7 @@ class MyHtmlFormatter extends Formatter {
     // This method is called for every log records
     public String format(LogRecord rec)
     {
-        StringBuffer buf = new StringBuffer(1000);
+        StringBuilder buf = new StringBuilder(1000);
         // Bold any levels >= WARNING
         buf.append("<tr>");
         buf.append("<td>");

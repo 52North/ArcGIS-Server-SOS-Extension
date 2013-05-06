@@ -35,7 +35,7 @@ public abstract class AbstractEncoder {
     protected static String readText(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String line;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; (line = br.readLine()) != null; i++) {
 
             // if not first line --> append "\n"

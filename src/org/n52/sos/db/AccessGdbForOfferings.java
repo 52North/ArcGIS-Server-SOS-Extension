@@ -60,24 +60,24 @@ public class AccessGdbForOfferings {
         this.gdb = accessGDB;
     }
     
-  /**
-  * DUMMY
-  */
- public Collection<ObservationOffering> getObservationOfferings() 
- {
-     LOGGER.info("Creating DUMMY ObservationOfferings.");
-     
-     List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
-     
-     try {
-         Envelope envelope = new Envelope();
-         ObservationOffering offering = new ObservationOffering("id", "name", new String[] { "observedProperties" }, "procedureIdentifier", envelope, new TimePeriod("2013-01-01/2013-03-31"));
-         offerings.add(offering);
-     } catch (Exception e) {
-         e.printStackTrace();
-     }
-     return offerings;
- }
+//  /**
+//  * DUMMY
+//  */
+// public Collection<ObservationOffering> getObservationOfferings() 
+// {
+//     LOGGER.info("Creating DUMMY ObservationOfferings.");
+//     
+//     List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
+//     
+//     try {
+//         Envelope envelope = new Envelope();
+//         ObservationOffering offering = new ObservationOffering("id", "name", new String[] { "observedProperties" }, "procedureIdentifier", envelope, new TimePeriod("2013-01-01/2013-03-31"));
+//         offerings.add(offering);
+//     } catch (Exception e) {
+//         e.printStackTrace();
+//     }
+//     return offerings;
+// }
     
     /**
      * This method can be used to retrieve all {@link ObservationOffering}s
@@ -86,7 +86,7 @@ public class AccessGdbForOfferings {
      * @return all offerings from the Geodatabase
      * @throws IOException
      */
-    public Collection<ObservationOffering> getObservationOfferings_NOTUSED() throws IOException
+    public Collection<ObservationOffering> getObservationOfferings() throws IOException
     {
         LOGGER.info("getObservationOfferings() is called.");
         
@@ -155,7 +155,7 @@ public class AccessGdbForOfferings {
                 queryDefTime.setSubFields(gdb.createCommaSeparatedList(subFieldsOff));
                 
                 // create where clause with joins and constraints
-                StringBuffer whereClauseTime = new StringBuffer();
+                StringBuilder whereClauseTime = new StringBuilder();
                 whereClauseTime.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
                 whereClauseTime.append(" AND ");
                 whereClauseTime.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
@@ -210,7 +210,7 @@ public class AccessGdbForOfferings {
 //                    LOGGER.info("Subfields clause := " + queryDefProp.getSubFields());
     
                     // create where clause with joins and constraints
-                    StringBuffer whereClauseProp = new StringBuffer();
+                    StringBuilder whereClauseProp = new StringBuilder();
                     whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
                     whereClauseProp.append(" AND ");
                     whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
@@ -263,7 +263,7 @@ public class AccessGdbForOfferings {
                     queryDefFoi.setSubFields(gdb.createCommaSeparatedList(subFieldsFoi));
                     
                     // create the where clause with joins and constraints
-                    StringBuffer whereClauseFoi = new StringBuffer();
+                    StringBuilder whereClauseFoi = new StringBuilder();
                     whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
                     whereClauseFoi.append(" AND ");
                     whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));

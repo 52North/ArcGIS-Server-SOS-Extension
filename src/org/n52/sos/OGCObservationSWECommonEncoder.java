@@ -98,7 +98,7 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
         	
             String observation = observationTemplate;
             
-            StringBuffer allValues = new StringBuffer();
+            StringBuilder allValues = new StringBuilder();
             for (MeasureResult resultValue : multiValObs.getResult().getValue()) {
                 allValues.append(encodeMeasureResult(resultValue));
             }

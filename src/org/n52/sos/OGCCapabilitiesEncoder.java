@@ -30,10 +30,7 @@ import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
-import org.n52.sos.dataTypes.ObservedProperty;
 import org.n52.sos.dataTypes.ServiceDescription;
-import org.n52.util.CommonUtilities;
-import org.n52.util.logging.Log;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -72,10 +69,10 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         
         // replace variables in Capabilities document template:
         
-        String templateCapabilites = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
+        StringBuilder templateCapabilites = new StringBuilder(readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml")));
         
-        templateCapabilites = templateCapabilites.replace(SERVICE_TITLE, sd.getTitle());        
-        templateCapabilites = templateCapabilites.replace(SERVICE_DESCRIPTION, sd.getDescription());
+        replace(templateCapabilites, SERVICE_TITLE, sd.getTitle());        
+        replace(templateCapabilites, SERVICE_DESCRIPTION, sd.getDescription());
         
         String[] keywordArray = sd.getKeywordArray();
         String keywordElement = "<ows:Keywords>";
@@ -83,70 +80,94 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
             keywordElement += "<ows:Keyword>" + keywordArray[i] + "</ows:Keyword>";
         }
         keywordElement += "</ows:Keywords>";
-        templateCapabilites = templateCapabilites.replace(SERVICE_KEYWORDS, keywordElement);
+        replace(templateCapabilites, SERVICE_KEYWORDS, keywordElement);
         
-        templateCapabilites = templateCapabilites.replace(PROVIDER_NAME, sd.getProviderName());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_SITE, sd.getProviderSite());
+        replace(templateCapabilites, PROVIDER_NAME, sd.getProviderName());
+        replace(templateCapabilites, PROVIDER_SITE, sd.getProviderSite());
         
         ContactDescription[] contactsArray = sd.getServiceContacts();
-        templateCapabilites = templateCapabilites.replace(PROVIDER_PHONE, contactsArray[0].getPhone());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_FAX, contactsArray[0].getFacsimile());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_DELIVERY_POINT, contactsArray[0].getDeliveryPoint());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_CITY, contactsArray[0].getCity());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_POSTAL_CODE, contactsArray[0].getPostalCode());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_COUNTRY, contactsArray[0].getCountry());
-        templateCapabilites = templateCapabilites.replace(PROVIDER_EMAIL, contactsArray[0].getElectronicMailAddress());
+        replace(templateCapabilites, PROVIDER_PHONE, contactsArray[0].getPhone());
+        replace(templateCapabilites, PROVIDER_FAX, contactsArray[0].getFacsimile());
+        replace(templateCapabilites, PROVIDER_DELIVERY_POINT, contactsArray[0].getDeliveryPoint());
+        replace(templateCapabilites, PROVIDER_CITY, contactsArray[0].getCity());
+        replace(templateCapabilites, PROVIDER_POSTAL_CODE, contactsArray[0].getPostalCode());
+        replace(templateCapabilites, PROVIDER_COUNTRY, contactsArray[0].getCountry());
+        replace(templateCapabilites, PROVIDER_EMAIL, contactsArray[0].getElectronicMailAddress());
         
         
         // replace variables in ObservationOffering template and add to Capabilities document:
         
-        String allOfferings = "";
-        String templateOffering = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
-        for (Iterator<ObservationOffering> iterator = obsOfferings.iterator(); iterator.hasNext();) {
-            String offering = templateOffering;
+        StringBuilder allOfferings = new StringBuilder();
+        StringBuilder templateOffering = new StringBuilder(readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml")));
+        
+        int j=0;
+        for (Iterator iterator = obsOfferings.iterator(); iterator.hasNext();) {
+            //LOGGER.info("Offering: " + j++);
+
+            StringBuilder offering = templateOffering;
             
             ObservationOffering obsOff = (ObservationOffering) iterator.next();
             
-            offering = offering.replace(OFFERING_IDENTIFIER, obsOff.getName());
-            offering = offering.replace(OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure
+            replace(offering, OFFERING_IDENTIFIER, obsOff.getName());
+            replace(offering, OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure
             
             String[] obsPropArray = obsOff.getObservedProperties();
             String obsPropElements = "";
             for (int i = 0; i < obsPropArray.length; i++) {
                 obsPropElements += "<swes:observableProperty>" + obsPropArray[i] + "</swes:observableProperty>";
             }
-            offering = offering.replace(OFFERING_OBSERVABLE_PROPERTIES, obsPropElements);
+            replace(offering, OFFERING_OBSERVABLE_PROPERTIES, obsPropElements);
             
             // e.g.: <gml:lowerCorner>50.7167 7.76667</gml:lowerCorner>
             if (!obsOff.getObservedArea().isEmpty()) {
                 double lowerX = obsOff.getObservedArea().getLowerLeft().getX();
                 double lowerY = obsOff.getObservedArea().getLowerLeft().getY();
-                offering = offering.replace(OFFERING_LOWER_CORNER, lowerY + " " + lowerX); 
+                replace(offering, OFFERING_LOWER_CORNER, lowerY + " " + lowerX); 
                 
                 double upperX = obsOff.getObservedArea().getUpperRight().getX();
                 double upperY = obsOff.getObservedArea().getUpperRight().getY();
-                offering = offering.replace(OFFERING_UPPER_CORNER, upperY + " " + upperX);    
+                replace(offering, OFFERING_UPPER_CORNER, upperY + " " + upperX);    
             }
             
             // e.g.: <gml:beginPosition>2009-01-11T16:22:25.00Z</gml:beginPosition>
             
             if (obsOff.getTimeExtent() != null) {
                 String beginPos = obsOff.getTimeExtent().getStart().toISO8601Format();
-                offering = offering.replace(OFFERING_BEGIN_POSITION, beginPos);
+                replace(offering, OFFERING_BEGIN_POSITION, beginPos);
                 
                 String endPos = obsOff.getTimeExtent().getEnd().toISO8601Format();
-                offering = offering.replace(OFFERING_END_POSITION, endPos);
+                replace(offering, OFFERING_END_POSITION, endPos);
             }
             
             // add offering to the allOfferings String
-            allOfferings += offering + "\n";
+            allOfferings.append(offering).append("\n");
         }
         
         // add the offerings to the Capabilities document:
-        templateCapabilites = templateCapabilites.replace(CONTENTS_OFFERINGS, allOfferings);
+        replace(templateCapabilites, CONTENTS_OFFERINGS, allOfferings.toString());
         
-        LOGGER.info("generated Capabilities: " + templateCapabilites);
+        // LOGGER.info("generated Capabilities: " + templateCapabilites);
         
-        return templateCapabilites;
+        return templateCapabilites.toString();
     }
+    
+    
+//    public static StringBuilder replaceFirst(StringBuilder builder,
+//            String replaceWhat,
+//            String replaceWith)
+//    {
+//        return builder.replace(builder.indexOf(replaceWhat), builder.indexOf(replaceWhat) + replaceWhat.length(), replaceWith);
+//    }
+    
+    public static StringBuilder replace(StringBuilder builder,
+            String replaceWhat,
+            String replaceWith)
+    {
+        int indexOfTarget = -1;
+        while ((indexOfTarget = builder.indexOf(replaceWhat)) > 0) {
+            builder.replace(indexOfTarget, indexOfTarget + replaceWhat.length(), replaceWith);
+        }
+        return builder;
+    }
+    
 }
