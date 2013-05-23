@@ -14,6 +14,12 @@
 		<om:procedure xlink:href="@observation-procedure@" />
 		<om:parameter>
 			<om:NamedValue>
+				<om:name xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/processParameter/AT"/>
+				<om:value>@observation-aggregation-type@</om:value>
+			</om:NamedValue>
+		</om:parameter>
+		<om:parameter>
+			<om:NamedValue>
 				<om:name xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/processParameters/SP" />
 				<om:value>@observation-sampling-point@</om:value>
 			</om:NamedValue>
@@ -46,9 +52,9 @@
 						<swe:field name="Validity">
 							<swe:Category definition="http://dd.eionet.europa.eu/vocabularies/aq/observationvalidity"/>
 						</swe:field>
-						<swe:field name="ObservedProperty">
+						<swe:field name="@observation-unit-notation@">
 							<swe:Quantity definition="@observation-property@">
-								<swe:uom xlink:href="@observation-ucum@" />
+								<swe:uom xlink:href="@observation-unit-id@" />
 							</swe:Quantity>
 						</swe:field>
 					</swe:DataRecord>

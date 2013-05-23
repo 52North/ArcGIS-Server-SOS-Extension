@@ -39,8 +39,6 @@ public class MeasureResult implements IResult {
 
 	private double value;
 
-	private String aggregationType;
-
 	private ITimePosition dateTimeBegin;
 
 	private ITimePosition dateTimeEnd;
@@ -50,11 +48,10 @@ public class MeasureResult implements IResult {
 	 */
 	public MeasureResult(ITimePosition dateTimeBegin,
 			ITimePosition dateTimeEnd, String validity, String verification,
-			String aggregationType, double value) {
+			double value) {
 		this.validity = validity;
 		this.verification = verification;
 		this.value = value;
-		this.aggregationType = aggregationType;
 		this.dateTimeBegin = dateTimeBegin;
 		this.dateTimeEnd = dateTimeEnd;
 	}
@@ -73,10 +70,6 @@ public class MeasureResult implements IResult {
 
 	public String getVerification() {
 		return this.verification;
-	}
-
-	public String getAggregationType() {
-		return this.aggregationType;
 	}
 
 	public Double getValue() {

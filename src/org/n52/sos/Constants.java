@@ -25,11 +25,7 @@ package org.n52.sos;
 
 public class Constants {
 
-    public static final String OBSERVATION_VALIDITY = "NOT_SET";
-    public static final String OBSERVATION_VERIFICATION = "NOT_SET";
-    public static final String OBSERVATION_AGGREGATIONTYPE = "NOT_SET";
-    
-    public static final Short VALUE_NONE = -99;
+    public static final String NULL_VALUE = "NOT_SET";
     
     public static final String FEATURE_LOCALID = "99999";
     public static final String FEATURE_NAMESPACE = "NOT_DEFINED";
@@ -37,7 +33,7 @@ public class Constants {
     public static final Double FEATURE_BUILDING_DISTANCE = 9999.9;
     public static final Double FEATURE_KERB_DISTANCE = 9999.9;
     
-    public static final String RESPONSE_FORMAT_AQ   = "http://aqd.ec.europa.eu/aqd/0.3.6b";
+    public static final String RESPONSE_FORMAT_AQ   = "http://aqd.ec.europa.eu/aqd/0.3.7c";
     public static final String RESPONSE_FORMAT_OM   = "http://www.opengis.net/om/2.0";
     public static final String RESPONSE_FORMAT_RDF  = "http://www.w3.org/1999/02/22-rdf-syntax-ns";
     

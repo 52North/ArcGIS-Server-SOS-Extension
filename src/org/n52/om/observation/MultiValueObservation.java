@@ -36,9 +36,13 @@ public class MultiValueObservation extends AbstractObservation {
 	/**
 	 * the {@link MultiMeasureResult} data structure containing all results
 	 */
-	private MultiMeasureResult multiResult;
+        protected MultiMeasureResult multiResult;
 	
-	private String samplingPointID;
+	protected String samplingPointID;
+	
+	protected String unitNotation;
+	
+	protected String aggregationType;
 	
 	public MultiValueObservation(
 			Identifier identifier, 
@@ -46,16 +50,20 @@ public class MultiValueObservation extends AbstractObservation {
 			String observedProperty, 
 			String featureOfInterest,
 			String samplingFeatureID,
-			String unit,
+			String unitID,
+			String unitNotation,
+			String aggregationType,
 			ITime resultTime) {
 		super(identifier, 
 				procedure, 
 				observedProperty, 
 				featureOfInterest,
-				unit,
+				unitID,
 				resultTime);
 		this.multiResult = new MultiMeasureResult();
 		this.samplingPointID = samplingFeatureID;
+		this.unitNotation = unitNotation;
+		this.aggregationType = aggregationType;
 	}
 
 
@@ -72,4 +80,12 @@ public class MultiValueObservation extends AbstractObservation {
 	public String getSamplingPoint() {
 	    return samplingPointID;
 	}
+	
+	public String getUnitNotation() {
+            return unitNotation;
+        }
+	
+	public String getAggregationType() {
+            return aggregationType;
+        }
 }

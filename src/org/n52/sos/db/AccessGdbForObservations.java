@@ -223,6 +223,7 @@ public class AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME));
         subFields.add(gdb.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)); 
         subFields.add(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION));
+        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
 
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
         LOGGER.info("Subfields clause := " + queryDef.getSubFields());
@@ -271,6 +272,7 @@ public class AccessGdbForObservations {
             String obsID = row.getValue(fields.findField(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
 
             MultiValueObservation multiValObs = idObsMap.get(obsID);
+            
             if (multiValObs == null) {
                 multiValObs = createMultiValueObservation(row, fields);
                 multiValObs.getResult().addResultValue(createResultValue(row, fields));
@@ -299,23 +301,20 @@ public class AccessGdbForObservations {
 
         // procedure
         String procID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
-        // in case "resource" field is null, "id" field is used:
-        if (procID == null || procID.equals("")) {
-            procID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID)));
+        if (procID == null) {
+            procID = Constants.NULL_VALUE;
         }
 
         // observed property
-        String obsPropID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_RESOURCE)));
-        // in case "resource" field is null, "id" field is used:
-        if (obsPropID == null || obsPropID.equals("")) {
-            obsPropID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+        String obsPropID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+        if (obsPropID == null) {
+            obsPropID = Constants.NULL_VALUE;
         }
 
         // featureOfInterest
         String featureID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
-        // in case "resource" field is null, "id" field is used:
-        if (featureID == null || featureID.equals("")) {
-            featureID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
+        if (featureID == null) {
+            featureID = Constants.NULL_VALUE;
         }
         
         // samplingFeature
@@ -325,18 +324,29 @@ public class AccessGdbForObservations {
             samplingPointID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID)));
         }
 
-        // unit
-        String unit = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
-        // in case "notation" field is null, "id" field is used:
-        if (unit == null || unit.equals("")) {
-            unit = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID)));
+        // unit ID
+        String unitID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID)));
+        if (unitID == null) {
+            unitID = Constants.NULL_VALUE;
         }
-
+        
+        // unit notation
+        String unitNotation = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
+        if (unitNotation == null) {
+            unitNotation = Constants.NULL_VALUE;
+        }
+        
+        // aggregation type
+        String aggregationType = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION)));
+        if (aggregationType == null) {
+            aggregationType = Constants.NULL_VALUE;
+        }
+        
         // result time
         Date resultDate = (Date) row.getValue(fields.findField(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME)));
         ITimePosition resultTimePos = createTimeFromDate(resultDate, null);
 
-        return new MultiValueObservation(obsIdentifier, procID, obsPropID, featureID, samplingPointID, unit, resultTimePos);
+        return new MultiValueObservation(obsIdentifier, procID, obsPropID, featureID, samplingPointID, unitID, unitNotation, aggregationType, resultTimePos);
     }
 
     /**
@@ -361,26 +371,20 @@ public class AccessGdbForObservations {
         // validity
         String validity = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)));
         if (validity == null) {
-            validity = Constants.OBSERVATION_VALIDITY;
+            validity = Constants.NULL_VALUE;
         }
 
         // verification
         String verification = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION)));
         if (verification == null) {
-            verification = Constants.OBSERVATION_VERIFICATION;
-        }
-
-        // aggregation type
-        String aggregationType = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION)));
-        if (aggregationType == null) {
-            aggregationType = Constants.OBSERVATION_AGGREGATIONTYPE;
+            verification = Constants.NULL_VALUE;
         }
 
         // result
         Object numValue = row.getValue(fields.findField(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC)));
         double value = (Double) numValue;
 
-        return new MeasureResult(startTimePos, endTimePos, validity, verification, aggregationType, value);
+        return new MeasureResult(startTimePos, endTimePos, validity, verification, value);
     }
  
     /**

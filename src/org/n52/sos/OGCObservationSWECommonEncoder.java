@@ -50,7 +50,9 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     protected static String OBSERVATION_PROPERTY = "@observation-property@";
     protected static String OBSERVATION_FEATURE = "@observation-feature@";
     protected static String OBSERVATION_SAMPLING_POINT = "@observation-sampling-point@";
-    protected static String OBSERVATION_UCUM = "@observation-ucum@";
+    protected static String OBSERVATION_UNIT_ID = "@observation-unit-id@";
+    protected static String OBSERVATION_UNIT_NOTATION = "@observation-unit-notation@";
+    protected static String OBSERVATION_AGGREGATION_TYPE = "@observation-aggregation-type@";
     protected static String ELEMENT_COUNT = "@element-count@";
     protected static String VALUES = "@values@";
 
@@ -96,13 +98,15 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
             }
             
             observation = observation.replace(OBSERVATION_ID, multiValObs.getIdentifier().getIdentifierValue());
-            observation = observation.replace(OBSERVATION_UCUM, multiValObs.getUnit());
+            observation = observation.replace(OBSERVATION_UNIT_ID, multiValObs.getUnit());
+            observation = observation.replace(OBSERVATION_UNIT_NOTATION, multiValObs.getUnitNotation());
             observation = observation.replace(OBSERVATION_PHENTIME_START, multiValObs.getResult().getDateTimeBegin().toISO8601Format());
             observation = observation.replace(OBSERVATION_PHENTIME_END, multiValObs.getResult().getDateTimeEnd().toISO8601Format());
             observation = observation.replace(OBSERVATION_PROCEDURE, multiValObs.getProcedure());
             observation = observation.replace(OBSERVATION_PROPERTY, multiValObs.getObservedProperty());
             observation = observation.replace(OBSERVATION_FEATURE, multiValObs.getFeatureOfInterest());
             observation = observation.replace(OBSERVATION_SAMPLING_POINT, multiValObs.getSamplingPoint());
+            observation = observation.replace(OBSERVATION_AGGREGATION_TYPE, multiValObs.getAggregationType());
             observation = observation.replace(ELEMENT_COUNT, "" + multiValObs.getResult().getValue().size());
             observation = observation.replace(VALUES, allValues);
             
