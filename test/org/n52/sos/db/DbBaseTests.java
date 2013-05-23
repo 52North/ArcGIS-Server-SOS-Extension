@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
+import javax.activation.UnsupportedDataTypeException;
+
 import org.junit.Test;
 import org.n52.sos.EsriBaseTest;
 
@@ -97,9 +99,18 @@ public class DbBaseTests extends EsriBaseTest {
     }
     
     /**
-     * Checks whether all subfields as defined in property file are present in DB.
+     * Checks whether all subfields as defined in property file are present in
+     * DB.
+     * 
+     * @deprecated since this method only checks whether a subfield is present
+     *             in any table of the database and not a specific table. In
+     *             conclusion, this results in false positives. A solution is
+     *             not straightforward to implement since it would require a
+     *             reflection of table-subfield relationships in the properties
+     *             file.
      */
     @Test
+    @Deprecated
     public void testIfAllSubfieldsArePresent() {
         // check if all attribute fields are initialized:
         Field[] fields = SubField.class.getFields();
@@ -121,31 +132,34 @@ public class DbBaseTests extends EsriBaseTest {
     }
     
     /**
-     * helper method that returns true if a subfieldName is used as a datasetName in the DB.
+     * helper method that returns true if a subfieldName is used by a dataset in the DB.
      */
     private boolean checkPresenceOfSubfield(String subfieldName) throws AutomationException, IOException {
         IEnumDataset datasets = gdb.getWorkspace().getDatasets(esriDatasetType.esriDTAny);
         IDataset dataset = datasets.next();
         
-        while(dataset != null) {
+        while (dataset != null) {
+            
             int typeID = dataset.getType();
+            
             if (typeID == esriDatasetType.esriDTTable) {
                 ITable table = gdb.getWorkspace().openTable(dataset.getName());
                 IFields fields = table.getFields();
                 if (fields.findField(subfieldName) != -1) {
                     return true;
-                }
+                } 
             }
             else if (typeID == esriDatasetType.esriDTFeatureClass) {
                 IFeatureClass featureClass = gdb.getWorkspace().openFeatureClass(dataset.getName());
                 IFields fields = featureClass.getFields();
                 if (fields.findField(subfieldName) != -1) {
                     return true;
-                }
+                } 
             }
             else {
-                throw new RuntimeException("Type not supported");
+                throw new UnsupportedDataTypeException("Type not supported");
             }
+            
             dataset = datasets.next();
         }
         return false;

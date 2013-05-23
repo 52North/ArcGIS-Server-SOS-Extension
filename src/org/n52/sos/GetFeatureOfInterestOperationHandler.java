@@ -25,7 +25,7 @@ package org.n52.sos;
 import java.util.Collection;
 
 import org.n52.om.sampling.Feature;
-import org.n52.sos.db.AccessObservationGDB;
+import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -44,7 +44,7 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
      * @return
      * @throws Exception
      */
-    public byte[] invokeOGCOperation(AccessObservationGDB geoDB, JSONObject inputObject,
+    public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
             String[] responseProperties) throws Exception
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
@@ -70,7 +70,7 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
             spatialFilter = convertSpatialFilterFromOGCtoESRI(spatialFilterOGC);
         }
 
-        Collection<Feature> featureCollection = geoDB.getFeaturesOfInterest(featuresOfInterest, observedProperties, procedures, spatialFilter);
+        Collection<Feature> featureCollection = geoDB.getFeatureAccess().getFeaturesOfInterest(featuresOfInterest, observedProperties, procedures, spatialFilter);
         
         String result = OGCFeatureEncoder.encodeFeatures(featureCollection);
         

@@ -150,9 +150,9 @@ public class AccessGDB {
         FeatureClass fc = new FeatureClass(dataSource);
         workspace = new Workspace(fc.getWorkspace());
         
-        // initialize the capabilities
-        getServiceDescription();
-        offeringAccess.getObservationOfferings();
+//        // initialize the capabilities
+//        getServiceDescription();
+//        offeringAccess.getObservationOfferings();
         long delta = System.currentTimeMillis() - start;
         
         LOGGER.info("Created in " + delta/1000 + " seconds.");

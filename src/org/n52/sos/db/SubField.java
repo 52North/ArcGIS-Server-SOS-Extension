@@ -39,18 +39,18 @@ public class SubField {
     public static String OBSERVATION_FK_PROPERTY;
     public static String OBSERVATION_FK_UNIT;
     
-	public static String VALUE_PK_VALUE;
-	public static String VALUE_FK_OBSERVATION;
-	public static String VALUE_DATETIME_BEGIN;
-	public static String VALUE_DATETIME_END;
-	public static String VALUE_VALUE_TEXT;
-	public static String VALUE_VALUE_NUMERIC;
-	public static String VALUE_FK_VALIDITY;
-	public static String VALUE_FK_VERIFICATION;
-	public static String VALUE_DATETIME_INSERTED;
-	public static String VALUE_DATETIME_UPDATED;
-	public static String VALUE_RESULTTIME;
-	public static String VALUE_FK_AGGREGATIONTYPE;
+    public static String VALUE_PK_VALUE;
+    public static String VALUE_FK_OBSERVATION;
+    public static String VALUE_DATETIME_BEGIN;
+    public static String VALUE_DATETIME_END;
+    public static String VALUE_VALUE_TEXT;
+    public static String VALUE_VALUE_NUMERIC;
+    public static String VALUE_FK_VALIDITY;
+    public static String VALUE_FK_VERIFICATION;
+    public static String VALUE_DATETIME_INSERTED;
+    public static String VALUE_DATETIME_UPDATED;
+    public static String VALUE_RESULTTIME;
+    public static String VALUE_FK_AGGREGATIONTYPE;
     
     public static String PROPERTY_PK_PROPERTY;
     public static String PROPERTY_ID;
@@ -90,7 +90,7 @@ public class SubField {
     public static String STATION_OPERATIONAL;
 
     public static String NETWORK_PK_NETWOK;
-    public static String NETWORK_NAME;
+    public static String NETWORK_ID;
 
     public static String UNIT_PK_UNIT;
     public static String UNIT_ID;
@@ -182,7 +182,7 @@ public class SubField {
         STATION_OPERATIONAL = props.getProperty("database.table.STATION.OPERATIONAL");
 
         NETWORK_PK_NETWOK = props.getProperty("database.table.NETWORK.PK_NETWORK");
-        NETWORK_NAME = props.getProperty("database.table.NETWORK.NAME");
+        NETWORK_ID = props.getProperty("database.table.NETWORK.ID");
 
         UNIT_PK_UNIT = props.getProperty("database.table.UNIT.PK_UNIT");
         UNIT_ID = props.getProperty("database.table.UNIT.ID");

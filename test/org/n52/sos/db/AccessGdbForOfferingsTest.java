@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.n52.sos.EsriBaseTest;
+import org.n52.sos.JSONEncoder;
 import org.n52.sos.OGCCapabilitiesEncoder;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -51,9 +52,9 @@ public class AccessGdbForOfferingsTest extends EsriBaseTest {
         
         System.out.println("start.");
         try {
-            Collection<ObservationOffering> offerings = gdb.getOfferingAccess().getObservationOfferings();
+            Collection<ObservationOffering> offerings = gdb.getOfferingAccess().getNetworksAsObservationOfferings();
             
-//            System.out.println(JSONEncoder.encodeObservationOfferings(offerings));
+            LOGGER.info("Offerings in JSON: " + JSONEncoder.encodeObservationOfferings(offerings).toString());
             
             List<String> procedureIDs = new ArrayList();
             procedureIDs.add("procedureID");

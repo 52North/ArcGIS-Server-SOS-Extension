@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.n52.sos.dataTypes.Procedure;
-import org.n52.sos.db.AccessObservationGDB;
+import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONObject;
@@ -50,7 +50,7 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
      * @return
      * @throws Exception
      */
-    public byte[] invokeOGCOperation(AccessObservationGDB geoDB, JSONObject inputObject,
+    public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
             String[] responseProperties) throws Exception
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
@@ -89,13 +89,13 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
      * @throws IOException 
      * @throws AutomationException 
      */
-    private byte[] encodeProcedures(AccessObservationGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException {
+    private byte[] encodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException {
         String[] procedures = null;
         if (inputObject.has("procedure")) {
             procedures = inputObject.getString("procedure").split(",");
         }
         
-        Collection<Procedure> procedureCollection = geoDB.getProcedures(procedures);
+        Collection<Procedure> procedureCollection = geoDB.getProcedureAccess().getProcedures(procedures);
         String result;
         
         if (sensorMLVersion.equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)){

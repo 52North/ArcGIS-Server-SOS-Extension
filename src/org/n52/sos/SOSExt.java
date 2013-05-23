@@ -618,7 +618,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         }
 
         else if (resourceName.matches("observations")) {
-            Collection<ObservationOffering> offerings = geoDB.getOfferingAccess().getObservationOfferings();
+            Collection<ObservationOffering> offerings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
             json = JSONEncoder.encodeObservationOfferings(offerings);
         }
 
