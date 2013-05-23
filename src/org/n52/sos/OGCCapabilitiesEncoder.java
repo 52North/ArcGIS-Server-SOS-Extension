@@ -65,7 +65,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     private static String OFFERING_END_POSITION = "@offering-end-position@";
     
     
-    public static String encodeCapabilities(ServiceDescription sd, Collection<ObservationOffering> obsOfferings) throws IOException {
+    public String encodeCapabilities(ServiceDescription sd, Collection<ObservationOffering> obsOfferings) throws IOException {
         
         // replace variables in Capabilities document template:
         

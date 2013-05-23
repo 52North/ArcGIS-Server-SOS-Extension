@@ -72,7 +72,7 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
 
         Collection<Feature> featureCollection = geoDB.getFeatureAccess().getFeaturesOfInterest(featuresOfInterest, observedProperties, procedures, spatialFilter);
         
-        String result = OGCFeatureEncoder.encodeFeatures(featureCollection);
+        String result = new OGCFeatureEncoder().encodeFeatures(featureCollection);
         
         return result.getBytes("utf-8");
     }

@@ -58,7 +58,7 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
         ServiceDescription serviceDesc = geoDB.getServiceDescription();
         Collection<ObservationOffering> obsOfferings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
         
-        String capabilitiesDocument = OGCCapabilitiesEncoder.encodeCapabilities(serviceDesc, obsOfferings);
+        String capabilitiesDocument = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDesc, obsOfferings);
                 
         // sending the Capabilities document:
         LOGGER.info("Returning capabilities document.");

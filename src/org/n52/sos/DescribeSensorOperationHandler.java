@@ -99,10 +99,10 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
         String result;
         
         if (sensorMLVersion.equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)){
-            result = OGCProcedureEncoder.encodeProceduresAsSensorML20(procedureCollection);
+            result = new OGCProcedureEncoder().encodeProceduresAsSensorML20(procedureCollection);
         }
         else {
-            result = OGCProcedureEncoder.encodeProceduresAsSensorML101(procedureCollection);
+            result = new OGCProcedureEncoder().encodeProceduresAsSensorML101(procedureCollection);
         }
         
         return result.getBytes("utf-8");

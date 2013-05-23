@@ -58,7 +58,7 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     private static String CONTACT_COUNTRY = "@contact-country@";
     private static String CONTACT_EMAIL   = "@contact-email@";
     
-    public static String encodeProceduresAsSensorML20(Collection<Procedure> procedureCollection) throws IOException {
+    public String encodeProceduresAsSensorML20(Collection<Procedure> procedureCollection) throws IOException {
         String responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
         
         String procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
@@ -66,7 +66,7 @@ public class OGCProcedureEncoder extends AbstractEncoder {
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }
     
-    public static String encodeProceduresAsSensorML101(Collection<Procedure> procedureCollection) throws IOException {
+    public String encodeProceduresAsSensorML101(Collection<Procedure> procedureCollection) throws IOException {
         String responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
         
         String procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
@@ -74,7 +74,7 @@ public class OGCProcedureEncoder extends AbstractEncoder {
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }
     
-    public static String encodeProcedures(Collection<Procedure> procedureCollection, String responseTemplate, String procedureTemplate) throws IOException {
+    public String encodeProcedures(Collection<Procedure> procedureCollection, String responseTemplate, String procedureTemplate) throws IOException {
         String allProcedures = "";
         
         for (Procedure procedure : procedureCollection) {

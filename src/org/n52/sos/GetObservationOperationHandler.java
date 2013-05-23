@@ -114,12 +114,12 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 //            result = new RDFEncoder(sosUrlExtension).getObservationCollectionTriples(observationCollection, invokedURL);
         }
         else if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_AQ)) {
-            result = AQDObservationEncoder.encodeObservations(observationCollection);
-            result = AQDObservationEncoder.wrapInEnvelope(result);
+            result = new AQDObservationEncoder().encodeObservations(observationCollection);
+            result = new AQDObservationEncoder().wrapInEnvelope(result);
         }
         else if (responseFormat == null || responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_OM)) {
-            result = OGCObservationSWECommonEncoder.encodeObservations(observationCollection);
-            result = OGCObservationSWECommonEncoder.wrapInSOAPEnvelope(result);
+            result = new OGCObservationSWECommonEncoder().encodeObservations(observationCollection);
+            result = new OGCObservationSWECommonEncoder().wrapInEnvelope(result);
         }
         else {
             throw new IllegalArgumentException("Specified responseFormat '" + responseFormat + "' is unsupported. Please use either '"+Constants.RESPONSE_FORMAT_OM+"', '"+Constants.RESPONSE_FORMAT_AQ+"', or '"+Constants.RESPONSE_FORMAT_RDF+"'.");

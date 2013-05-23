@@ -52,7 +52,7 @@ public class OGCFeatureEncoder extends AbstractEncoder {
     private static String FEATURE_BUILDING_DISTANCE = "@feature-building-distance@";
     private static String FEATURE_KERB_DISTANCE = "@feature-kerb-distance@";
 
-    public static String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
+    public String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
                 
         String responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
         

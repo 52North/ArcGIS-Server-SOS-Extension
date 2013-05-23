@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.oxf.valueDomains.time.ITimePosition;
+import org.n52.sos.AQDObservationEncoder;
 import org.n52.sos.EsriBaseTest;
 import org.n52.sos.OGCObservationSWECommonEncoder;
 
@@ -48,13 +49,13 @@ public class AccessGdbForObservationsTest extends EsriBaseTest {
             String spatialFilter = "{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}";
             String temporalFilter = "after:2013-02-01T01:00:00+0007";
             String where = "value_numeric > 9";
-            String[] observedProperties = new String[]{"http://dd.eionet.europa.eu/vocabularies/aq/pollutant/1", "http://dd.eionet.europa.eu/vocabularies/aq/pollutant/7"};
+            String[] observedProperties = null; //new String[]{"http://dd.eionet.europa.eu/vocabularies/aq/pollutant/1", "http://dd.eionet.europa.eu/vocabularies/aq/pollutant/7"};
             String[] procedures = null;
             String[] featuresOfInterest = null;
             
             Map<String, MultiValueObservation> idObsList = gdb.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, where);
         
-            LOGGER.info(OGCObservationSWECommonEncoder.encodeObservations(idObsList));
+            LOGGER.info(new AQDObservationEncoder().encodeObservations(idObsList));
         } catch (Exception e) {
             e.printStackTrace();
             fail();

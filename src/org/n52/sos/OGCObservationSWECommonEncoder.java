@@ -23,18 +23,13 @@
 
 package org.n52.sos;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
-import org.n52.util.CommonUtilities;
 import org.n52.util.ExceptionSupporter;
 
 /**
@@ -42,33 +37,30 @@ import org.n52.util.ExceptionSupporter;
  */
 public class OGCObservationSWECommonEncoder extends AbstractEncoder {
 
-    private static Logger LOGGER = Logger.getLogger(OGCObservationSWECommonEncoder.class.getName());
+    protected static Logger LOGGER = Logger.getLogger(OGCObservationSWECommonEncoder.class.getName());
     
     /*
      * definition of anchor variables within template files:
      */
-    private static String OBSERVATIONS = "@observations@";
+    protected static String OBSERVATIONS = "@observations@";
+    protected static String OBSERVATION_ID = "@observation-id@";
+    protected static String OBSERVATION_PHENTIME_START = "@observation-phentime-start@";
+    protected static String OBSERVATION_PHENTIME_END = "@observation-phentime-end@";
+    protected static String OBSERVATION_PROCEDURE = "@observation-procedure@";
+    protected static String OBSERVATION_PROPERTY = "@observation-property@";
+    protected static String OBSERVATION_FEATURE = "@observation-feature@";
+    protected static String OBSERVATION_SAMPLING_POINT = "@observation-sampling-point@";
+    protected static String OBSERVATION_UCUM = "@observation-ucum@";
+    protected static String ELEMENT_COUNT = "@element-count@";
+    protected static String VALUES = "@values@";
 
-    private static String OBSERVATION_ID = "@observation-id@";
-
-    private static String OBSERVATION_PHENTIME_START = "@observation-phentime-start@";
-
-    private static String OBSERVATION_PHENTIME_END = "@observation-phentime-end@";
-
-    private static String OBSERVATION_PROCEDURE = "@observation-procedure@";
-
-    private static String OBSERVATION_PROPERTY = "@observation-property@";
-
-    private static String OBSERVATION_FEATURE = "@observation-feature@";
+    protected String observationTemplateFile;
+    protected String observationEnvelopeTemplateFile;
     
-    private static String OBSERVATION_SAMPLING_POINT = "@observation-sampling-point@";
-
-    private static String OBSERVATION_UCUM = "@observation-ucum@";
-
-    private static String ELEMENT_COUNT = "@element-count@";
-
-    private static String VALUES = "@values@";
-
+    public OGCObservationSWECommonEncoder() {
+        observationTemplateFile = "template_om_observation_swe_common.xml";
+        observationEnvelopeTemplateFile = "template_getobservation_response_OM.xml";
+    }
     
     /**
      * This operation encodes the observations contained in the
@@ -78,14 +70,14 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
      * @return
      * @throws IOException
      */
-    public static String encodeObservations(Map<String, MultiValueObservation> idObsList) throws IOException
+    public String encodeObservations(Map<String, MultiValueObservation> idObsList) throws IOException
     {
         String encodedObservations = "";
 
         String observationTemplate = null;
         try {
             // read template for SWE Common Encoding:
-            observationTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_om_observation_swe_common.xml"));
+            observationTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream(observationTemplateFile));
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading the template: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw e;
@@ -119,9 +111,9 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
         return encodedObservations;
     }
 
-    public static String wrapInSOAPEnvelope(String result) throws IOException
+    public String wrapInEnvelope(String result) throws IOException
     {
-        String responseTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_OM.xml"));
+        String responseTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream(observationEnvelopeTemplateFile));
 
         responseTemplate = responseTemplate.replace(OBSERVATIONS, result);
 
@@ -130,9 +122,11 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
 
     // /////////////////////////////////// helper methods:
     
-    private static String encodeMeasureResult(MeasureResult resultValue)
+    protected String encodeMeasureResult(MeasureResult resultValue)
     {
-        String valueRow = resultValue.getDateTimeEnd().toISO8601Format() + "," + 
+        String valueRow = 
+                resultValue.getDateTimeBegin().toISO8601Format() + "," +
+                resultValue.getDateTimeEnd().toISO8601Format() + "," + 
                 resultValue.getValidity() + "," +
                 resultValue.getVerification() + "," + 
                 resultValue.getValue() + "@@";
