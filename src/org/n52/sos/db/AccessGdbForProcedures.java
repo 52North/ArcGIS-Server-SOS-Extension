@@ -71,13 +71,13 @@ public class AccessGdbForProcedures {
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
-        LOGGER.info("Table clause := " + queryDef.getTables());
+//        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
+//        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
         
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
@@ -118,14 +118,14 @@ public class AccessGdbForProcedures {
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
-        LOGGER.info("Table clause := " + queryDef.getTables());
+//        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
+//        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
 
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
@@ -133,7 +133,7 @@ public class AccessGdbForProcedures {
             
             queryDef.setWhereClause(whereClause.toString());
         }
-        LOGGER.info(queryDef.getWhereClause());
+//        LOGGER.info(queryDef.getWhereClause());
 
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();

@@ -104,7 +104,7 @@ public class AccessGdbForAnalysis {
         }
         
         /*
-         * check number of observedPropertys!
+         * check number of observedProperties!
          */
         queryDef = gdb.getWorkspace().createQueryDef();
         queryDef.setTables(Table.PROPERTY);

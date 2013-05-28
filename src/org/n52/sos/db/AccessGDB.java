@@ -155,8 +155,7 @@ public class AccessGDB {
 //        offeringAccess.getObservationOfferings();
         long delta = System.currentTimeMillis() - start;
         
-        LOGGER.info("Created in " + delta/1000 + " seconds.");
-        LOGGER.info("End of creating AccessGDB.");
+        LOGGER.info("End of creating AccessGDB. Created in " + delta/1000 + " seconds.");
     }
     
     /**

@@ -348,13 +348,13 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String requestProperties,
             String[] responseProperties) throws IOException, AutomationException
     {
-        LOGGER.info("Starting to handle REST request...");
-        LOGGER.info("capabilities: " + capabilities);
-        LOGGER.info("resourceName: " + resourceName);
-        LOGGER.info("operationName: " + operationName);
-        LOGGER.info("operationInput: " + operationInput);
-        LOGGER.info("outputFormat: " + outputFormat);
-        LOGGER.info("requestProperties: " + requestProperties);
+//        LOGGER.info("Starting to handle REST request...");
+//        LOGGER.info("capabilities: " + capabilities);
+//        LOGGER.info("resourceName: " + resourceName);
+//        LOGGER.info("operationName: " + operationName);
+//        LOGGER.info("operationInput: " + operationInput);
+//        LOGGER.info("outputFormat: " + outputFormat);
+//        LOGGER.info("requestProperties: " + requestProperties);
 
         try {
             // if no operationName is specified send description of specified
@@ -630,10 +630,10 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         
         else if (resourceName.matches("procedures/.+")) {
             String procedureID = resourceName.split("/")[1];
-            LOGGER.info("Procedure requested: '" + procedureID + "'");
+//            LOGGER.info("Procedure requested: '" + procedureID + "'");
 
             Collection<Procedure> proceduresFromDB = geoDB.getProcedureAccess().getProcedures(new String[] { procedureID });
-            LOGGER.info("Count of procedures returned from DB: " + proceduresFromDB.size());
+//            LOGGER.info("Count of procedures returned from DB: " + proceduresFromDB.size());
 
             if (proceduresFromDB.size() == 1) {
                 Procedure p = proceduresFromDB.iterator().next();
