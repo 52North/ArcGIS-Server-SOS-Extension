@@ -26,13 +26,21 @@ package org.n52.sos.db;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.n52.util.logging.Log;
+import org.n52.sos.DBInspector;
 
+import com.esri.arcgis.carto.IMapServer3;
+import com.esri.arcgis.carto.IMapServerDataAccess;
+import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.ICursor;
+import com.esri.arcgis.geodatabase.IDataset;
+import com.esri.arcgis.geodatabase.IEnumDataset;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
+import com.esri.arcgis.geodatabase.Workspace;
+import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONObject;
+import com.sun.corba.se.pept.encoding.InputObject;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -41,10 +49,70 @@ public class AccessGdbForAnalysis {
 
     static Logger LOGGER = Logger.getLogger(AccessGdbForAnalysis.class.getName());
 
-    private AccessGDB gdb;
+    private Workspace workspace;
+    
+    private DBInspector soe;
 
-    public AccessGdbForAnalysis(AccessGDB accessGDB) {
-        this.gdb = accessGDB;
+    public AccessGdbForAnalysis(DBInspector soe) throws AutomationException, IOException {
+        LOGGER.info("Creating AccessGdbForAnalysis.");
+        
+        this.soe = soe;
+        
+        // Workspace creation
+        IMapServer3 ms = (IMapServer3) soe.getMapServerDataAccess();
+        String mapName = ms.getDefaultMapName();
+        IMapServerDataAccess mapServerDataAccess = soe.getMapServerDataAccess();
+        Object dataSource= mapServerDataAccess.getDataSource(mapName, 0);
+        FeatureClass fc = new FeatureClass(dataSource);
+        this.workspace = new Workspace(fc.getWorkspace());
+    }
+    
+    public JSONObject analyzeTable (JSONObject inputObject) throws AutomationException, IOException {
+
+        String tableName = null;
+        if (inputObject.has("tableName")) {
+            tableName = inputObject.getString("tableName");
+        }
+        
+        String primaryKeyColumn = null;
+        if (inputObject.has("primaryKeyColumn")) {
+            tableName = inputObject.getString("primaryKeyColumn");
+        }
+        
+        return analyzeTable(tableName, primaryKeyColumn);
+    }
+    
+    
+    /**
+     * @throws IOException 
+     * @throws AutomationException 
+     * 
+     */
+    public JSONObject analyzeTable (String tableName, String primaryKeyColumn) throws AutomationException, IOException {
+        
+        
+        JSONObject json = new JSONObject();
+
+        IQueryDef queryDef = this.workspace.createQueryDef();
+        try {
+            queryDef.setTables(tableName);
+            queryDef.setSubFields("COUNT(" + primaryKeyColumn + ")");
+            ICursor cursor = queryDef.evaluate();
+            
+            json.append("Reading count of table:", tableName);
+            IRow row;
+            if ((row = cursor.nextRow()) != null) {
+                Object count = row.getValue(0);
+                String countAsString = count.toString();
+                
+                json.append("Table count:", countAsString);
+            }
+        } catch (Exception e) {
+            LOGGER.severe(e.getLocalizedMessage());
+            throw e;
+        }
+        
+        return json;
     }
     
     /**
@@ -52,72 +120,68 @@ public class AccessGdbForAnalysis {
      * @throws AutomationException 
      * 
      */
-    public JSONObject analyzeDB () throws AutomationException, IOException {
+    public JSONObject analyzeProcedureTable () throws AutomationException, IOException {
         
         JSONObject json = new JSONObject();
+        json.append("This function: ", "...checks the availability of a table as specified in the properties of this SOE (configure in ArcGIS Server Manager).");
+        json.append("This function: ", "...and presents the count of rows contained in that table.");
         
-        /*
-         * check number of observations!
-         * build something like: SELECT COUNT(column_name) FROM table_name
-         */
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.OBSERVATION);
-        queryDef.setSubFields("COUNT(" + SubField.OBSERVATION_ID + ")");
-        queryDef.evaluate();
-        ICursor cursor = queryDef.evaluate();
-        IRow row;
-        while ((row = cursor.nextRow()) != null) {
-            Object observationCount = row.getValue(0);
-            String observationCountAsString = observationCount.toString();
+        IQueryDef queryDef = this.workspace.createQueryDef();
+        try {
+            queryDef.setTables(soe.getTable());
+            queryDef.setSubFields("COUNT(" + soe.getTablePkField() + ")");
+            ICursor cursor = queryDef.evaluate();
             
-            json.append("observationCount", observationCountAsString);
+            json.append("Reading count of table:", soe.getTable());
+            IRow row;
+            if ((row = cursor.nextRow()) != null) {
+                Object count = row.getValue(0);
+                String countAsString = count.toString();
+                
+                json.append("Table count:", countAsString);
+            }
+        } catch (Exception e) {
+            LOGGER.severe(e.getLocalizedMessage());
+            
+            json.append("ERROR:", "while trying to read table '" + soe.getTable() + "' with specified primary key '" + soe.getTablePkField() + "'");
         }
         
-        /*
-         * check number of features!
-         */
-        queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.FEATUREOFINTEREST);
-        queryDef.setSubFields("COUNT(" + SubField.FEATUREOFINTEREST_ID + ")");
-        queryDef.evaluate();
-        cursor = queryDef.evaluate();
-        while ((row = cursor.nextRow()) != null) {
-            Object featureCount = row.getValue(0);
-            String featureCountAsString = featureCount.toString();
+        return json;
+    }
+
+    public JSONObject readTableNamesFromDB() throws AutomationException, IOException
+    {
+
+
+            JSONObject json = new JSONObject();
+            json.append("This function: ", "...reads directly the table names from the DB through ArcGIS Server. This gives you a picture of how the SOE sees your DB.");
             
-            json.append("featureCount", featureCountAsString);
-        }
-        
-        /*
-         * check number of procedures!
-         */
-        queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.PROCEDURE);
-        queryDef.setSubFields("COUNT(" + SubField.PROCEDURE_ID + ")");
-        queryDef.evaluate();
-        cursor = queryDef.evaluate();
-        while ((row = cursor.nextRow()) != null) {
-            Object procedureCount = row.getValue(0);
-            String procedureCountAsString = procedureCount.toString();
+            IEnumDataset datasets = this.workspace.getDatasets(esriDatasetType.esriDTAny);
+            IDataset dataset = datasets.next();
             
-            json.append("procedureCount", procedureCountAsString);
-        }
-        
-        /*
-         * check number of observedProperties!
-         */
-        queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(Table.PROPERTY);
-        queryDef.setSubFields("COUNT(" + SubField.PROPERTY_ID + ")");
-        queryDef.evaluate();
-        cursor = queryDef.evaluate();
-        while ((row = cursor.nextRow()) != null) {
-            Object observedPropertyCount = row.getValue(0);
-            String observedPropertyCountAsString = observedPropertyCount.toString();
-            
-            json.append("observedPropertyCount", observedPropertyCountAsString);
-        }
-        
+            while (dataset != null) {
+                
+                int typeID = dataset.getType();
+                
+//                if (typeID == esriDatasetType.esriDTTable) {
+//                    ITable table = this.workspace.openTable(dataset.getName());
+//                    
+//                    IFields fields = table.getFields();
+//                    
+//                }
+//                else if (typeID == esriDatasetType.esriDTFeatureClass) {
+//                    IFeatureClass featureClass = this.workspace.openFeatureClass(dataset.getName());
+//                    IFields fields = featureClass.getFields();
+//                     
+//                }
+//                else {
+//                    throw new UnsupportedDataTypeException("Type not supported");
+//                }
+                
+                json.append("Reading dataset names from DB:", dataset.getName());
+                
+                dataset = datasets.next();
+            }
         return json;
     }
 }

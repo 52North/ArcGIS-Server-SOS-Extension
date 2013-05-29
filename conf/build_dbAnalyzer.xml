@@ -2,11 +2,11 @@
 
 	<property file="build.properties" />
 	
-	<property name="soe.name" value="DBAnalyzerSOE" />
-	<property name="extension.class" value="org.n52.sos.DBAnalyzerSOE" />
+	<property name="soe.name" value="DBInspector" />
+	<property name="extension.class" value="org.n52.sos.DBInspector" />
 	<property name="extension.id" value="${extension.class}" />
-	<property name="extension.library" value="DBAnalyzerSOE.jar" />
-	<property name="extension.displayName" value="DBAnalyzer SOE" />
+	<property name="extension.library" value="DBInspector.jar" />
+	<property name="extension.displayName" value="DBInspector SOE" />
 	<property name="extension.description" value="Analyzes the DB of the SOS extension" />
 	
 	<scriptdef name="generateguid" language="javascript">
@@ -36,17 +36,17 @@
 	</target>
 	
 	<target name="config" depends="init">
-		<copy file="${conf}/arcGisSos.properties" tofile="${classes}/arcGisSos.properties" overwrite="true">
+		<!--<copy file="${conf}/arcGisSos.properties" tofile="${classes}/arcGisSos.properties" overwrite="true">
 			<filterset>
 				<filter token="TIME_STAMP" value="${TIME}" />
 			</filterset>
-		</copy>
+		</copy>-->
 		
 		<jar destfile="${build}/Install/${soe.name}.jar" manifest="${conf}/Manifest.mf">
-			<fileset dir="${classes}" />
+			<fileset dir="${classes}" excludes="*.properties" />
 		</jar>
 		
-		<copy file="${conf}/Config.xml" tofile="${build}/Config.xml" overwrite="true">
+		<copy file="${conf}/Config_DBAnalyzer.xml" tofile="${build}/Config.xml" overwrite="true">
 			<filterset>
 				<filter token="SOE_NAME" value="${soe.name}" />
 				<filter token="GENERATED_UUID" value="${guid1}" />
@@ -58,12 +58,11 @@
 				<filter token="EXTENSION_DISPLAYNAME" value="${extension.displayName}" />
 			</filterset>
 		</copy>
-				
-		<copy file="${conf}/SOSExtension.wsdl" tofile="${build}/Resources/SOSExtension.wsdl" />
 		
+		<!--
 		<copy todir="${build}/Install">
 			<fileset dir="${lib}" />
-		</copy>
+		</copy>-->
 	</target>
 	
 	<target name="mkSOE" depends="config" description="generates the SOE">
@@ -72,7 +71,4 @@
 		</jar>
 	</target>
 	
-	<!--
-	 TODO: Alternatively, we can directly update the SOE on the server with a new one, by first uploading the updated .soe file using the http://<server name>:6080/arcgis/admin/uploads/upload endpoint, then copying the upload id and pasting it in the text box of the http://<server name>:6080/arcgis/admin/services/types/extensions/update endpoint.
-	-->
 </project>

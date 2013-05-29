@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>@SOE_NAME@</Name>
+	<Description>@SOE_NAME@</Description>
+	<Date>@TIME_TAG@</Date>
+	<Author />
+	<Company>52North GmbH</Company>
+	<Version>1.0</Version>
+	<Targets>
+		<Target name="server" version="10.1" />
+	</Targets>
+	<AddInID>{@GENERATED_UUID@}</AddInID>
+	<AddIn language="Java">
+		<ServerObjectType>
+			<Name>MapServer</Name>
+			<ExtensionTypes>			
+				<ExtensionType class="@EXTENSION_CLASS@" id="@EXTENSION_ID@"
+					library="@EXTENSION_LIBRARY@">
+					<Name>@SOE_NAME@</Name>
+					<DisplayName>@EXTENSION_DISPLAYNAME@</DisplayName>
+					<Description>@EXTENSION_DESCRIPTION@ - version @TIME_TAG@</Description>
+					<Properties>
+						<tableToAnalyze>Airquality_E2a.DBO.Procedures</tableToAnalyze>
+						<tablePkField>pk_procedure</tablePkField>
+					</Properties>
+					<Info>
+						<DefaultWebCapabilities />
+						<AllWebCapabilities />
+						<SupportsREST>true</SupportsREST>
+					</Info>
+				</ExtensionType>
+			</ExtensionTypes>
+		</ServerObjectType>
+	</AddIn>
+</ESRI.Configuration>

@@ -184,7 +184,6 @@ public class AccessGDB {
         featureAccess = new AccessGdbForFeatures(this);
         procedureAccess = new AccessGdbForProcedures(this);
         offeringAccess = new AccessGdbForOfferings(this);
-        analysisAccess = new AccessGdbForAnalysis(this);
         observationInsert = new InsertGdbForObservations(this);
     }
 

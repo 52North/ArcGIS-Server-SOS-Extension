@@ -44,7 +44,7 @@
 		</copy>-->
 		
 		<jar destfile="${build}/Install/${soe.name}.jar" manifest="${conf}/Manifest.mf">
-			<fileset dir="${classes}" />
+			<fileset dir="${classes}" excludes="arcGisSosLocal.properties"/>
 		</jar>
 		
 		<copy file="${conf}/Config.xml" tofile="${build}/Config.xml" overwrite="true">
