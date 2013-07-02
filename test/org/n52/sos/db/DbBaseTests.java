@@ -30,6 +30,12 @@ public class DbBaseTests extends EsriBaseTest {
 
     static Logger LOGGER = Logger.getLogger(DbBaseTests.class.getName());
 
+    public static void main(String[] args) throws Exception {
+    	DbBaseTests test = new DbBaseTests();
+		test.setUp();
+		test.testConnection();
+	}
+    
     /**
      * checks whether the connection to the DB can be established and prints out
      * the names of all dataset names contained in the DB.

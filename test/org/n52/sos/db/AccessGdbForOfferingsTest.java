@@ -72,7 +72,7 @@ public class AccessGdbForOfferingsTest extends EsriBaseTest {
             fail();
         }
         
-        LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+        LOGGER.info("Duration: " + (System.currentTimeMillis() - millis) / 1000 + " seconds");
     }
 
     public static void main(String[] args) throws Exception

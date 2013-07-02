@@ -21,8 +21,8 @@
 					<DisplayName>@EXTENSION_DISPLAYNAME@</DisplayName>
 					<Description>@EXTENSION_DESCRIPTION@ - version @TIME_TAG@</Description>
 					<Properties>
-						<tableToAnalyze>Airquality_E2a.DBO.Procedures</tableToAnalyze>
-						<tablePkField>pk_procedure</tablePkField>
+						<tableToAnalyze>_Observation</tableToAnalyze>
+						<tablePkField>pk_observation</tablePkField>
 					</Properties>
 					<Info>
 						<DefaultWebCapabilities />

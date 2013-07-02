@@ -142,7 +142,7 @@ public class AccessGdbForOfferings {
             tablesTime.add(Table.NETWORK);
             queryDefTime.setTables(gdb.createCommaSeparatedList(tablesTime));
 //            LOGGER.info("Tables clause := " + queryDefTime.getTables());
-                            
+            
             // set sub fields
             List<String> subFieldsOff = new ArrayList<String>();
             subFieldsOff.add("MIN(" + gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
@@ -155,15 +155,13 @@ public class AccessGdbForOfferings {
             whereClauseTime.append(" AND ");
             whereClauseTime.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
             whereClauseTime.append(" AND ");
-            whereClauseTime.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
-            whereClauseTime.append(" AND ");
             whereClauseTime.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
             whereClauseTime.append(" AND ");
             whereClauseTime.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
             whereClauseTime.append(" AND ");
             whereClauseTime.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
             queryDefTime.setWhereClause(whereClauseTime.toString());
-//            LOGGER.info("Where clause := " + queryDefTime.getWhereClause());
+            LOGGER.info("Where clause := " + queryDefTime.getWhereClause());
 
             ICursor cursorOffering = queryDefTime.evaluate();
             
