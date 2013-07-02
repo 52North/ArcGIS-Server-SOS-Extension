@@ -23,14 +23,12 @@
 
 package org.n52.sos.db;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import org.n52.om.observation.collections.GenericObservationCollection;
+import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
-import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.sos.EsriBaseTest;
 import org.n52.sos.JSONEncoder;
 import org.n52.sos.JSONObservationEncoder;
@@ -53,83 +51,83 @@ public class AccessObservationGDBTest extends EsriBaseTest {
     {
         try {
 
-            GenericObservationCollection observations = null;
+            Map<String, MultiValueObservation> observations = null;
 
             long millis;
 
             LOGGER.info("###################################### no parameter geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, null, null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("without Entries ", observations);
 
             LOGGER.info("###################################### offering geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(new String[] { "Observations of my thermometer" }, null, null, null, null, null, null);
+            observations = gdb.getObservationAccess().getObservations(new String[] { "Observations of my thermometer" }, null, null, null, null, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("with Offerings", observations);
 
             LOGGER.info("###################################### featuresOfInterest geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, new String[] { "WXT500" }, null, null, null, null, null);
+            observations = gdb.getObservationAccess().getObservations(null, new String[] { "WXT500" }, null, null, null, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("with feature of interest '' ", observations);
 
             LOGGER.info("###################################### spatial filter 1 geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, "{xmin:0.0,ymin:40.0,xmax:2.0,ymax:43.0,spatialReference:{wkid:4326}}", null, null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, "{xmin:0.0,ymin:40.0,xmax:2.0,ymax:43.0,spatialReference:{wkid:4326}}", null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("with feature of interest '' ", observations);
 
             LOGGER.info("###################################### spatial filter 2 geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, "{x:1.121389,y:41.152222,spatialReference:{wkid:4326}}", null, null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, "{x:1.121389,y:41.152222,spatialReference:{wkid:4326}}", null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("with feature of interest '' ", observations);
 
             LOGGER.info("###################################### temporal filter 'equals' geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, "equals:2011-07-28T10:00:00+12:00", null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "equals:2011-07-28T10:00:00+12:00", null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("equals:<time instant>", observations);
 
             LOGGER.info("###################################### temporal filter 'during' geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, "during:2011-08-13T10:00:00,2011-08-13T11:00:00", null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "during:2011-08-13T10:00:00,2011-08-13T11:00:00", null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("during:<time start>,<time end>", observations);
 
             LOGGER.info("###################################### temporal filter 'after' geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, "after:2011-08-13T10:00:00", null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "after:2011-08-13T10:00:00", null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("after:<time instant>", observations);
 
             LOGGER.info("###################################### temporal filter 'before' geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, "before:2011-08-13T10:00:00", null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "before:2011-08-13T10:00:00", null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("before:<time instant>", observations);
 
             LOGGER.info("###################################### temporal filter 'last' geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, "last:3600000000,+02:00", null);
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "last:3600000000,+02:00", null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("last:<time duration>", observations);
 
             LOGGER.info("###################################### where geoDBQuerier");
             millis = System.currentTimeMillis();
-            observations = geoDBQuerier.getObservations(null, null, null, null, null, null, "NUMERIC_VALUE > 2500");
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, null, "NUMERIC_VALUE > 2500");
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observations.size());
             assertNotNull("last:<time duration>", observations);
@@ -159,35 +157,35 @@ public class AccessObservationGDBTest extends EsriBaseTest {
 
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            featuresOfInterest = geoDBQuerier.getFeaturesOfInterest(null, null, null, null);
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, null, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             assertNotNull("Without Entries", featuresOfInterest);
             assertTrue(featuresOfInterest.size() > 0);
             
             LOGGER.info("######################################");
-            featuresOfInterest = geoDBQuerier.getFeaturesOfInterest(new String[] { "BETR701" }, null, null, null);
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(new String[] { "BETR701" }, null, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             assertNotNull("Without Entries", featuresOfInterest);
             assertTrue(featuresOfInterest.size() == 1);
             
             LOGGER.info("######################################");
-            featuresOfInterest = geoDBQuerier.getFeaturesOfInterest(null, new String[] { "http://sweet.jpl.nasa.gov/ontology/substance.owl#CarbonMonoxide" }, null, null);
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, new String[] { "http://sweet.jpl.nasa.gov/ontology/substance.owl#CarbonMonoxide" }, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             assertNotNull("Without Entries", featuresOfInterest);
             assertTrue(featuresOfInterest.size() > 0);
             
             LOGGER.info("######################################");
-            featuresOfInterest = geoDBQuerier.getFeaturesOfInterest(null, null, new String[] { "CO" }, null);
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, null, new String[] { "CO" }, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             assertNotNull("Without Entries", featuresOfInterest);
             assertTrue(featuresOfInterest.size() > 0);
             
             LOGGER.info("######################################");
-            featuresOfInterest = geoDBQuerier.getFeaturesOfInterest(null, null, null, "{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}");
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, null, null, "{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}");
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             assertNotNull("Without Entries", featuresOfInterest);
@@ -212,7 +210,7 @@ public class AccessObservationGDBTest extends EsriBaseTest {
              String[] procedures = new String[] {"CO-SensorNetwork"};
              String spatialFilter = "{\"xmin\":28.000000000000057,\"ymin\":-16.570832999999936,\"xmax\":55.945591000000036,\"ymax\":28.054740000000038,\"spatialReference\":{\"wkid\":4326}}"; 
              
-             featuresOfInterest = geoDBQuerier.getFeaturesOfInterest(null, observedProperties, procedures, spatialFilter);
+             featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, observedProperties, procedures, spatialFilter);
              
          } catch (Exception e) {
              e.printStackTrace();
@@ -229,7 +227,7 @@ public class AccessObservationGDBTest extends EsriBaseTest {
 
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            Collection<ObservationOffering> observationOfferings = geoDBQuerier.getObservationOfferings();
+            Collection<ObservationOffering> observationOfferings = gdb.getOfferingAccess().getProceduresAsObservationOfferings();
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + observationOfferings.size());
             assertNotNull(observationOfferings);
@@ -251,7 +249,7 @@ public class AccessObservationGDBTest extends EsriBaseTest {
 
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            ServiceDescription serviceDescription = geoDBQuerier.getServiceDescription();
+            ServiceDescription serviceDescription = gdb.getServiceDescription();
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             assertNotNull(serviceDescription);
 
@@ -272,7 +270,7 @@ public class AccessObservationGDBTest extends EsriBaseTest {
 
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            Collection<Procedure> procedures = geoDBQuerier.getProcedures(null);
+            Collection<Procedure> procedures = gdb.getProcedureAccess().getProcedures(null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + procedures.size());
             assertNotNull(procedures);
@@ -280,7 +278,7 @@ public class AccessObservationGDBTest extends EsriBaseTest {
 
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            procedures = geoDBQuerier.getProcedures(new String[] { "CO" });
+            procedures = gdb.getProcedureAccess().getProcedures(new String[] { "CO" });
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + procedures.size());
             assertNotNull(procedures);

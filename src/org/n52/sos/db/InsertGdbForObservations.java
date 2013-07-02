@@ -56,73 +56,77 @@ public class InsertGdbForObservations {
             int procedureID,
             float result) throws Exception
     {
-        LOGGER.info("Starting to add new observation");
-
-        try {
-            gdb.getWorkspace().startEditing(true);
-            gdb.getWorkspace().startEditOperation();
-            
-            LOGGER.info("Started editing workspace.");
-            
-            ITable observationFC = gdb.getWorkspace().openTable(Table.OBSERVATION);
-            IRow newObservation = observationFC.createRow();
-            LOGGER.info("New row created.");
-            
-            IFields fields = observationFC.getFields();
-            for (int i = 0; i < fields.getFieldCount(); i++) {
-                if (fields.getField(i).getName().equals(SubField.OBSERVATION_OFFERING)) {
-                    newObservation.setValue(i, offeringID);
-                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_END_TIME)) {
-
-                    // Date phenomenonTimeStatic = new Date();
-                    // short year = 2012;
-                    // short month = 8;
-                    // short day = 16;
-                    // short hour = 15;
-                    // short minute = 45;
-                    // short second = 0;
-                    // phenomenonTimeStatic.setYear(year);
-                    // phenomenonTimeStatic.setMonth(month);
-                    // phenomenonTimeStatic.setDate(day);
-                    // phenomenonTimeStatic.setHours(hour);
-                    // phenomenonTimeStatic.setMinutes(minute);
-                    // phenomenonTimeStatic.setSeconds(second);
-                    // LOGGER.info("phenomenonTimeStatic to set: '" +
-                    // phenomenonTimeStatic + "'");
-                    // newObservation.setValue(i, phenomenonTimeStatic);
-
-                    LOGGER.info("phenomenonTime to set: '" + phenomenonTime + "'");
-                    newObservation.setValue(i, phenomenonTime);
-                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_PROPERTY)) {
-                    newObservation.setValue(i, observedPropertyID);
-                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_PROCEDURE)) {
-                    newObservation.setValue(i, procedureID);
-                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_FEATURE)) {
-                    newObservation.setValue(i, featureID);
-                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_NUMERIC_VALUE)) {
-                    newObservation.setValue(i, result);
-                }
-            }
-            LOGGER.info("New observation created.");
-
-            newObservation.store();
-            LOGGER.info("New observation stored.");
-
-            int observationID = newObservation.getOID();
-            LOGGER.info("New observation successfully added to DB: " + observationID);
-
-            gdb.getWorkspace().stopEditOperation();
-            gdb.getWorkspace().stopEditing(true);
-
-            return observationID;
-
-        } catch (Exception e) {
-            gdb.getWorkspace().stopEditOperation();
-            gdb.getWorkspace().stopEditing(false);
-
-            LOGGER.severe("There was a problem while trying to insert new observation: \n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw e;
-        }
+    	// TODO: insert observation needs to be adjusted to new AQ e-Reporting data model
+    	
+    	throw new UnsupportedOperationException();
+    	
+//        LOGGER.info("Starting to add new observation");
+//
+//        try {
+//            gdb.getWorkspace().startEditing(true);
+//            gdb.getWorkspace().startEditOperation();
+//            
+//            LOGGER.info("Started editing workspace.");
+//            
+//            ITable observationFC = gdb.getWorkspace().openTable(Table.OBSERVATION);
+//            IRow newObservation = observationFC.createRow();
+//            LOGGER.info("New row created.");
+//            
+//            IFields fields = observationFC.getFields();
+//            for (int i = 0; i < fields.getFieldCount(); i++) {
+//                if (fields.getField(i).getName().equals(SubField.OBSERVATION_OFFERING)) {
+//                    newObservation.setValue(i, offeringID);
+//                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_END_TIME)) {
+//
+//                    // Date phenomenonTimeStatic = new Date();
+//                    // short year = 2012;
+//                    // short month = 8;
+//                    // short day = 16;
+//                    // short hour = 15;
+//                    // short minute = 45;
+//                    // short second = 0;
+//                    // phenomenonTimeStatic.setYear(year);
+//                    // phenomenonTimeStatic.setMonth(month);
+//                    // phenomenonTimeStatic.setDate(day);
+//                    // phenomenonTimeStatic.setHours(hour);
+//                    // phenomenonTimeStatic.setMinutes(minute);
+//                    // phenomenonTimeStatic.setSeconds(second);
+//                    // LOGGER.info("phenomenonTimeStatic to set: '" +
+//                    // phenomenonTimeStatic + "'");
+//                    // newObservation.setValue(i, phenomenonTimeStatic);
+//
+//                    LOGGER.info("phenomenonTime to set: '" + phenomenonTime + "'");
+//                    newObservation.setValue(i, phenomenonTime);
+//                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_PROPERTY)) {
+//                    newObservation.setValue(i, observedPropertyID);
+//                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_PROCEDURE)) {
+//                    newObservation.setValue(i, procedureID);
+//                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_FEATURE)) {
+//                    newObservation.setValue(i, featureID);
+//                } else if (fields.getField(i).getName().equals(SubField.OBSERVATION_NUMERIC_VALUE)) {
+//                    newObservation.setValue(i, result);
+//                }
+//            }
+//            LOGGER.info("New observation created.");
+//
+//            newObservation.store();
+//            LOGGER.info("New observation stored.");
+//
+//            int observationID = newObservation.getOID();
+//            LOGGER.info("New observation successfully added to DB: " + observationID);
+//
+//            gdb.getWorkspace().stopEditOperation();
+//            gdb.getWorkspace().stopEditing(true);
+//
+//            return observationID;
+//
+//        } catch (Exception e) {
+//            gdb.getWorkspace().stopEditOperation();
+//            gdb.getWorkspace().stopEditing(false);
+//
+//            LOGGER.severe("There was a problem while trying to insert new observation: \n" + ExceptionSupporter.createStringFromStackTrace(e));
+//            throw e;
+//        }
     }
     
     /**
@@ -132,17 +136,21 @@ public class InsertGdbForObservations {
      */
     protected int getObservationMaxID() throws AutomationException, IOException
     {
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-
-        queryDef.setTables(Table.OBSERVATION);
-
-        queryDef.setSubFields("MAX(" + SubField.OBSERVATION_OBJECTID + ")");
-
-        // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
-
-        IRow row = cursor.nextRow();
-
-        return (Integer) row.getValue(0);
+    	// TODO: insert observation needs to be adjusted to new AQ e-Reporting data model
+    	
+    	throw new UnsupportedOperationException();
+    	
+//        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+//
+//        queryDef.setTables(Table.OBSERVATION);
+//
+//        queryDef.setSubFields("MAX(" + SubField.OBSERVATION_OBJECTID + ")");
+//
+//        // evaluate the database query
+//        ICursor cursor = queryDef.evaluate();
+//
+//        IRow row = cursor.nextRow();
+//
+//        return (Integer) row.getValue(0);
     }
 }

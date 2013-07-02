@@ -22,7 +22,10 @@
  */
 package org.n52.sos;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.n52.util.CommonUtilities;
 
@@ -40,10 +43,28 @@ public class SosSoapTest {
 
         String url = "http://" + serverName + ":6080/arcgis/services/" + serviceName + "/MapServer/" + soapExt;
         
-        String query = CommonUtilities.readText(SosSoapTest.class.getResourceAsStream("soapTest.xml")); 
+        String query = readText(SosSoapTest.class.getResourceAsStream("soapTest.xml")); 
         
-        String result = CommonUtilities.readText(CommonUtilities.sendPostMessage(url, query));
+        String result = readText(CommonUtilities.sendPostMessage(url, query));
         
         System.out.println("result: " + result);
+    }
+    
+    private static String readText(InputStream in) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String line;
+        StringBuffer sb = new StringBuffer();
+        for (int i=0; (line = br.readLine()) != null; i++) {
+            
+            // if not first line --> append "\n"
+            if (i > 0) {
+                sb.append("\n");
+            }
+            
+            sb.append(line);
+        }
+        br.close();
+
+        return sb.toString();
     }
 }

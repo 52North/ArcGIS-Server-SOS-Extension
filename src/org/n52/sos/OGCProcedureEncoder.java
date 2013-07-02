@@ -26,12 +26,7 @@ package org.n52.sos;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.n52.sos.dataTypes.ContactDescription;
-import org.n52.sos.dataTypes.ObservedProperty;
 import org.n52.sos.dataTypes.Procedure;
-import org.n52.util.CommonUtilities;
-
-import com.esri.arcgis.geometry.IEnvelope;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -75,56 +70,61 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     }
     
     public String encodeProcedures(Collection<Procedure> procedureCollection, String responseTemplate, String procedureTemplate) throws IOException {
-        String allProcedures = "";
         
-        for (Procedure procedure : procedureCollection) {
-            
-            String procedureString = procedureTemplate;
-            
-            procedureString = procedureString.replace(PROCEDURE_ID, procedure.getId());
-            procedureString = procedureString.replace(PROCEDURE_NAME, procedure.getName());
-            if (procedure.getDescription() != null) {
-                procedureString = procedureString.replace(PROCEDURE_DESC, procedure.getDescription());
-            } else {
-                procedureString = procedureString.replace(PROCEDURE_DESC, "");
-            }
-            procedureString = procedureString.replace(PROCEDURE_APP, procedure.getIntendedApplication());
-            procedureString = procedureString.replace(PROCEDURE_TYPE, procedure.getSensorType());
-            
-            IEnvelope e = procedure.getObservedArea().getEnvelope();
-            procedureString = procedureString.replace(PROCEDURE_LOCATION_LOWER, e.getLowerLeft().getX() + " " + e.getLowerLeft().getY());
-            procedureString = procedureString.replace(PROCEDURE_LOCATION_UPPER, e.getUpperRight().getX() + " " + e.getUpperRight().getY());
-            
-            ContactDescription c = procedure.getContact();
-            procedureString = procedureString.replace(CONTACT_NAME, c.getIndividualName());
-            procedureString = procedureString.replace(CONTACT_POS, c.getPositionName());
-            procedureString = procedureString.replace(CONTACT_STREET, c.getDeliveryPoint());
-            procedureString = procedureString.replace(CONTACT_CITY, c.getCity());
-            procedureString = procedureString.replace(CONTACT_COUNTRY, c.getCountry());
-            procedureString = procedureString.replace(CONTACT_EMAIL, c.getElectronicMailAddress());
-            
-            ObservedProperty[] obsProps = procedure.getOutputs();
-            String outputsString = "";
-            for (int i = 0; i < obsProps.length; i++) {
-                if (obsProps[i].getDataType().equalsIgnoreCase("numeric")) {
-                    outputsString += "<output name=\"output-" + i + "\">";
-                    outputsString += "<swe:Quantity definition=\""+ obsProps[i].getDescription() +"\">";
-                    outputsString += "<swe:uom code=\"" + obsProps[i].getUnitOfMeasurement() +"\"/>";
-                    outputsString += "</swe:Quantity>";
-                    outputsString += "</output>";
-                }
-                else {
-                    throw new IllegalArgumentException("Output Data Type '" + obsProps[i].getDataType() + "' not yet supported.");
-                }
-            }
-            procedureString = procedureString.replace(PROCEDURE_OUTPUTS, outputsString);
-            
-            // add procedure to the allProcedures String
-            allProcedures += procedureString + "\n";
-        }
-        
-        responseTemplate = responseTemplate.replace(PROCEDURES, allProcedures);
-        
-        return responseTemplate;
+    	throw new UnsupportedOperationException();
+    	
+    	// TODO: adjust old encoding to new AQ e-Reporting schemas  
+    	
+//    	String allProcedures = "";
+//        
+//        for (Procedure procedure : procedureCollection) {
+//            
+//            String procedureString = procedureTemplate;
+//            
+//            procedureString = procedureString.replace(PROCEDURE_ID, procedure.getId());
+//            procedureString = procedureString.replace(PROCEDURE_NAME, procedure.getName());
+//            if (procedure.getDescription() != null) {
+//                procedureString = procedureString.replace(PROCEDURE_DESC, procedure.getDescription());
+//            } else {
+//                procedureString = procedureString.replace(PROCEDURE_DESC, "");
+//            }
+//            procedureString = procedureString.replace(PROCEDURE_APP, procedure.getIntendedApplication());
+//            procedureString = procedureString.replace(PROCEDURE_TYPE, procedure.getSensorType());
+//            
+//            IEnvelope e = procedure.getObservedArea().getEnvelope();
+//            procedureString = procedureString.replace(PROCEDURE_LOCATION_LOWER, e.getLowerLeft().getX() + " " + e.getLowerLeft().getY());
+//            procedureString = procedureString.replace(PROCEDURE_LOCATION_UPPER, e.getUpperRight().getX() + " " + e.getUpperRight().getY());
+//            
+//            ContactDescription c = procedure.getContact();
+//            procedureString = procedureString.replace(CONTACT_NAME, c.getIndividualName());
+//            procedureString = procedureString.replace(CONTACT_POS, c.getPositionName());
+//            procedureString = procedureString.replace(CONTACT_STREET, c.getDeliveryPoint());
+//            procedureString = procedureString.replace(CONTACT_CITY, c.getCity());
+//            procedureString = procedureString.replace(CONTACT_COUNTRY, c.getCountry());
+//            procedureString = procedureString.replace(CONTACT_EMAIL, c.getElectronicMailAddress());
+//            
+//            ObservedProperty[] obsProps = procedure.getOutputs();
+//            String outputsString = "";
+//            for (int i = 0; i < obsProps.length; i++) {
+//                if (obsProps[i].getDataType().equalsIgnoreCase("numeric")) {
+//                    outputsString += "<output name=\"output-" + i + "\">";
+//                    outputsString += "<swe:Quantity definition=\""+ obsProps[i].getDescription() +"\">";
+//                    outputsString += "<swe:uom code=\"" + obsProps[i].getUnitOfMeasurement() +"\"/>";
+//                    outputsString += "</swe:Quantity>";
+//                    outputsString += "</output>";
+//                }
+//                else {
+//                    throw new IllegalArgumentException("Output Data Type '" + obsProps[i].getDataType() + "' not yet supported.");
+//                }
+//            }
+//            procedureString = procedureString.replace(PROCEDURE_OUTPUTS, outputsString);
+//            
+//            // add procedure to the allProcedures String
+//            allProcedures += procedureString + "\n";
+//        }
+//        
+//        responseTemplate = responseTemplate.replace(PROCEDURES, allProcedures);
+//        
+//        return responseTemplate;
     }
 }
