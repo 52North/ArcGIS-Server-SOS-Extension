@@ -179,7 +179,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw e;
+            throw new IOException(e);
         }
      
         try {
@@ -187,7 +187,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             this.geoDB = new AccessGDB(this);
         } catch (Exception e) {
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw e;
+            throw new IOException(e);
         }
     }
     

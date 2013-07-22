@@ -138,7 +138,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
 
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw e;
+            throw new IOException(e);
         }
 
         try {
@@ -146,7 +146,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
             this.geoDB = new AccessGdbForAnalysis(this);
         } catch (Exception e) {
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw e;
+            throw new IOException(e);
         }
     }
 

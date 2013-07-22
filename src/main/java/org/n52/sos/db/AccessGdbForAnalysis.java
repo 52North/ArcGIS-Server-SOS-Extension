@@ -109,7 +109,7 @@ public class AccessGdbForAnalysis {
             }
         } catch (Exception e) {
             LOGGER.severe(e.getLocalizedMessage());
-            throw e;
+            throw new IOException(e);
         }
         
         return json;

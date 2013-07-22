@@ -82,7 +82,7 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
             observationTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream(observationTemplateFile));
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading the template: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw e;
+            throw new IOException(e);
         }
         
         Set<String> obsIdSet = idObsList.keySet();
