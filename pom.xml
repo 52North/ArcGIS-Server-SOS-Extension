@@ -15,6 +15,7 @@
 	<inceptionYear>2012</inceptionYear>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<arcobjects.version>10.1</arcobjects.version>
 		<arcobjects.local.location>C:/Program Files (x86)/ArcGIS/Desktop10.1/java/lib/arcobjects.jar</arcobjects.local.location>
 	</properties>
@@ -25,8 +26,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>

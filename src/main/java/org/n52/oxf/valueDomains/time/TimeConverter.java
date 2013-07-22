@@ -98,7 +98,7 @@ public class TimeConverter {
 
     /**
      * @param iso8601TimeStamp
-     *            an ISO 86ß1 conform time instnat following the format
+     *            an ISO 8601 conform time instnat following the format
      *            'yyyy-MM-ddTHH:mm:ss+HH:mm'.
      * @return the time zone offset as a String in format of e.g. '+02:00'
      */
