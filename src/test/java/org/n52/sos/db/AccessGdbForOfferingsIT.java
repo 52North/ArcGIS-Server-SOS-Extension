@@ -31,19 +31,19 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.Test;
-import org.n52.sos.EsriBaseTest;
 import org.n52.sos.JSONEncoder;
 import org.n52.sos.OGCCapabilitiesEncoder;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
+import org.n52.sos.it.EsriTestBase;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class AccessGdbForOfferingsTest extends EsriBaseTest {
+public class AccessGdbForOfferingsIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(AccessGdbForOfferingsTest.class.getName());
+    static Logger LOGGER = Logger.getLogger(AccessGdbForOfferingsIT.class.getName());
     
     @Test
     public void testGetObservationOfferings()
@@ -77,7 +77,7 @@ public class AccessGdbForOfferingsTest extends EsriBaseTest {
 
     public static void main(String[] args) throws Exception
     {
-        AccessGdbForOfferingsTest a = new AccessGdbForOfferingsTest();
+        AccessGdbForOfferingsIT a = new AccessGdbForOfferingsIT();
         a.setUp();
         a.testGetObservationOfferings();
     }

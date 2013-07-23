@@ -20,7 +20,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.it;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import org.n52.util.CommonUtilities;
  * @author Arne
  *
  */
-public class SosSoapTest {
+public class SosSoapIT {
 
     public static void main(String[] args) throws IOException {
         
@@ -43,7 +43,7 @@ public class SosSoapTest {
 
         String url = "http://" + serverName + ":6080/arcgis/services/" + serviceName + "/MapServer/" + soapExt;
         
-        String query = readText(SosSoapTest.class.getResourceAsStream("soapTest.xml")); 
+        String query = readText(SosSoapIT.class.getResourceAsStream("soapTest.xml")); 
         
         String result = readText(CommonUtilities.sendPostMessage(url, query));
         

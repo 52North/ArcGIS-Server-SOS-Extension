@@ -29,19 +29,19 @@ import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
-import org.n52.sos.EsriBaseTest;
 import org.n52.sos.JSONEncoder;
 import org.n52.sos.JSONObservationEncoder;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
+import org.n52.sos.it.EsriTestBase;
 
 import com.esri.arcgis.server.json.JSONObject;
 
 
-public class AccessObservationGDBTest extends EsriBaseTest {
+public class AccessObservationGDBIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(AccessObservationGDBTest.class.getName());
+    static Logger LOGGER = Logger.getLogger(AccessObservationGDBIT.class.getName());
     
     /**
      * Test method for {@link
@@ -300,7 +300,7 @@ public class AccessObservationGDBTest extends EsriBaseTest {
      */
     public static void main(String[] args) throws Exception
     {
-        AccessObservationGDBTest test = new AccessObservationGDBTest();
+        AccessObservationGDBIT test = new AccessObservationGDBIT();
         test.setUp();
         test.testGetFeatureOfInterest2();
     }

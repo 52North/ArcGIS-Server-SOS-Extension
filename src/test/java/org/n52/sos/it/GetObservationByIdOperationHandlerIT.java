@@ -20,9 +20,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.it;
 
 import org.junit.Test;
+import org.n52.sos.GetObservationByIDOperationHandler;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -30,9 +31,9 @@ import com.esri.arcgis.server.json.JSONObject;
  * @author Arne
  *
  */
-public class GetObservationOperationHandlerTest extends EsriBaseTest {
+public class GetObservationByIdOperationHandlerIT extends EsriTestBase {
     
-    private GetObservationOperationHandler getObsOpHandler;
+    private GetObservationByIDOperationHandler getObsByIDOpHandler;
     
     /**
      * @throws java.lang.Exception
@@ -40,27 +41,22 @@ public class GetObservationOperationHandlerTest extends EsriBaseTest {
     public void setUp() throws Exception
     {
         super.setUp();
-        getObsOpHandler = new GetObservationOperationHandler("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
+        getObsByIDOpHandler = new GetObservationByIDOperationHandler("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
     }
 
-    /**
-     * Test method for {@link org.n52.sos.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
-     */
     @Test
     public void testInvokeOGCOperation()
     {
         JSONObject inputObject = new JSONObject();
         String[] responseProperties = new String[0];
         
-        // init the JSONObject to simulate a GetObservation request:
         inputObject = inputObject.put("version", "2.0.0");
         inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "ES1865A,ES1863A");
+        inputObject = inputObject.put("request", "GetObservationByID");
+        inputObject = inputObject.put("observation", "1");
         
         try {
-            String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
+            String result = new String(getObsByIDOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
             
             System.out.println(result);
             
@@ -70,25 +66,20 @@ public class GetObservationOperationHandlerTest extends EsriBaseTest {
         }
     }
 
-    /**
-     * Test method for {@link org.n52.sos.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
-     */
     @Test
     public void testInvokeOGCOperation_RDF()
     {
         JSONObject inputObject = new JSONObject();
         String[] responseProperties = new String[0];
         
-        // init the JSONObject to simulate a GetObservation request:
         inputObject = inputObject.put("version", "2.0.0");
         inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "ES1865A,ES1863A");
+        inputObject = inputObject.put("request", "GetObservationByID");
+        inputObject = inputObject.put("observation", "1");
         inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
         
         try {
-            String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
+            String result = new String(getObsByIDOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
             
             System.out.println(result);
             

@@ -28,15 +28,15 @@ import java.util.logging.Logger;
 import org.junit.Test;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
-import org.n52.sos.EsriBaseTest;
+import org.n52.sos.it.EsriTestBase;
 
 /**
  * @author Arne
  *
  */
-public class InsertGdbForObservationsTest extends EsriBaseTest {
+public class InsertGdbForObservationsIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(AccessObservationGDBTest.class.getName());
+    static Logger LOGGER = Logger.getLogger(AccessObservationGDBIT.class.getName());
     
     
     /**

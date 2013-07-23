@@ -20,7 +20,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.it;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -38,9 +38,9 @@ import com.esri.arcgis.system.esriLicenseStatus;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class EsriBaseTest extends TestCase {
+public class EsriTestBase extends TestCase {
 
-    static Logger LOGGER = Logger.getLogger(EsriBaseTest.class.getName());
+    static Logger LOGGER = Logger.getLogger(EsriTestBase.class.getName());
     
     protected AoInitialize aoInit;
     

@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 import javax.activation.UnsupportedDataTypeException;
 
 import org.junit.Test;
-import org.n52.sos.EsriBaseTest;
+import org.n52.sos.db.SubField;
+import org.n52.sos.db.Table;
+import org.n52.sos.it.EsriTestBase;
 
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IDatasetName;
@@ -26,12 +28,12 @@ import com.esri.arcgis.interop.AutomationException;
  * @author Arne
  *
  */
-public class DbBaseTests extends EsriBaseTest {
+public class DbBaseIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(DbBaseTests.class.getName());
+    static Logger LOGGER = Logger.getLogger(DbBaseIT.class.getName());
 
     public static void main(String[] args) throws Exception {
-    	DbBaseTests test = new DbBaseTests();
+    	DbBaseIT test = new DbBaseIT();
 		test.setUp();
 		test.testConnection();
 	}

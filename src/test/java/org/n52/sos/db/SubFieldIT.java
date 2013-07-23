@@ -7,8 +7,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.n52.sos.db.AccessGDB;
+import org.n52.sos.db.SubField;
 
-public class SubFieldTest {
+public class SubFieldIT {
 
     private Properties props;
 
@@ -48,7 +50,7 @@ public class SubFieldTest {
 
     public static void main(String[] args) throws Exception
     {
-        SubFieldTest st = new SubFieldTest();
+        SubFieldIT st = new SubFieldIT();
         st.setUp();
         st.testInitSubfieldNames();
     }

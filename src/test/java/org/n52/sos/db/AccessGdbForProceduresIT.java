@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.Test;
-import org.n52.sos.EsriBaseTest;
+import org.n52.sos.it.EsriTestBase;
 
-public class AccessGdbForProceduresTest extends EsriBaseTest {
+public class AccessGdbForProceduresIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(AccessGdbForProceduresTest.class.getName());
+    static Logger LOGGER = Logger.getLogger(AccessGdbForProceduresIT.class.getName());
     
 
     @Test

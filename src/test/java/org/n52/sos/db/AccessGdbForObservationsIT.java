@@ -16,8 +16,9 @@ import org.junit.Test;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.sos.AQDObservationEncoder;
-import org.n52.sos.EsriBaseTest;
 import org.n52.sos.OGCObservationSWECommonEncoder;
+import org.n52.sos.db.SubField;
+import org.n52.sos.it.EsriTestBase;
 
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IDatasetName;
@@ -26,9 +27,9 @@ import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.interop.AutomationException;
 
-public class AccessGdbForObservationsTest extends EsriBaseTest {
+public class AccessGdbForObservationsIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(AccessGdbForObservationsTest.class.getName());
+    static Logger LOGGER = Logger.getLogger(AccessGdbForObservationsIT.class.getName());
     
     @Test
     public void testGetObservationsStringArray()
