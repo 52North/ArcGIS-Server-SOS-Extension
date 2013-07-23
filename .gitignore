@@ -12,3 +12,4 @@ bin/
 build/
 dist/
 /target
+/target
