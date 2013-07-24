@@ -7,13 +7,11 @@ import org.junit.Test;
 public class SOSExtTest {
 
     @Test
-    public void testGetSchema()
-    {
+    public void testGetSchema() {
         try {
             System.out.println(SOSExt.createSchema());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail();
+            fail(e.getMessage());
         }
     }
 

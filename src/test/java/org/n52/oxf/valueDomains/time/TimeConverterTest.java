@@ -22,24 +22,37 @@
  */
 package org.n52.oxf.valueDomains.time;
 
-import junit.framework.TestCase;
+import java.util.Date;
+
+import static org.hamcrest.CoreMatchers.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class TimeConverterTest extends TestCase {
+public class TimeConverterTest {
 
 
+	@Test
     public void testTimeZoneHandling() {
         
         String timeInstantLocal = "2011-10-16T01:00:00+02:00";
         String timeInstantUTC = "2011-10-15 23:00:00";
         
-        assertEquals(timeInstantUTC, TimeConverter.convertLocalToUTC(timeInstantLocal));
+        Assert.assertEquals(timeInstantUTC, TimeConverter.convertLocalToUTC(timeInstantLocal));
         
         String timeZoneOffset = TimeConverter.getTimeZoneOffset(timeInstantLocal);
-        assertEquals(timeInstantLocal, TimeConverter.convertUTCToLocal(timeInstantUTC, timeZoneOffset));
-        
+        Assert.assertEquals(timeInstantLocal, TimeConverter.convertUTCToLocal(timeInstantUTC, timeZoneOffset));
     }
+	
+	@Test
+	public void testTimePositionCreation() {
+		Date now = new Date(1374690253000L);
+		
+		ITimePosition result = TimeConverter.createTimePosition(now);
+		
+		Assert.assertThat(result.toString(), is(equalTo("24.7.2013 20:24:13.0+00:00")));
+	}
 }

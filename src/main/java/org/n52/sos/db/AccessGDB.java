@@ -25,17 +25,14 @@ package org.n52.sos.db;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
-import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.SOSExt;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ServiceDescription;
@@ -257,20 +254,7 @@ public class AccessGDB {
     {
         ITimePosition timePosition = null;
         if (startValue != null && startValue instanceof Date) {
-            GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime((Date) startValue);
-            // Problem: java.util.Date always sets the time zone to the
-            // local time
-            // zone, where the SOS is installed.
-            // Hence, we have to make it UTC:
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH) + 1;
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-            int second = calendar.get(Calendar.SECOND);
-            String startTimeAsISO8601 = TimeConverter.toISO8601(year, month, day, hour, minute, second, "+00:00");
-            timePosition = (ITimePosition) TimeFactory.createTime(startTimeAsISO8601);
+        	return TimeConverter.createTimePosition((Date) startValue);
         }
         return timePosition;
     }
