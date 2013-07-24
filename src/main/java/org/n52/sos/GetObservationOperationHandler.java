@@ -34,7 +34,16 @@ import com.esri.arcgis.server.json.JSONObject;
  */
 public class GetObservationOperationHandler extends OGCOperationRequestHandler {
     
-    public GetObservationOperationHandler(String urlSosExtension) {
+    private static final String VERSION_KEY = "version";
+	private static final String OFFERING_KEY = "offering";
+	private static final String FOI_KEY = "featureOfInterest";
+	private static final String OBSERVED_PROPERTY_KEY = "observedProperty";
+	private static final String PROCEDURE_KEY = "procedure";
+	private static final String SPATIAL_FILTER_KEY = "spatialFilter";
+	private static final String TEMPORAL_FILTER_KEY = "temporalFilter";
+	private static final String RESPONSE_FORMAT_KEY = "responseFormat";
+
+	public GetObservationOperationHandler(String urlSosExtension) {
         super(urlSosExtension);
         OPERATION_NAME = "GetObservation";
     }
@@ -50,66 +59,47 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
         
-        // keep track of the invokedURL (for possible RDF response):
-        String invokedURL = this.sosUrlExtension + "/GetObservation";
-        invokedURL += "?service=" + SERVICE;
-        invokedURL += "&request=" + OPERATION_NAME;
-        
         // check 'version' parameter:
-        checkMandatoryParameter(inputObject, "version", VERSION);
-        invokedURL += "&version=" + VERSION;
+        checkMandatoryParameter(inputObject, VERSION_KEY, VERSION);
         
         String[] offerings = null;
-        if (inputObject.has("offering")) {
-            offerings = inputObject.getString("offering").split(",");
-            
-            invokedURL += "&offering=" + inputObject.getString("offering");
+        if (inputObject.has(OFFERING_KEY)) {
+            offerings = inputObject.getString(OFFERING_KEY).split(",");
         }
         String[] featuresOfInterest = null;
-        if (inputObject.has("featureOfInterest")) {
-            featuresOfInterest = inputObject.getString("featureOfInterest").split(",");
-            
-            invokedURL += "&featureOfInterest=" + inputObject.getString("featureOfInterest");
+        if (inputObject.has(FOI_KEY)) {
+            featuresOfInterest = inputObject.getString(FOI_KEY).split(",");
         }
         String[] observedProperties = null;
-        if (inputObject.has("observedProperty")) {
-            observedProperties = inputObject.getString("observedProperty").split(",");
-            
-            invokedURL += "&observedProperty=" + inputObject.getString("observedProperty");
+        if (inputObject.has(OBSERVED_PROPERTY_KEY)) {
+            observedProperties = inputObject.getString(OBSERVED_PROPERTY_KEY).split(",");
         }
         String[] procedures = null;
-        if (inputObject.has("procedure")) {
-            procedures = inputObject.getString("procedure").split(",");
-            
-            invokedURL += "&procedure=" + inputObject.getString("procedure");
+        if (inputObject.has(PROCEDURE_KEY)) {
+            procedures = inputObject.getString(PROCEDURE_KEY).split(",");
         }
         String spatialFilter = null;
-        if (inputObject.has("spatialFilter")) {
-            String spatialFilterOGC = inputObject.getString("spatialFilter");
+        if (inputObject.has(SPATIAL_FILTER_KEY)) {
+            String spatialFilterOGC = inputObject.getString(SPATIAL_FILTER_KEY);
             spatialFilter = convertSpatialFilterFromOGCtoESRI(spatialFilterOGC);
-            
-            invokedURL += "&spatialFilter=" + inputObject.getString("spatialFilter");
         }
         String temporalFilter = null;
-        if (inputObject.has("temporalFilter")) {
-            String temporalFilterOGC = inputObject.getString("temporalFilter");
+        if (inputObject.has(TEMPORAL_FILTER_KEY)) {
+            String temporalFilterOGC = inputObject.getString(TEMPORAL_FILTER_KEY);
             temporalFilter = convertTemporalFilterFromOGCtoESRI(temporalFilterOGC);
-            
-            invokedURL += "&temporalFilter=" + inputObject.getString("temporalFilter");
         }
         
         String responseFormat = null;
-        if (inputObject.has("responseFormat")) {
-            responseFormat = inputObject.getString("responseFormat");
-            
-            invokedURL += "&responseFormat=" + inputObject.getString("responseFormat");
+        if (inputObject.has(RESPONSE_FORMAT_KEY)) {
+            responseFormat = inputObject.getString(RESPONSE_FORMAT_KEY);
         }
         
-        String result = "";
+        String result;
            
         Map<String, MultiValueObservation> observationCollection = geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, null);
         
         if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_RDF)) {
+        	constructInvokedURL(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, responseFormat);
             throw new UnsupportedOperationException("RDF not yet supported");
 //            result = new RDFEncoder(sosUrlExtension).getObservationCollectionTriples(observationCollection, invokedURL);
         }
@@ -128,7 +118,58 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         return result.getBytes("utf-8");
     }
 
-    public static void main(String[] args)
+    private String constructInvokedURL(String[] offerings,
+			String[] featuresOfInterest, String[] observedProperties,
+			String[] procedures, String spatialFilter, String temporalFilter, String responseFormat) {
+        StringBuilder invokedURL = new StringBuilder(this.sosUrlExtension);
+        invokedURL.append("/GetObservation");
+        invokedURL.append("?service=").append(SERVICE);
+        invokedURL.append("&request=").append(OPERATION_NAME);
+        
+        invokedURL.append("&version=").append(VERSION);
+        
+        if (offerings != null) {
+            invokedURL.append("&offering=").append(createCommaSeperatedList(offerings));
+        }
+        if (featuresOfInterest != null) {
+            invokedURL.append("&featureOfInterest=").append(createCommaSeperatedList(featuresOfInterest));
+        }
+        if (observedProperties != null) {
+            invokedURL.append("&observedProperty=").append(createCommaSeperatedList(observedProperties));
+        }
+        if (procedures != null) {
+            invokedURL.append("&procedure=").append(createCommaSeperatedList(procedures));
+        }
+        if (spatialFilter != null) {
+            invokedURL.append("&spatialFilter=").append(spatialFilter);
+        }
+        if (temporalFilter != null) {
+            invokedURL.append("&temporalFilter=").append(temporalFilter);
+        }
+        
+        if (responseFormat != null) {
+            invokedURL.append("&responseFormat=").append(responseFormat);
+        }
+        
+        return invokedURL.toString();
+	}
+
+	private String createCommaSeperatedList(String[] offerings) {
+		StringBuilder sb = new StringBuilder(offerings[0]);
+		
+		if (offerings.length == 1) return sb.toString();
+		
+		for (int i = 1; i < offerings.length-1; i++) {
+			sb.append(offerings[i]);
+			sb.append(",");
+		}
+		
+		sb.append(offerings[offerings.length-1]);
+		
+		return sb.toString();
+	}
+
+	public static void main(String[] args)
     {
         String[] offerings = new String[]{"o1", "o2"};
     

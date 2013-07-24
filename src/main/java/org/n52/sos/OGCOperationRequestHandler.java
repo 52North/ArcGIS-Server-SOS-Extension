@@ -23,6 +23,7 @@
 
 package org.n52.sos;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.n52.oxf.valueDomains.time.ITime;
@@ -30,7 +31,6 @@ import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.db.AccessGDB;
-import org.n52.util.logging.Log;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -39,7 +39,10 @@ import com.esri.arcgis.server.json.JSONObject;
  */
 public class OGCOperationRequestHandler {
 
-    protected Logger LOGGER = Logger.getLogger(OGCOperationRequestHandler.class.getName());
+    private static final String SERVICE_KEY = "service";
+	private static final String REQUEST_KEY = "request";
+
+	protected static Logger LOGGER = Logger.getLogger(OGCOperationRequestHandler.class.getName());
     
     protected static String SERVICE = "SOS";
 
@@ -56,7 +59,8 @@ public class OGCOperationRequestHandler {
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
             String[] responseProperties) throws Exception
     {
-        LOGGER.info("Start " + OPERATION_NAME + " query.");
+    	if (LOGGER.isLoggable(Level.INFO))
+    		LOGGER.info("Start " + OPERATION_NAME + " query.");
         
         responseProperties = new String[]{
                 "{\"Content-Type\" : \"text/xml\"}",
@@ -67,10 +71,10 @@ public class OGCOperationRequestHandler {
         }
         
         // check 'service' parameter:
-        checkMandatoryParameter(inputObject, "service", SERVICE);
+        checkMandatoryParameter(inputObject, SERVICE_KEY, SERVICE);
         
         // check 'request' parameter:
-        checkMandatoryParameter(inputObject, "request", OPERATION_NAME);
+        checkMandatoryParameter(inputObject, REQUEST_KEY, OPERATION_NAME);
         
         return null;
     }

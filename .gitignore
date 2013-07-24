@@ -12,4 +12,4 @@ bin/
 build/
 dist/
 /target
-/target
+performance-test.csv

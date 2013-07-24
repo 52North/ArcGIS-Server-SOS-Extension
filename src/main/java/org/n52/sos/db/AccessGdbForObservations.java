@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.n52.gml.Identifier;
@@ -43,8 +44,6 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.oxf.valueDomains.time.TimePosition;
 import org.n52.sos.Constants;
-import org.n52.util.CommonUtilities;
-import org.n52.util.logging.Log;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
@@ -254,7 +253,8 @@ public class AccessGdbForObservations {
         queryDef.setWhereClause(whereClause.append(whereClauseParameterAppend).toString());
 
         // Log the query clause
-        LOGGER.info("Where clause := " + queryDef.getWhereClause());
+        if (LOGGER.isLoggable(Level.INFO))
+        	LOGGER.info("Where clause := " + queryDef.getWhereClause());
 
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
