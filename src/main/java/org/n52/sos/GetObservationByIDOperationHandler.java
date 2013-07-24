@@ -24,7 +24,6 @@ package org.n52.sos;
 
 import java.util.Map;
 
-import org.n52.om.observation.AbstractObservation;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.sos.db.AccessGDB;
 

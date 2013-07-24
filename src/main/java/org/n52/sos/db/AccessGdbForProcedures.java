@@ -26,21 +26,14 @@ package org.n52.sos.db;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.n52.sos.dataTypes.ContactDescription;
-import org.n52.sos.dataTypes.ObservedProperty;
 import org.n52.sos.dataTypes.Procedure;
-import org.n52.util.logging.Log;
-
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
-import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.Multipoint;
 import com.esri.arcgis.interop.AutomationException;
 
 /**

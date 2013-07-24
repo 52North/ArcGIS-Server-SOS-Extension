@@ -26,7 +26,6 @@ package org.n52.sos;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -36,8 +35,6 @@ import org.n52.sos.dataTypes.ServiceDescription;
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class OGCCapabilitiesEncoder extends AbstractEncoder {
-
-    private static Logger LOGGER = Logger.getLogger(OGCCapabilitiesEncoder.class.getName());
 
     
     /*
@@ -100,8 +97,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         StringBuilder allOfferings = new StringBuilder();
         StringBuilder templateOffering = new StringBuilder(readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml")));
         
-        int j=0;
-        for (Iterator iterator = obsOfferings.iterator(); iterator.hasNext();) {
+        for (Iterator<ObservationOffering> iterator = obsOfferings.iterator(); iterator.hasNext();) {
             //LOGGER.info("Offering: " + j++);
 
             StringBuilder offering = templateOffering;

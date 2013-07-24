@@ -23,14 +23,7 @@
 
 package org.n52.sos;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
-
-import org.n52.om.observation.MultiValueObservation;
-import org.n52.om.result.MeasureResult;
-import org.n52.util.CommonUtilities;
 
 /**
  * Overrides the {@link OGCObservationSWECommonEncoder} and uses AQD specific templates.

@@ -31,11 +31,8 @@ import java.util.logging.Logger;
 import org.n52.om.sampling.Feature;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
-import org.n52.sos.dataTypes.ObservedProperty;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
-import org.n52.util.logging.Log;
-
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONArray;
 import com.esri.arcgis.server.json.JSONException;

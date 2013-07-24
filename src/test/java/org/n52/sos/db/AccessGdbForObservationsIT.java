@@ -1,31 +1,18 @@
 package org.n52.sos.db;
 
-import static org.junit.Assert.fail;
-
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.sos.AQDObservationEncoder;
-import org.n52.sos.OGCObservationSWECommonEncoder;
 import org.n52.sos.db.SubField;
 import org.n52.sos.it.EsriTestBase;
-
-import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IDatasetName;
-import com.esri.arcgis.geodatabase.IEnumDatasetName;
-import com.esri.arcgis.geodatabase.IQueryDef;
-import com.esri.arcgis.geodatabase.esriDatasetType;
-import com.esri.arcgis.interop.AutomationException;
 
 public class AccessGdbForObservationsIT extends EsriTestBase {
 

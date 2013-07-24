@@ -24,25 +24,13 @@
 package org.n52.sos.db;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.n52.gml.Identifier;
-import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
-import org.n52.sos.Constants;
-import org.n52.util.logging.Log;
-
 import com.esri.arcgis.geodatabase.Fields;
-import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
-import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -52,10 +40,10 @@ public class AccessGdbForFeatures {
     
     static Logger LOGGER = Logger.getLogger(AccessGdbForFeatures.class.getName());
 
-    private AccessGDB gdb;
 
     public AccessGdbForFeatures(AccessGDB accessGDB) {
-        this.gdb = accessGDB;
+    	//TODO: never used?
+//        this.gdb = accessGDB;
     }
     
     /**

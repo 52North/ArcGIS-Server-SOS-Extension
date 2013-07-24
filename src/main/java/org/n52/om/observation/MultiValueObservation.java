@@ -23,9 +23,7 @@
 package org.n52.om.observation;
 
 import org.n52.gml.Identifier;
-import org.n52.om.result.IResult;
 import org.n52.om.result.MultiMeasureResult;
-import org.n52.om.sampling.Feature;
 import org.n52.oxf.valueDomains.time.ITime;
 
 /**

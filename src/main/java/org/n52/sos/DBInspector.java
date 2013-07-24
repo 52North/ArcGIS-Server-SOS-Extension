@@ -27,12 +27,9 @@
 package org.n52.sos;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.n52.sos.dataTypes.ObservationOffering;
-import org.n52.sos.db.AccessGDB;
 import org.n52.sos.db.AccessGdbForAnalysis;
 import org.n52.util.ExceptionSupporter;
 

@@ -33,17 +33,12 @@ import java.util.logging.Logger;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimePeriod;
 import org.n52.sos.dataTypes.ObservationOffering;
-import org.n52.sos.dataTypes.ObservedProperty;
-import org.n52.util.CommonUtilities;
-import org.n52.util.logging.Log;
-
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.interop.AutomationException;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>

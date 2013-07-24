@@ -56,7 +56,7 @@ public class AccessGdbForOfferingsIT extends EsriTestBase {
             
             LOGGER.info("Offerings in JSON: " + JSONEncoder.encodeObservationOfferings(offerings).toString());
             
-            List<String> procedureIDs = new ArrayList();
+            List<String> procedureIDs = new ArrayList<String>();
             procedureIDs.add("procedureID");
             ContactDescription serviceContact = new ContactDescription("", "", "", "", "", "", "", "", "", "");
             ServiceDescription serviceDescription = new ServiceDescription("title", "description", new String[]{"keyword"}, "providerName", "providerSite", new ContactDescription[]{serviceContact}, procedureIDs); 

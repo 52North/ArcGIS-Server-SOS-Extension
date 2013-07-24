@@ -22,11 +22,6 @@
  */
 package org.n52.sos;
 
-import java.util.List;
-
-import org.n52.om.observation.AbstractObservation;
-import org.n52.om.result.IResult;
-
 /**
  * @author Arne
  */

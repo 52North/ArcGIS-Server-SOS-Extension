@@ -40,7 +40,6 @@ import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONObject;
-import com.sun.corba.se.pept.encoding.InputObject;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -161,7 +160,7 @@ public class AccessGdbForAnalysis {
             
             while (dataset != null) {
                 
-                int typeID = dataset.getType();
+//                int typeID = dataset.getType();
                 
 //                if (typeID == esriDatasetType.esriDTTable) {
 //                    ITable table = this.workspace.openTable(dataset.getName());

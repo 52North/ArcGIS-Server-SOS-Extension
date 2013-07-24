@@ -26,14 +26,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import org.n52.util.ExceptionSupporter;
-import org.n52.util.logging.Log;
-
-import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IFields;
-import com.esri.arcgis.geodatabase.IQueryDef;
-import com.esri.arcgis.geodatabase.IRow;
-import com.esri.arcgis.geodatabase.ITable;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -43,10 +35,10 @@ public class InsertGdbForObservations {
 
     static Logger LOGGER = Logger.getLogger(InsertGdbForObservations.class.getName());
 
-    private AccessGDB gdb;
 
     public InsertGdbForObservations(AccessGDB accessGDB) {
-        this.gdb = accessGDB;
+    	//TODO: never used?
+//        this.gdb = accessGDB;
     }
     
     public int insertObservation(int offeringID,

@@ -28,8 +28,6 @@ import java.util.Collection;
 
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
-import org.n52.util.CommonUtilities;
-
 import com.esri.arcgis.geometry.Point;
 
 /**

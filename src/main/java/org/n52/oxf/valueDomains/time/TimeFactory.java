@@ -25,9 +25,6 @@ package org.n52.oxf.valueDomains.time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
-
-import org.n52.sos.JSONEncoder;
 
 /**
  * Creates an appropriate ITime object, (--> TimePeriod or TimePosition)
