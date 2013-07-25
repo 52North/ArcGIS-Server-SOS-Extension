@@ -38,6 +38,14 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -110,35 +118,6 @@
 									<version>${arcobjects.version}</version>
 									<file>${arcobjects.local.location}</file>
 									<packaging>jar</packaging>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>junit-tests</id>
-			<activation>
-				<property>
-					<name>!disable-junit-tests</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>junit-scope-test</id>
-								<phase>test</phase>
-								<goals>
-									<goal>test</goal>
-								</goals>
-								<configuration>
-									<excludes>
-										<exclude>**/*IT.java</exclude>
-									</excludes>
 								</configuration>
 							</execution>
 						</executions>

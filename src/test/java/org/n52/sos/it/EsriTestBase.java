@@ -25,8 +25,7 @@ package org.n52.sos.it;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
-
+import org.junit.Assert;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.interop.AutomationException;
@@ -38,7 +37,7 @@ import com.esri.arcgis.system.esriLicenseStatus;
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class EsriTestBase extends TestCase {
+public class EsriTestBase {
 
     static Logger LOGGER = Logger.getLogger(EsriTestBase.class.getName());
     
@@ -103,4 +102,8 @@ public class EsriTestBase extends TestCase {
             throw new IOException("Could not initialize a license. Exiting application.");
         }
     }
+    
+    protected void fail() {
+    	Assert.fail();
+	}
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.oxf.valueDomains.time.ITimePosition;
@@ -31,7 +32,8 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
         }
     }
     
-    @Test
+
+	@Test
     public void testGetObservations()
     {
         try {
@@ -66,25 +68,25 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
         String temporalFilter = "equals:2011-12-04T15:45:30+04:00";
         String expectedTemporalClause = SubField.VALUE_DATETIME_END + " = '2011-12-04 11:45:30'";
         String temporalClause = gdb.getObservationAccess().createTemporalClauseSDE(temporalFilter);
-        assertEquals(expectedTemporalClause, temporalClause);
+        Assert.assertEquals(expectedTemporalClause, temporalClause);
         
         // TEST: after:yyyy-MM-ddTHH:mm:ss+HH:mm<br>
         temporalFilter = "after:2011-12-04T15:45:30+04:00";
         expectedTemporalClause = SubField.VALUE_DATETIME_END + " > '2011-12-04 11:45:30'";
         temporalClause = gdb.getObservationAccess().createTemporalClauseSDE(temporalFilter);
-        assertEquals(expectedTemporalClause, temporalClause);
+        Assert.assertEquals(expectedTemporalClause, temporalClause);
         
         // TEST: before:yyyy-MM-ddTHH:mm:ss+HH:mm<br>
         temporalFilter = "before:2011-12-04T15:45:30+04:00";
         expectedTemporalClause = SubField.VALUE_DATETIME_END + " < '2011-12-04 11:45:30'";
         temporalClause = gdb.getObservationAccess().createTemporalClauseSDE(temporalFilter);
-        assertEquals(expectedTemporalClause, temporalClause);
+        Assert.assertEquals(expectedTemporalClause, temporalClause);
         
         // TEST: during:yyyy-MM-ddTHH:mm:ss+HH:mm,yyyy-MM-dd HH:mm:ss+HH:mm
         temporalFilter = "during:2011-12-04T15:45:30+04:00,2011-12-04T15:45:30+04:00";
         expectedTemporalClause = SubField.VALUE_DATETIME_END + " BETWEEN '2011-12-04 11:45:30' AND '2011-12-04 11:45:30'";
         temporalClause = gdb.getObservationAccess().createTemporalClauseSDE(temporalFilter);
-        assertEquals(expectedTemporalClause, temporalClause);
+        Assert.assertEquals(expectedTemporalClause, temporalClause);
         
         // TEST: last:milliseconds,+HH:mm
         // cannot geoDBQuerier this, since there is a System.currentTimeMillis() call in the method.
@@ -100,7 +102,7 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
             
             ITimePosition timePos = gdb.getObservationAccess().createTimeFromDate(date, temporalFilter);
             
-            assertEquals("2011-12-04T15:45:30+04:00", timePos.toISO8601Format());
+            Assert.assertEquals("2011-12-04T15:45:30+04:00", timePos.toISO8601Format());
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -108,8 +110,8 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
     }
     
     public void testExtractTemporalOperandAfterKeyWord(){
-        assertEquals("2011-12-04T15:45:30+04:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("equals:2011-12-04T15:45:30+04:00"));
-        assertEquals("2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("during:2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00"));
-        assertEquals("100,+02:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("last:100,+02:00"));
+    	Assert.assertEquals("2011-12-04T15:45:30+04:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("equals:2011-12-04T15:45:30+04:00"));
+    	Assert.assertEquals("2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("during:2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00"));
+    	Assert.assertEquals("100,+02:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("last:100,+02:00"));
     }
 }

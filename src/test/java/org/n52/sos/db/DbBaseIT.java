@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.activation.UnsupportedDataTypeException;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.n52.sos.db.SubField;
 import org.n52.sos.db.Table;
@@ -79,7 +80,7 @@ public class DbBaseIT extends EsriTestBase {
                     fail();
                 } else {
                     LOGGER.info("Checking if table '" + field.getName() + "' with value '" + fieldName + "' is present in DB.");
-                    assertTrue(checkPresenceOfTable(fieldName));
+                    Assert.assertTrue(checkPresenceOfTable(fieldName));
                 }
             }
         } catch (Exception e) {
@@ -130,7 +131,7 @@ public class DbBaseIT extends EsriTestBase {
                     fail();
                 } else {
                     LOGGER.info("Checking if subfield '" + field.getName() + "' with value '" + fieldName + "' is present in DB.");
-                    assertTrue(checkPresenceOfSubfield(fieldName));
+                    Assert.assertTrue(checkPresenceOfSubfield(fieldName));
                 }
             }
         } catch (Exception e) {
