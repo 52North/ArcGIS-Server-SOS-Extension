@@ -20,11 +20,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.handler;
 
 import java.io.IOException;
 import java.util.Collection;
 
+import org.n52.sos.OGCOperationRequestHandler;
+import org.n52.sos.OGCProcedureEncoder;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGDB;
 
@@ -35,12 +37,14 @@ import com.esri.arcgis.server.json.JSONObject;
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
+	
+	private static final String DESCRIBE_SENSOR_OPERATION_NAME = "DescribeSensor";
 
     protected String PROCEDURE_DESC_FORMAT_20  = "http://www.opengis.net/sensorML/2.0";
     protected String PROCEDURE_DESC_FORMAT_101 = "http://www.opengis.net/sensorML/1.0.1";
     
-    public DescribeSensorOperationHandler(String urlSosExtension) {
-        super(urlSosExtension);
+    public DescribeSensorOperationHandler() {
+        super();
         OPERATION_NAME = "DescribeSensor";
     }
 
@@ -107,5 +111,9 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
         
         return result.getBytes("utf-8");
     }
+
+	protected String getOperationName() {
+		return DESCRIBE_SENSOR_OPERATION_NAME;
+	}
 
 }

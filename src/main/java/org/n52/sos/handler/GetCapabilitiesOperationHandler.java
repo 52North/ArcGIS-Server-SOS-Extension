@@ -20,10 +20,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.handler;
 
 import java.util.Collection;
 
+import org.n52.sos.OGCCapabilitiesEncoder;
+import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
@@ -34,9 +36,11 @@ import com.esri.arcgis.server.json.JSONObject;
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler {
+	
+	private static final String GET_CAPABILITIES_OPERATION_NAME = "GetCapabilities";
 
-    public GetCapabilitiesOperationHandler(String urlSosExtension) {
-        super(urlSosExtension);
+    public GetCapabilitiesOperationHandler() {
+        super();
         OPERATION_NAME = "GetCapabilities";
     }
     
@@ -63,6 +67,11 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
         // sending the Capabilities document:
         LOGGER.info("Returning capabilities document.");
         return capabilitiesDocument.getBytes("utf-8");
-    } 
+    }
+
+	@Override
+	protected String getOperationName() {
+		return GET_CAPABILITIES_OPERATION_NAME;
+	} 
     
 }

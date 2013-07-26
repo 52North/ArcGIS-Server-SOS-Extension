@@ -20,11 +20,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.handler;
 
 import java.util.Collection;
 
 import org.n52.om.sampling.Feature;
+import org.n52.sos.OGCFeatureEncoder;
+import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -34,8 +36,10 @@ import com.esri.arcgis.server.json.JSONObject;
  */
 public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHandler {
 
-    public GetFeatureOfInterestOperationHandler(String urlSosExtension) {
-        super(urlSosExtension);
+	private static final String GET_FOI_OPERATION_NAME = "GetFeatureOfInterest";
+	
+    public GetFeatureOfInterestOperationHandler() {
+        super();
         OPERATION_NAME = "GetFeatureOfInterest";
     }
 
@@ -76,5 +80,10 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
         
         return result.getBytes("utf-8");
     }
+
+	@Override
+	protected String getOperationName() {
+		return GET_FOI_OPERATION_NAME;
+	}
 
 }

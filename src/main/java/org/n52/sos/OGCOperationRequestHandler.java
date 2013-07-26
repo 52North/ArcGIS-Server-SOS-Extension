@@ -31,16 +31,18 @@ import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.handler.OperationRequestHandler;
 
 import com.esri.arcgis.server.json.JSONObject;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class OGCOperationRequestHandler {
+public abstract class OGCOperationRequestHandler implements OperationRequestHandler {
 
     private static final String SERVICE_KEY = "service";
 	private static final String REQUEST_KEY = "request";
+	private static final String DEFAULT_RESPONSE_PROPERTIES = "{ \"Content-Disposition\":\"inline; filename=\\\"ogc-sos-response.xml\\\"\", \"Content-Type\":\"application/xml\" }";
 
 	protected static Logger LOGGER = Logger.getLogger(OGCOperationRequestHandler.class.getName());
     
@@ -52,8 +54,13 @@ public class OGCOperationRequestHandler {
 
     protected String sosUrlExtension;
     
-    public OGCOperationRequestHandler(String urlSosExtension) {
-        this.sosUrlExtension = urlSosExtension;
+    
+    public OGCOperationRequestHandler() {
+    }
+    
+    @Override
+    public void setSosUrlExtension(String urlSosExtension) {
+    	this.sosUrlExtension = urlSosExtension;
     }
 
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
@@ -62,9 +69,9 @@ public class OGCOperationRequestHandler {
     	if (LOGGER.isLoggable(Level.INFO))
     		LOGGER.info("Start " + OPERATION_NAME + " query.");
         
-        responseProperties = new String[]{
-                "{\"Content-Type\" : \"text/xml\"}",
-                "{\"Content-Disposition\" : inline; filename=\"ogc-sos-response.xml\"}"};
+    	if (responseProperties == null) responseProperties = new String[1];
+    	
+        responseProperties[0] = DEFAULT_RESPONSE_PROPERTIES;
         
         if (inputObject == null) {
             throw new IllegalArgumentException("Error, no parameters specified.");
@@ -198,13 +205,20 @@ public class OGCOperationRequestHandler {
         return result;
     }
     
+	@Override
+	public boolean canHandle(String operationName) {
+		return operationName.equalsIgnoreCase(getOperationName());
+	}
     
-    public static void main(String[] args)
+    protected abstract String getOperationName();
+
+	public static void main(String[] args)
     {
         String timeOGC1 = "2011-10-18T10:00/2011-10-19T10:00";
         System.out.println(convertTemporalFilterFromOGCtoESRI(timeOGC1));
         
         String timeOGC2 = "2011-10-18T00:00";
         System.out.println(convertTemporalFilterFromOGCtoESRI(timeOGC2));
+        System.out.println(DEFAULT_RESPONSE_PROPERTIES);
     }
 }

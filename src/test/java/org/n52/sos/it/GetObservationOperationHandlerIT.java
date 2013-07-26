@@ -23,7 +23,7 @@
 package org.n52.sos.it;
 
 import org.junit.Test;
-import org.n52.sos.GetObservationOperationHandler;
+import org.n52.sos.handler.GetObservationOperationHandler;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -41,11 +41,12 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     public void setUp() throws Exception
     {
         super.setUp();
-        getObsOpHandler = new GetObservationOperationHandler("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
+        getObsOpHandler = new GetObservationOperationHandler();
+        getObsOpHandler.setSosUrlExtension("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
     }
 
     /**
-     * Test method for {@link org.n52.sos.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
+     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
      */
     @Test
     public void testInvokeOGCOperation()
@@ -72,7 +73,7 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     }
 
     /**
-     * Test method for {@link org.n52.sos.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
+     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
      */
     @Test
     public void testInvokeOGCOperation_RDF()

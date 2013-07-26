@@ -23,7 +23,7 @@
 package org.n52.sos.it;
 
 import org.junit.Test;
-import org.n52.sos.GetObservationByIDOperationHandler;
+import org.n52.sos.handler.GetObservationByIDOperationHandler;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -41,7 +41,8 @@ public class GetObservationByIdOperationHandlerIT extends EsriTestBase {
     public void setUp() throws Exception
     {
         super.setUp();
-        getObsByIDOpHandler = new GetObservationByIDOperationHandler("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
+        getObsByIDOpHandler = new GetObservationByIDOperationHandler();
+        getObsByIDOpHandler.setSosUrlExtension("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
     }
 
     @Test

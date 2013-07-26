@@ -38,7 +38,9 @@ import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
+import org.n52.util.SlimServiceLoader;
 
 import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.interop.AutomationException;
@@ -93,6 +95,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     private String sosContactPersonPostalCode;
     private String sosContactPersonCountry;
     private String sosContactPersonEmail;
+
+	private Collection<OperationRequestHandler> operationHandlers;
     
     
     /**
@@ -117,10 +121,22 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         
         this.mapServerDataAccess = (IMapServerDataAccess) soh.getServerObject();
         
+        initializeOperationHandlers();
+        
         LOGGER.info(this.getClass().getName() + " initialized.");
     }
 
-    /**
+    private void initializeOperationHandlers() {
+    	SlimServiceLoader<OperationRequestHandler> loader = SlimServiceLoader.load(OperationRequestHandler.class);
+    	
+    	this.operationHandlers = loader.implementations();
+    	
+    	for (OperationRequestHandler h : this.operationHandlers) {
+			h.setSosUrlExtension(this.urlSosExtension);
+		}
+	}
+
+	/**
      * shutdown() is called once when the Server Object's context is being shut
      * down and is about to go away.
      */
@@ -391,33 +407,12 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
                     return invokeProcedureQueryOperation(inputObject);
                 }
                 
-                // handle: /GetCapabilities
-                else if (operationName.equalsIgnoreCase("GetCapabilities")) {
-                    return new GetCapabilitiesOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-                }
-
-                // handle: /GetObservation
-                else if (operationName.equalsIgnoreCase("GetObservation")) {
-                    return new GetObservationOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-                }
-                
-                // handle: /GetObservationByID
-                else if (operationName.equalsIgnoreCase("GetObservationByID")) {
-                    return new GetObservationByIDOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-                }
-                
-                // handle: /DescribeSensor
-                else if (operationName.equalsIgnoreCase("DescribeSensor")) {
-                    return new DescribeSensorOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-                }
-                
-                // handle: /GetFeatureOfInterest
-                else if (operationName.equalsIgnoreCase("GetFeatureOfInterest")) {
-                    return new GetFeatureOfInterestOperationHandler(this.urlSosExtension).invokeOGCOperation(geoDB, inputObject, responseProperties);
-                }
                 else {
-                    throw new Exception("Operation '" + operationName + "' on resource '" + resourceName + "' not supported.");
+                	OperationRequestHandler handler = resolveHandler(operationName);
+                	
+               		return handler.invokeOGCOperation(geoDB, inputObject, responseProperties);
                 }
+                
             }
         } catch (Exception e) {
             LOGGER.severe("Error while handle REST request: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
@@ -428,7 +423,17 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     }
 
     
-    /*************************************************************************************
+    private OperationRequestHandler resolveHandler(String operationName) throws Exception {
+    	for (OperationRequestHandler h : this.operationHandlers) {
+			if (h.canHandle(operationName)) {
+				return h;
+			}
+		}
+    	
+    	throw new Exception("Operation '" + operationName + "' not supported on this resource.");
+    }
+
+	/*************************************************************************************
      * Private, supporting & helper methods:
      *************************************************************************************/
 

@@ -20,11 +20,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.handler;
 
 import java.util.Map;
 
 import org.n52.om.observation.MultiValueObservation;
+import org.n52.sos.AQDObservationEncoder;
+import org.n52.sos.Constants;
+import org.n52.sos.OGCObservationSWECommonEncoder;
+import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -33,6 +37,8 @@ import com.esri.arcgis.server.json.JSONObject;
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class GetObservationOperationHandler extends OGCOperationRequestHandler {
+	
+	private static final String GET_OBSERVATION_OPERATION_NAME = "GetObservation";
     
     private static final String VERSION_KEY = "version";
 	private static final String OFFERING_KEY = "offering";
@@ -43,8 +49,8 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 	private static final String TEMPORAL_FILTER_KEY = "temporalFilter";
 	private static final String RESPONSE_FORMAT_KEY = "responseFormat";
 
-	public GetObservationOperationHandler(String urlSosExtension) {
-        super(urlSosExtension);
+	public GetObservationOperationHandler() {
+        super();
         OPERATION_NAME = "GetObservation";
     }
 
@@ -181,4 +187,9 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             System.out.println(offeringsNew[offeringIndex]);
         }
     }
+
+	@Override
+	protected String getOperationName() {
+		return GET_OBSERVATION_OPERATION_NAME;
+	}
 }
