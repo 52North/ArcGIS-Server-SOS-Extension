@@ -45,7 +45,6 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
     
     public DescribeSensorOperationHandler() {
         super();
-        OPERATION_NAME = "DescribeSensor";
     }
 
     /**

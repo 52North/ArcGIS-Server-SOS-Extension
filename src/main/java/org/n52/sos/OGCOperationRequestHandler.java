@@ -50,8 +50,6 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
 
     protected static String VERSION = "2.0.0";
     
-    protected static String OPERATION_NAME;
-
     protected String sosUrlExtension;
     
     
@@ -67,7 +65,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
             String[] responseProperties) throws Exception
     {
     	if (LOGGER.isLoggable(Level.INFO))
-    		LOGGER.info("Start " + OPERATION_NAME + " query.");
+    		LOGGER.info("Start " + getOperationName() + " query.");
         
     	if (responseProperties == null) responseProperties = new String[1];
     	
@@ -81,7 +79,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
         checkMandatoryParameter(inputObject, SERVICE_KEY, SERVICE);
         
         // check 'request' parameter:
-        checkMandatoryParameter(inputObject, REQUEST_KEY, OPERATION_NAME);
+        checkMandatoryParameter(inputObject, REQUEST_KEY, getOperationName());
         
         return null;
     }

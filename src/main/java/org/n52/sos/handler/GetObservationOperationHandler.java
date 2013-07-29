@@ -51,7 +51,6 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 
 	public GetObservationOperationHandler() {
         super();
-        OPERATION_NAME = "GetObservation";
     }
 
     /**
@@ -130,7 +129,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         StringBuilder invokedURL = new StringBuilder(this.sosUrlExtension);
         invokedURL.append("/GetObservation");
         invokedURL.append("?service=").append(SERVICE);
-        invokedURL.append("&request=").append(OPERATION_NAME);
+        invokedURL.append("&request=").append(getOperationName());
         
         invokedURL.append("&version=").append(VERSION);
         

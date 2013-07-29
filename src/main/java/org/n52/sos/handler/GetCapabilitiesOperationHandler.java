@@ -41,7 +41,6 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 
     public GetCapabilitiesOperationHandler() {
         super();
-        OPERATION_NAME = "GetCapabilities";
     }
     
     /**

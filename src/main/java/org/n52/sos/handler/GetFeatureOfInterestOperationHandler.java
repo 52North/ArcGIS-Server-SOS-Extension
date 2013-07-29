@@ -40,7 +40,6 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
 	
     public GetFeatureOfInterestOperationHandler() {
         super();
-        OPERATION_NAME = "GetFeatureOfInterest";
     }
 
     /**

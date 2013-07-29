@@ -42,7 +42,6 @@ public class GetObservationByIDOperationHandler extends OGCOperationRequestHandl
     
     public GetObservationByIDOperationHandler() {
         super();
-        OPERATION_NAME = "GetObservationByID";
     }
 
     /**
@@ -59,7 +58,7 @@ public class GetObservationByIDOperationHandler extends OGCOperationRequestHandl
         // keep track of the invokedURL (for possible RDF response):
         String invokedURL = sosUrlExtension + "/GetObservation";
         invokedURL += "?service=" + SERVICE;
-        invokedURL += "&request=" + OPERATION_NAME;
+        invokedURL += "&request=" + getOperationName();
         
         // check 'version' parameter:
         checkMandatoryParameter(inputObject, "version", VERSION);
