@@ -1,0 +1,16 @@
+<project name="Generate UUID" basedir=".">
+
+	<scriptdef name="generateuuid" language="javascript">
+		<attribute name="property" />
+	    <![CDATA[
+	    importClass( java.util.UUID );
+
+	    project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
+	    ]]>
+	</scriptdef>
+	
+	<echo message="${soe.uuid}" />
+	<generateuuid property="soe.uuid" />
+	<echo message="${soe.uuid}" />
+
+</project>

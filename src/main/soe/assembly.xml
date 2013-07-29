@@ -1,0 +1,31 @@
+<assembly>
+	<id>soe-assembly</id>
+	<formats>
+		<format>jar</format>
+		<format>dir</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>${project.build.directory}</directory>
+			<includes>
+				<include>${project.build.finalName}.${project.packaging}</include>
+			</includes>
+			<outputDirectory>/Install</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/soe</directory>
+			<includes>
+				<include>SOSExtension.wsdl</include>
+			</includes>
+			<outputDirectory>/Resources</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${soe.tmp.target}</directory>
+			<includes>
+				<include>Config.xml</include>
+			</includes>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>
