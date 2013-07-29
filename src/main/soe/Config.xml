@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>${soe.name}</Name>
+	<Description>${soe.name}</Description>
+	<Date>${TIME}</Date>
+	<Author />
+	<Company>52North GmbH</Company>
+	<Version>1.0</Version>
+	<Targets>
+		<Target name="server" version="10.1" />
+	</Targets>
+	<AddInID>{${soe.uuid}}</AddInID>
+	<AddIn language="Java">
+		<ServerObjectType>
+			<Name>MapServer</Name>
+			<ExtensionTypes>			
+				<ExtensionType class="${extension.class}" id="${extension.id}"
+					library="${extension.library}">
+					<Name>${soe.name}</Name>
+					<DisplayName>${extension.displayName}</DisplayName>
+					<Description>${extension.description} - version ${TIME}</Description>
+					<Properties>
+						<urlSosExtension>http://myServer/arcgis/rest/services/myMapServer/MapServer/exts/mySosExtension</urlSosExtension>
+						<title>AirQualitySOS</title>
+						<description>Air quality observation across Europe</description>
+						<keywords>Air quality, CO, O3, Carbon Monoxide, Ozone</keywords>
+						<providerName>52North</providerName>
+						<providerSite>http://52north.org</providerSite>
+						<contactPersonName>Arne Broring</contactPersonName>
+						<contactPersonPosition>Project Manager</contactPersonPosition>
+						<contactPersonPhone>+4925139637132</contactPersonPhone>
+						<contactPersonFax></contactPersonFax>
+						<contactPersonAddress>Martin-Luther-King-Weg 24</contactPersonAddress>
+						<contactPersonCity>Muenster</contactPersonCity>
+						<contactPersonAdminArea></contactPersonAdminArea>
+						<contactPersonPostalCode>48155</contactPersonPostalCode>
+						<contactPersonCountry>Germany</contactPersonCountry>
+						<contactPersonEmail>broering@52north.org</contactPersonEmail>
+					</Properties>
+					<Info>
+						<DefaultWebCapabilities />
+						<AllWebCapabilities />
+						<SupportsSOAP>true</SupportsSOAP>
+						<SupportsREST>true</SupportsREST>
+					</Info>
+					<Resources>
+						<WSDL>SOSExtension.wsdl</WSDL>
+					</Resources>
+				</ExtensionType>
+			</ExtensionTypes>
+		</ServerObjectType>
+	</AddIn>
+</ESRI.Configuration>
