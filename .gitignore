@@ -11,3 +11,5 @@
 bin/
 build/
 dist/
+/target
+performance-test.csv

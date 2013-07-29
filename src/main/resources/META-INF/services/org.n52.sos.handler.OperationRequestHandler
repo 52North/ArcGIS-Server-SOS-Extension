@@ -1,0 +1,5 @@
+org.n52.sos.handler.DescribeSensorOperationHandler
+org.n52.sos.handler.GetCapabilitiesOperationHandler
+org.n52.sos.handler.GetFeatureOfInterestOperationHandler
+org.n52.sos.handler.GetObservationByIDOperationHandler
+org.n52.sos.handler.GetObservationOperationHandler
