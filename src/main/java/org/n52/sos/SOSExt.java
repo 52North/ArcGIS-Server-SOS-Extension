@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
@@ -40,7 +41,6 @@ import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
-import org.n52.util.SlimServiceLoader;
 
 import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.interop.AutomationException;
@@ -127,12 +127,11 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     }
 
     private void initializeOperationHandlers() {
-    	SlimServiceLoader<OperationRequestHandler> loader = SlimServiceLoader.load(OperationRequestHandler.class);
-    	
-    	this.operationHandlers = loader.implementations();
-    	
-    	for (OperationRequestHandler h : this.operationHandlers) {
+    	ServiceLoader<OperationRequestHandler> loader = ServiceLoader.load(OperationRequestHandler.class);
+
+    	for (OperationRequestHandler h : loader) {
 			h.setSosUrlExtension(this.urlSosExtension);
+			this.operationHandlers.add(h);
 		}
 	}
 
