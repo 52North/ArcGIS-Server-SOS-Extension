@@ -28,7 +28,6 @@ import org.n52.om.observation.MultiValueObservation;
 import org.n52.sos.AQDObservationEncoder;
 import org.n52.sos.Constants;
 import org.n52.sos.OGCObservationSWECommonEncoder;
-import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -113,6 +112,11 @@ public class GetObservationByIDOperationHandler extends OGCOperationRequestHandl
 	@Override
 	protected String getOperationName() {
 		return GET_OBSERVATION_BY_ID_OPERATION_NAME;
+	}
+
+	@Override
+	public int getExecutionPriority() {
+		return 2;
 	}
 
 }

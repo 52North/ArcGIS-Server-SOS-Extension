@@ -25,7 +25,6 @@ package org.n52.sos.handler;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.OGCProcedureEncoder;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGDB;
@@ -113,6 +112,11 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
 
 	protected String getOperationName() {
 		return DESCRIBE_SENSOR_OPERATION_NAME;
+	}
+
+	@Override
+	public int getExecutionPriority() {
+		return 10;
 	}
 
 }

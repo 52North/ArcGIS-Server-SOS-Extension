@@ -26,7 +26,6 @@ import java.util.Collection;
 
 import org.n52.om.sampling.Feature;
 import org.n52.sos.OGCFeatureEncoder;
-import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -83,6 +82,11 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
 	@Override
 	protected String getOperationName() {
 		return GET_FOI_OPERATION_NAME;
+	}
+
+	@Override
+	public int getExecutionPriority() {
+		return 6;
 	}
 
 }
