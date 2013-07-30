@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.n52.sos.db.AccessGdbForAnalysis;
+import org.n52.sos.db.impl.AccessGdbForAnalysisImpl;
 import org.n52.util.ExceptionSupporter;
 
 import com.esri.arcgis.carto.IMapServerDataAccess;
@@ -64,7 +64,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
 
     private String tablePkField;
 
-    protected AccessGdbForAnalysis geoDB;
+    protected AccessGdbForAnalysisImpl geoDB;
 
     private IMapServerDataAccess mapServerDataAccess;
 
@@ -140,7 +140,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
 
         try {
             // create database access
-            this.geoDB = new AccessGdbForAnalysis(this);
+            this.geoDB = new AccessGdbForAnalysisImpl(this);
         } catch (Exception e) {
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);

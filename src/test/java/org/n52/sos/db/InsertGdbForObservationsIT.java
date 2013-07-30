@@ -40,7 +40,7 @@ public class InsertGdbForObservationsIT extends EsriTestBase {
     
     
     /**
-     * Test method for {@link org.n52.sos.db.InsertGdbForObservations#insertObservation(int, com.esri.arcgis.system.Time, int, int, int, java.lang.String, float)}.
+     * Test method for {@link org.n52.sos.db.impl.InsertGdbForObservationsImpl#insertObservation(int, com.esri.arcgis.system.Time, int, int, int, java.lang.String, float)}.
      */
     @Test
     public void testInsertObservation()

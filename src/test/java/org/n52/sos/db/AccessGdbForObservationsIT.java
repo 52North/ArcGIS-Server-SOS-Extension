@@ -11,8 +11,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.oxf.valueDomains.time.ITimePosition;
+import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.AQDObservationEncoder;
-import org.n52.sos.db.SubField;
+import org.n52.sos.db.impl.SubField;
 import org.n52.sos.it.EsriTestBase;
 
 public class AccessGdbForObservationsIT extends EsriTestBase {
@@ -100,7 +101,7 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
             // assuming this is the corresponding date of an observation coming from our UTC database:
             Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2011-12-04 11:45:30");
             
-            ITimePosition timePos = gdb.getObservationAccess().createTimeFromDate(date, temporalFilter);
+            ITimePosition timePos = TimeConverter.createTimeFromDate(date, temporalFilter);
             
             Assert.assertEquals("2011-12-04T15:45:30+04:00", timePos.toISO8601Format());
         } catch (Exception e) {
@@ -110,8 +111,8 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
     }
     
     public void testExtractTemporalOperandAfterKeyWord(){
-    	Assert.assertEquals("2011-12-04T15:45:30+04:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("equals:2011-12-04T15:45:30+04:00"));
-    	Assert.assertEquals("2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("during:2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00"));
-    	Assert.assertEquals("100,+02:00", gdb.getObservationAccess().extractTemporalOperandAfterKeyWord("last:100,+02:00"));
+    	Assert.assertEquals("2011-12-04T15:45:30+04:00", TimeConverter.extractTemporalOperandAfterKeyWord("equals:2011-12-04T15:45:30+04:00"));
+    	Assert.assertEquals("2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00", TimeConverter.extractTemporalOperandAfterKeyWord("during:2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00"));
+    	Assert.assertEquals("100,+02:00", TimeConverter.extractTemporalOperandAfterKeyWord("last:100,+02:00"));
     }
 }

@@ -7,8 +7,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.n52.sos.db.AccessGDB;
-import org.n52.sos.db.SubField;
+import org.n52.sos.db.impl.SubField;
 
 public class SubFieldIT {
 
@@ -19,7 +18,7 @@ public class SubFieldIT {
     {
         // Load properties for data access
         props = new Properties();
-        props.load(AccessGDB.class.getResourceAsStream("/arcGisSos.properties"));
+        props.load(getClass().getResourceAsStream("/arcGisSos.properties"));
     }
 
     /**
