@@ -22,6 +22,7 @@
  */
 package org.n52.sos.handler;
 
+import org.n52.sos.SOSExt;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -32,7 +33,7 @@ import com.esri.arcgis.server.json.JSONObject;
  * @author matthes rieke
  *
  */
-public interface OperationRequestHandler {
+public interface OperationRequestHandler extends Comparable<OperationRequestHandler> {
 
 	/**
 	 * An implementation shall return true if it
@@ -63,5 +64,15 @@ public interface OperationRequestHandler {
 	 * @param urlSosExtension the public URL
 	 */
 	void setSosUrlExtension(String urlSosExtension);
+
+	
+	/**
+	 * A handler with a higher execution priority (= lower number) will be
+	 * invoked earlier in the resolution phase of operation handlers.
+	 * @see SOSExt#handleRESTRequest(String, String, String, String, String, String, String[])
+	 * 
+	 * @return the execution priority of this handler
+	 */
+	public int getExecutionPriority();
 
 }

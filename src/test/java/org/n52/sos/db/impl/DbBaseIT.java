@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.n52.sos.db;
+package org.n52.sos.db.impl;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -11,8 +11,8 @@ import javax.activation.UnsupportedDataTypeException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.n52.sos.db.SubField;
-import org.n52.sos.db.Table;
+import org.n52.sos.db.impl.SubField;
+import org.n52.sos.db.impl.Table;
 import org.n52.sos.it.EsriTestBase;
 
 import com.esri.arcgis.geodatabase.IDataset;

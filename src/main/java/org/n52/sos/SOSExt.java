@@ -25,8 +25,11 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
@@ -39,6 +42,7 @@ import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.db.impl.AccessGDBImpl;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
 
@@ -96,7 +100,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     private String sosContactPersonCountry;
     private String sosContactPersonEmail;
 
-	private Collection<OperationRequestHandler> operationHandlers;
+	private List<OperationRequestHandler> operationHandlers;
     
     
     /**
@@ -129,10 +133,14 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     private void initializeOperationHandlers() {
     	ServiceLoader<OperationRequestHandler> loader = ServiceLoader.load(OperationRequestHandler.class);
 
+    	this.operationHandlers = new ArrayList<OperationRequestHandler>();
+    	
     	for (OperationRequestHandler h : loader) {
 			h.setSosUrlExtension(this.urlSosExtension);
 			this.operationHandlers.add(h);
 		}
+    	
+    	Collections.sort(this.operationHandlers);
 	}
 
 	/**
@@ -199,7 +207,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      
         try {
             // create database access
-            this.geoDB = new AccessGDB(this);
+            this.geoDB = new AccessGDBImpl(this);
         } catch (Exception e) {
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);

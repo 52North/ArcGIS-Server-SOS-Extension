@@ -20,129 +20,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.sos.db;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.Procedure;
-import com.esri.arcgis.geodatabase.Fields;
-import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IQueryDef;
-import com.esri.arcgis.geodatabase.IRow;
+
 import com.esri.arcgis.interop.AutomationException;
 
-/**
- * @author <a href="mailto:broering@52north.org">Arne Broering</a>
- */
-public class AccessGdbForProcedures {
+public interface AccessGdbForProcedures {
 
-    static Logger LOGGER = Logger.getLogger(AccessGdbForProcedures.class.getName());
+	Collection<Procedure> getProcedures(String[] procedures) throws AutomationException, IOException;
 
-    private AccessGDB gdb;
+	List<String> getProcedureIdList() throws AutomationException, IOException;
 
-    public AccessGdbForProcedures(AccessGDB accessGDB) {
-        this.gdb = accessGDB;
-    }
-    
-    /**
-     * This method can be used to retrieve the IDs of all procedures.
-     * 
-     * @throws AutomationException
-     * @throws IOException
-     */
-    public List<String> getProcedureIdList() throws AutomationException, IOException {
-        LOGGER.info("Querying procedure list from DB.");
-        
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-        
-        // set tables
-        List<String> tables = new ArrayList<String>();
-        tables.add(Table.PROCEDURE);
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
-//        LOGGER.info("Table clause := " + queryDef.getTables());
-        
-        // set sub fields
-        List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-//        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
-        
-        // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
-        
-        Fields fields = (Fields) cursor.getFields();
-        IRow row;
-        List<String> procedureIdList = new ArrayList<String>();
-        while ((row = cursor.nextRow()) != null) {
-            String procedureId = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
-            
-            procedureIdList.add(procedureId);
-        }
-        
-        return procedureIdList;
-    }
-    
-    /**
-     * This method can be used to retrieve all {@link Procedure}s associated
-     * with the SOS complying to the filter as specified by the parameters. The
-     * method basically reflects the SOS:DescribeSensor() operation on Java
-     * level.
-     * 
-     * If one of the method parameters is <b>null</b>, it shall not be
-     * considered in the query.
-     * 
-     * @param procedureIdentifierArray
-     *            an array of unique IDs.
-     * @return all procedures from the Geodatabase which comply to the specified
-     *         parameters.
-     * @throws IOException
-     * @throws AutomationException
-     */
-    public Collection<Procedure> getProcedures(String[] procedureIdentifierArray) throws AutomationException, IOException
-    {
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-
-        // set tables
-        List<String> tables = new ArrayList<String>();
-        tables.add(Table.PROCEDURE);
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
-//        LOGGER.info("Table clause := " + queryDef.getTables());
-        
-        // set sub fields
-        List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-//        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
-
-        StringBuilder whereClause = new StringBuilder();
-        if (procedureIdentifierArray != null) {
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
-            
-            queryDef.setWhereClause(whereClause.toString());
-        }
-//        LOGGER.info(queryDef.getWhereClause());
-
-        // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
-
-        Fields fields = (Fields) cursor.getFields();
-        IRow row;
-        List<Procedure> procedures = new ArrayList<Procedure>();
-        while ((row = cursor.nextRow()) != null) {
-
-            String id = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
-
-            String resource = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
-
-            procedures.add(new Procedure(id, resource));
-        }
-
-        return procedures;
-    }
 }

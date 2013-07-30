@@ -25,7 +25,6 @@ package org.n52.sos.handler;
 import java.util.Collection;
 
 import org.n52.sos.OGCCapabilitiesEncoder;
-import org.n52.sos.OGCOperationRequestHandler;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
@@ -71,6 +70,11 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 	@Override
 	protected String getOperationName() {
 		return GET_CAPABILITIES_OPERATION_NAME;
+	}
+
+	@Override
+	public int getExecutionPriority() {
+		return 4;
 	} 
     
 }

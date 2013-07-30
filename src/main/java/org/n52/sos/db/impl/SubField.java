@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.n52.sos.db;
+package org.n52.sos.db.impl;
 
 import java.util.Properties;
 

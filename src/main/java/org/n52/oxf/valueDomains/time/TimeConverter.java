@@ -210,6 +210,10 @@ public class TimeConverter {
     }
 
 	public static ITimePosition createTimePosition(Date startValue) {
+        return (ITimePosition) TimeFactory.createTime(createISO8601TimeString(startValue, "+00:00"));
+	}
+	
+	public static String createISO8601TimeString(Date startValue) {
 		GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(startValue);
         // Problem: java.util.Date always sets the time zone to the
@@ -222,8 +226,83 @@ public class TimeConverter {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
-        String startTimeAsISO8601 = TimeConverter.toISO8601(year, month, day, hour, minute, second, "+00:00");
-        return (ITimePosition) TimeFactory.createTime(startTimeAsISO8601);
+        String startTimeAsISO8601 = TimeConverter.toISO8601(true, year, month, day, hour, minute, second);
+        return startTimeAsISO8601;
 	}
+	
+	public static String createISO8601TimeString(Date startValue, String timezoneOffset) {
+		return createISO8601TimeString(startValue) + timezoneOffset;
+	}
+	
+    /**
+     * This helper method creates an {@link ITimePosition} from a
+     * {@link java.util.Date} object (which is in the time zone of the SOS
+     * server), and converts it to the requested time zone as defined in the
+     * temporalFilter parameter.
+     * 
+     * @param date
+     *            the time stamp of an observation but in the local time zone of
+     *            the SOS server.
+     * @param temporalFilter
+     *            as accepted by the SOS server.
+     * @return
+     */
+    public static ITimePosition createTimeFromDate(Date date,
+            String temporalFilter)
+    {
+        // Problem: java.util.Date always sets the time zone to the local time
+        // zone, where the SOS is installed.
+        // Hence, we have to make it UTC:
+        String timeAsString = createISO8601TimeString(date);
+
+        if (temporalFilter != null) {
+            // if a temporalFilter was specified by the client, find out the
+            // requested time zone, so that we can convert the UTC time to that
+            // one:
+            String queriedTimeZoneOffset;
+            if (temporalFilter.contains("last:")) {
+                queriedTimeZoneOffset = extractTemporalOperandAfterKeyWord(temporalFilter).split(",")[1];
+            } else {
+                String queriedTimeAsISO8601 = extractTemporalOperandAfterKeyWord(temporalFilter);
+                if (queriedTimeAsISO8601.contains(",")) {
+                    // time period has been requested; it's fine to only
+                    // consider
+                    // begin time to find out time zone:
+                    queriedTimeAsISO8601 = queriedTimeAsISO8601.split(",")[0];
+                }
+                queriedTimeZoneOffset = TimeConverter.getTimeZoneOffset(queriedTimeAsISO8601);
+            }
+
+            // now, convert to the local time used in the query by the client:
+            timeAsString = TimeConverter.convertUTCToLocal(timeAsString, queriedTimeZoneOffset);
+        }
+
+        ITimePosition time = new TimePosition(timeAsString);
+
+        return time;
+    }
+    
+    /**
+     * @param temporalFilter
+     *            the temporalFilter as accepted by the SOS server, e.g.,
+     *            'equals:2010-12-31T15:00:00+02:00'
+     * @return the String after the keyword, e.g., '2010-12-31T15:00:00+02:00'.
+     */
+    public static String extractTemporalOperandAfterKeyWord(String temporalFilter)
+    {
+        if (temporalFilter.contains("equals:")) {
+            return temporalFilter.substring(temporalFilter.indexOf("equals:") + 7);
+        } else if (temporalFilter.contains("during:")) {
+            return temporalFilter.substring(temporalFilter.indexOf("during:") + 7);
+        } else if (temporalFilter.contains("after:")) {
+            return temporalFilter.substring(temporalFilter.indexOf("after:") + 6);
+        } else if (temporalFilter.contains("before:")) {
+            return temporalFilter.substring(temporalFilter.indexOf("before:") + 7);
+        } else if (temporalFilter.contains("last:")) {
+            return temporalFilter.substring(temporalFilter.indexOf("last:") + 5);
+        } else {
+            throw new IllegalArgumentException("Error while parsing the temporal filter.");
+        }
+    }
 	
 }

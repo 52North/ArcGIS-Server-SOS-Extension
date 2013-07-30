@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.n52.sos;
+package org.n52.sos.handler;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +31,6 @@ import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.db.AccessGDB;
-import org.n52.sos.handler.OperationRequestHandler;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -209,7 +208,11 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
 	}
     
     protected abstract String getOperationName();
-
+    
+	@Override
+	public int compareTo(OperationRequestHandler o) {
+		return this.getExecutionPriority() - o.getExecutionPriority();
+	}
 	public static void main(String[] args)
     {
         String timeOGC1 = "2011-10-18T10:00/2011-10-19T10:00";

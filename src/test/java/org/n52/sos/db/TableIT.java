@@ -29,8 +29,7 @@ import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.n52.sos.db.AccessGDB;
-import org.n52.sos.db.Table;
+import org.n52.sos.db.impl.Table;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -44,7 +43,7 @@ public class TableIT {
     {
         // Load properties for data access
         props = new Properties();
-        props.load(AccessGDB.class.getResourceAsStream("/arcGisSos.properties"));
+        props.load(getClass().getResourceAsStream("/arcGisSos.properties"));
     }
 
     @Test
