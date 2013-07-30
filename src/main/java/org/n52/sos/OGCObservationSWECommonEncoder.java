@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
-import org.n52.util.ExceptionSupporter;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -56,12 +55,23 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     protected static String ELEMENT_COUNT = "@element-count@";
     protected static String VALUES = "@values@";
 
-    protected String observationTemplateFile;
-    protected String observationEnvelopeTemplateFile;
+    protected static String observationTemplateFile = "template_om_observation_swe_common.xml";
+    protected static String observationEnvelopeTemplateFile = "template_getobservation_response_OM.xml";
+	private static String observationTemplate;
+	private static String observationEnvelopeTemplate;
+    
+    static {
+    	try {
+    		observationTemplate = AbstractEncoder.readText(
+    			OGCObservationSWECommonEncoder.class.getResourceAsStream(observationTemplateFile));
+    		observationEnvelopeTemplate = AbstractEncoder.readText(
+        			OGCObservationSWECommonEncoder.class.getResourceAsStream(observationEnvelopeTemplateFile));
+    	} catch (IOException e) {
+    		LOGGER.warning(e.getMessage());
+    	}
+    }
     
     public OGCObservationSWECommonEncoder() {
-        observationTemplateFile = "template_om_observation_swe_common.xml";
-        observationEnvelopeTemplateFile = "template_getobservation_response_OM.xml";
     }
     
     /**
@@ -74,17 +84,8 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
      */
     public String encodeObservations(Map<String, MultiValueObservation> idObsList) throws IOException
     {
-        String encodedObservations = "";
+        StringBuilder encodedObservations = new StringBuilder();
 
-        String observationTemplate = null;
-        try {
-            // read template for SWE Common Encoding:
-            observationTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream(observationTemplateFile));
-        } catch (Exception e) {
-            LOGGER.severe("There was a problem while reading the template: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            throw new IOException(e);
-        }
-        
         Set<String> obsIdSet = idObsList.keySet();
         for (String obsId : obsIdSet) {
 
@@ -107,19 +108,17 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
             observation = observation.replace(OBSERVATION_FEATURE, multiValObs.getFeatureOfInterest());
             observation = observation.replace(OBSERVATION_SAMPLING_POINT, multiValObs.getSamplingPoint());
             observation = observation.replace(OBSERVATION_AGGREGATION_TYPE, multiValObs.getAggregationType());
-            observation = observation.replace(ELEMENT_COUNT, "" + multiValObs.getResult().getValue().size());
+            observation = observation.replace(ELEMENT_COUNT, Integer.toString(multiValObs.getResult().getValue().size()));
             observation = observation.replace(VALUES, allValues);
             
-            encodedObservations += observation;
+            encodedObservations.append(observation);
         }
-        return encodedObservations;
+        return encodedObservations.toString();
     }
 
     public String wrapInEnvelope(String result) throws IOException
     {
-        String responseTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream(observationEnvelopeTemplateFile));
-
-        responseTemplate = responseTemplate.replace(OBSERVATIONS, result);
+        String responseTemplate = observationEnvelopeTemplate.replace(OBSERVATIONS, result);
 
         return responseTemplate;
     }
@@ -128,13 +127,19 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     
     protected String encodeMeasureResult(MeasureResult resultValue)
     {
-        String valueRow = 
-                resultValue.getDateTimeBegin().toISO8601Format() + "," +
-                resultValue.getDateTimeEnd().toISO8601Format() + "," + 
-                resultValue.getValidity() + "," +
-                resultValue.getVerification() + "," + 
-                resultValue.getValue() + "@@";
-        return valueRow;
+    	StringBuilder result = new StringBuilder();
+    	result.append(resultValue.getDateTimeBegin().toISO8601Format());
+    	result.append(",");
+    	result.append(resultValue.getDateTimeEnd().toISO8601Format());
+    	result.append(",");
+    	result.append(resultValue.getValidity());
+    	result.append(",");
+    	result.append(resultValue.getVerification());
+    	result.append(",");
+    	result.append(resultValue.getValue());
+    	result.append("@@");
+    	
+        return result.toString();
     }
 
 }
