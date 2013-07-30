@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.junit.Assert;
-import org.n52.sos.db.AccessGDB;
+import org.n52.sos.db.impl.AccessGDBImpl;
 
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.AoInitialize;
@@ -43,7 +43,7 @@ public class EsriTestBase {
     
     protected AoInitialize aoInit;
     
-    protected AccessGDB gdb;
+    protected AccessGDBImpl gdb;
     
     /**
      * @throws java.lang.Exception
@@ -57,7 +57,7 @@ public class EsriTestBase {
         aoInit = new AoInitialize();
         initializeArcGISLicenses();
         
-        gdb = new AccessGDB();
+        gdb = new AccessGDBImpl();
     }
     
     protected void tearDown() throws Exception

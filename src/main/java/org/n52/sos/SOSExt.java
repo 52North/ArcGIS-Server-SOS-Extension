@@ -42,6 +42,7 @@ import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.db.impl.AccessGDBImpl;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
 
@@ -206,7 +207,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      
         try {
             // create database access
-            this.geoDB = new AccessGDB(this);
+            this.geoDB = new AccessGDBImpl(this);
         } catch (Exception e) {
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
