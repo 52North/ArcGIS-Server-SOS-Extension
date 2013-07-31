@@ -1,0 +1,5 @@
+		<ows:Parameter name="${name}">
+			<ows:AllowedValues>
+				${values}
+			</ows:AllowedValues>
+		</ows:Parameter>

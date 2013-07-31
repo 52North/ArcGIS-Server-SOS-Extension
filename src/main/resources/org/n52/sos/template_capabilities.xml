@@ -48,6 +48,7 @@
 			<ows:Role/>
 		</ows:ServiceContact>
 	</ows:ServiceProvider>
+@operations-metadata@
 	
 	<!-- the filterCapabilities section lists the filters and operands which are supported in the observation, result and feature retrieval operations -->
 	<sos:filterCapabilities>

@@ -1,0 +1,9 @@
+	<ows:Operation name="${operationName}">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="${getUrl}" />
+			</ows:HTTP>
+		</ows:DCP>
+		${parameters}
+	</ows:Operation>

@@ -25,6 +25,7 @@ package org.n52.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -118,4 +119,16 @@ public class CommonUtilities {
         stringRep.append("]");
         return stringRep.toString();
     }
+    
+    public static String readResource(InputStream res) {
+		Scanner sc = new Scanner(res);
+		StringBuilder sb = new StringBuilder();
+		while (sc.hasNext()) {
+			sb.append(sc.nextLine());
+			sb.append(System.getProperty("line.separator"));
+		}
+		sc.close();
+		return sb.toString();
+	}
+    
 }

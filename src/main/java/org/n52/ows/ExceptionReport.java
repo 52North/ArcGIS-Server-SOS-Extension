@@ -46,15 +46,18 @@ public class ExceptionReport extends Exception {
 	
 	static {
 		InputStream stream = ExceptionReport.class.getResourceAsStream(TEMPLATE_FILE);
-		Scanner sc = new Scanner(stream);
-		
+		template = readResource(stream);
+	}
+	
+	private static String readResource(InputStream res) {
+		Scanner sc = new Scanner(res);
 		StringBuilder sb = new StringBuilder();
 		while (sc.hasNext()) {
 			sb.append(sc.nextLine());
+			sb.append(System.getProperty("line.separator"));
 		}
 		sc.close();
-		
-		template = sb.toString();
+		return sb.toString();
 	}
 	
 	public ExceptionReport(String code, String text) {

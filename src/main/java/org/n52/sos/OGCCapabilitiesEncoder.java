@@ -26,11 +26,13 @@ package org.n52.sos;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
+import org.n52.sos.handler.capabilities.OperationsMetadataProvider;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -61,6 +63,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     private static final String OFFERING_UPPER_CORNER = "@offering-upper-corner@";
     private static final String OFFERING_BEGIN_POSITION = "@offering-begin-position@";
     private static final String OFFERING_END_POSITION = "@offering-end-position@";
+    private static final String OPERATIONS_METADATA = "@operations-metadata@";
     
     private static String template;
     private static String offeringTemplate;
@@ -75,7 +78,8 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     	
     }
     
-    public String encodeCapabilities(ServiceDescription sd, Collection<ObservationOffering> obsOfferings) throws IOException {
+    public String encodeCapabilities(ServiceDescription sd,
+    		Collection<ObservationOffering> obsOfferings, List<OperationsMetadataProvider> operations) throws IOException {
         
         // replace variables in Capabilities document template:
         
@@ -155,6 +159,8 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         // add the offerings to the Capabilities document:
         replace(templateCapabilites, CONTENTS_OFFERINGS, allOfferings.toString());
         
+        replace(templateCapabilites, OPERATIONS_METADATA, createOperationsMetadataMarkup(operations));
+        
         // LOGGER.info("generated Capabilities: " + templateCapabilites);
         
         return templateCapabilites.toString();
@@ -168,7 +174,27 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
 //        return builder.replace(builder.indexOf(replaceWhat), builder.indexOf(replaceWhat) + replaceWhat.length(), replaceWith);
 //    }
     
-    public static StringBuilder replace(StringBuilder builder,
+    private String createOperationsMetadataMarkup(
+			List<OperationsMetadataProvider> operations) {
+    	if (operations == null || operations.size() == 0) return "";
+    	
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("<ows:OperationsMetadata>");
+    	sb.append(System.getProperty("line.separator"));
+    	
+    	for (OperationsMetadataProvider omp : operations) {
+			sb.append(omp.createMarkup());
+			sb.append(System.getProperty("line.separator"));
+		}
+    	
+    	sb.append("</ows:OperationsMetadata>");
+    	sb.append(System.getProperty("line.separator"));
+    	
+    	return sb.toString();
+	}
+
+
+	public static StringBuilder replace(StringBuilder builder,
             String replaceWhat,
             String replaceWith)
     {

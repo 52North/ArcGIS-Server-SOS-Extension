@@ -43,28 +43,11 @@ public class SosSoapIT {
 
         String url = "http://" + serverName + ":6080/arcgis/services/" + serviceName + "/MapServer/" + soapExt;
         
-        String query = readText(SosSoapIT.class.getResourceAsStream("soapTest.xml")); 
+        String query = CommonUtilities.readResource(SosSoapIT.class.getResourceAsStream("soapTest.xml")); 
         
-        String result = readText(CommonUtilities.sendPostMessage(url, query));
+        String result = CommonUtilities.readResource(CommonUtilities.sendPostMessage(url, query));
         
         System.out.println("result: " + result);
     }
     
-    private static String readText(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String line;
-        StringBuffer sb = new StringBuffer();
-        for (int i=0; (line = br.readLine()) != null; i++) {
-            
-            // if not first line --> append "\n"
-            if (i > 0) {
-                sb.append("\n");
-            }
-            
-            sb.append(line);
-        }
-        br.close();
-
-        return sb.toString();
-    }
 }
