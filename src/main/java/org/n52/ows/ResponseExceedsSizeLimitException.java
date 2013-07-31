@@ -29,7 +29,8 @@ public class ResponseExceedsSizeLimitException extends ExceptionReport {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String CODE = "ResponseExceedsSizeLimit";
-	private static final String TEXT = "The requested result set exceeds the response size limit of this service and thus cannot be delivered.";
+	private static final String TEXT = "The requested result set exceeds the response size limit of this "
+			+ "service and thus cannot be delivered. Try defining a more strict filter.";
 
 	public ResponseExceedsSizeLimitException() {
 		super(CODE, TEXT);

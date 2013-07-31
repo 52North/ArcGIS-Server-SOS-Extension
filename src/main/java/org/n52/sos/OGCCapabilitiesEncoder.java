@@ -26,6 +26,7 @@ package org.n52.sos;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -37,36 +38,48 @@ import org.n52.sos.dataTypes.ServiceDescription;
 public class OGCCapabilitiesEncoder extends AbstractEncoder {
 
     
-    /*
+	/*
      * definition of anchor variables of Capabilities template file:
      */
-    private static String SERVICE_TITLE = "@service-title@";
-    private static String SERVICE_DESCRIPTION = "@service-description@";
-    private static String SERVICE_KEYWORDS = "@service-keywords@";
-    private static String PROVIDER_NAME = "@provider-name@";
-    private static String PROVIDER_SITE = "@provider-site@";
-    private static String PROVIDER_PHONE = "@provider-phone@";
-    private static String PROVIDER_FAX = "@provider-fax@";
-    private static String PROVIDER_DELIVERY_POINT = "@provider-delivery-point@";
-    private static String PROVIDER_CITY = "@provider-city@";
-    private static String PROVIDER_POSTAL_CODE = "@provider-postal-code@";
-    private static String PROVIDER_COUNTRY = "@provider-country@";
-    private static String PROVIDER_EMAIL = "@provider-email@";
-    private static String CONTENTS_OFFERINGS = "@contents-offerings@";
-    private static String OFFERING_IDENTIFIER = "@offering-identifier@";
-    private static String OFFERING_PROCEDURE = "@offering-procedure@";
-    private static String OFFERING_OBSERVABLE_PROPERTIES = "@offering-observable-properties@";
-    private static String OFFERING_LOWER_CORNER = "@offering-lower-corner@";
-    private static String OFFERING_UPPER_CORNER = "@offering-upper-corner@";
-    private static String OFFERING_BEGIN_POSITION = "@offering-begin-position@";
-    private static String OFFERING_END_POSITION = "@offering-end-position@";
+    private static final String SERVICE_TITLE = "@service-title@";
+    private static final String SERVICE_DESCRIPTION = "@service-description@";
+    private static final String SERVICE_KEYWORDS = "@service-keywords@";
+    private static final String PROVIDER_NAME = "@provider-name@";
+    private static final String PROVIDER_SITE = "@provider-site@";
+    private static final String PROVIDER_PHONE = "@provider-phone@";
+    private static final String PROVIDER_FAX = "@provider-fax@";
+    private static final String PROVIDER_DELIVERY_POINT = "@provider-delivery-point@";
+    private static final String PROVIDER_CITY = "@provider-city@";
+    private static final String PROVIDER_POSTAL_CODE = "@provider-postal-code@";
+    private static final String PROVIDER_COUNTRY = "@provider-country@";
+    private static final String PROVIDER_EMAIL = "@provider-email@";
+    private static final String CONTENTS_OFFERINGS = "@contents-offerings@";
+    private static final String OFFERING_IDENTIFIER = "@offering-identifier@";
+    private static final String OFFERING_PROCEDURE = "@offering-procedure@";
+    private static final String OFFERING_OBSERVABLE_PROPERTIES = "@offering-observable-properties@";
+    private static final String OFFERING_LOWER_CORNER = "@offering-lower-corner@";
+    private static final String OFFERING_UPPER_CORNER = "@offering-upper-corner@";
+    private static final String OFFERING_BEGIN_POSITION = "@offering-begin-position@";
+    private static final String OFFERING_END_POSITION = "@offering-end-position@";
     
+    private static String template;
+    private static String offeringTemplate;
+    
+    static {
+    	try {
+			template = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
+			offeringTemplate = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
+		} catch (IOException e) {
+			Logger.getLogger(OGCCapabilitiesEncoder.class.getName()).warning(e.getMessage());
+		}
+    	
+    }
     
     public String encodeCapabilities(ServiceDescription sd, Collection<ObservationOffering> obsOfferings) throws IOException {
         
         // replace variables in Capabilities document template:
         
-        StringBuilder templateCapabilites = new StringBuilder(readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml")));
+        StringBuilder templateCapabilites = new StringBuilder(template);
         
         replace(templateCapabilites, SERVICE_TITLE, sd.getTitle());        
         replace(templateCapabilites, SERVICE_DESCRIPTION, sd.getDescription());
@@ -95,7 +108,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         // replace variables in ObservationOffering template and add to Capabilities document:
         
         StringBuilder allOfferings = new StringBuilder();
-        StringBuilder templateOffering = new StringBuilder(readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml")));
+        StringBuilder templateOffering = new StringBuilder(offeringTemplate);
         
         for (Iterator<ObservationOffering> iterator = obsOfferings.iterator(); iterator.hasNext();) {
             //LOGGER.info("Offering: " + j++);
