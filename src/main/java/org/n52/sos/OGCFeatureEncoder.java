@@ -25,9 +25,11 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
+
 import com.esri.arcgis.geometry.Point;
 
 /**
@@ -49,20 +51,26 @@ public class OGCFeatureEncoder extends AbstractEncoder {
     private static String FEATURE_INLET_HEIGHT = "@feature-inlet-height@";
     private static String FEATURE_BUILDING_DISTANCE = "@feature-building-distance@";
     private static String FEATURE_KERB_DISTANCE = "@feature-kerb-distance@";
+	private static String responseTemplate;
+	private static String featureTemplate;
 
+    static {
+    	try {
+			responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
+			featureTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
+		} catch (IOException e) {
+			Logger.getLogger(OGCFeatureEncoder.class.getName()).warning(e.getMessage());
+		}
+    	
+    }
+    
     public String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
                 
-        String responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
-        
-        String featureTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
-        
         String allFeatures = "";
         
         for (Feature feature : featureCollection) {
             
-            String featureString = featureTemplate;
-            
-            featureString = featureString.replace(FEATURE_ID, feature.getIdentifier().getIdentifierValue());
+            String featureString = featureTemplate.replace(FEATURE_ID, feature.getIdentifier().getIdentifierValue());
             
             Point p = (Point)feature.getShape();
             featureString = featureString.replace(FEATURE_POINT, p.getX() + " " + p.getY());
@@ -101,8 +109,8 @@ public class OGCFeatureEncoder extends AbstractEncoder {
             allFeatures += featureString + "\n";
         }
         
-        responseTemplate = responseTemplate.replace(FEATURES, allFeatures);
+        String response = responseTemplate.replace(FEATURES, allFeatures);
         
-        return responseTemplate;
+        return response;
     }
 }

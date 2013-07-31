@@ -23,6 +23,7 @@
 
 package org.n52.sos;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -33,9 +34,28 @@ import java.util.logging.Logger;
 public class AQDObservationEncoder extends OGCObservationSWECommonEncoder {
 
     protected static Logger LOGGER = Logger.getLogger(AQDObservationEncoder.class.getName());
+	private static String aqdObservationTemplate;
+	private static String aqdObservationEnvelopeTemplate;
     
-    public AQDObservationEncoder() {
-        observationTemplateFile = "template_aqd_observation.xml";
-        observationEnvelopeTemplateFile = "template_getobservation_response_AQD.xml";
+    static {
+    	try {
+    		aqdObservationTemplate = AbstractEncoder.readText(
+    			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_aqd_observation.xml"));
+    		aqdObservationEnvelopeTemplate = AbstractEncoder.readText(
+        			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
+    	} catch (IOException e) {
+    		LOGGER.warning(e.getMessage());
+    	}
+    }
+    
+    
+    @Override
+    protected String getObservationEnvelopeTemplate() {
+    	return aqdObservationEnvelopeTemplate;
+    }
+    
+    @Override
+    protected String getObservationTemplate() {
+    	return aqdObservationTemplate;
     }
 }

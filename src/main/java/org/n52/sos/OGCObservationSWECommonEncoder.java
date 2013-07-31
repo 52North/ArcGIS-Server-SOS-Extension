@@ -91,7 +91,7 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
 
             MultiValueObservation multiValObs = idObsList.get(obsId);
         	
-            String observation = observationTemplate;
+            String observation = getObservationTemplate();
             
             StringBuilder allValues = new StringBuilder();
             for (MeasureResult resultValue : multiValObs.getResult().getValue()) {
@@ -116,12 +116,20 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
         return encodedObservations.toString();
     }
 
-    public String wrapInEnvelope(String result) throws IOException
-    {
-        String responseTemplate = observationEnvelopeTemplate.replace(OBSERVATIONS, result);
+
+    public String wrapInEnvelope(String result) throws IOException {
+        String responseTemplate = getObservationEnvelopeTemplate().replace(OBSERVATIONS, result);
 
         return responseTemplate;
     }
+
+    protected String getObservationTemplate() {
+		return observationTemplate;
+	}
+    
+	protected String getObservationEnvelopeTemplate() {
+		return observationEnvelopeTemplate;
+	}
 
     // /////////////////////////////////// helper methods:
     
