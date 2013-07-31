@@ -25,6 +25,7 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.Procedure;
 
@@ -52,21 +53,30 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     private static String CONTACT_CITY    = "@contact-city@";
     private static String CONTACT_COUNTRY = "@contact-country@";
     private static String CONTACT_EMAIL   = "@contact-email@";
+	private static String responseTemplate;
+	private static String procedureTemplate;
+	private static String responseTemplate101;
+	private static String procedureTemplate101;
+    
+    static {
+    	try {
+			responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
+			procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
+
+	        responseTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
+	        procedureTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
+		} catch (IOException e) {
+			Logger.getLogger(OGCProcedureEncoder.class.getName()).warning(e.getMessage());
+		}
+        
+    }
     
     public String encodeProceduresAsSensorML20(Collection<Procedure> procedureCollection) throws IOException {
-        String responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
-        
-        String procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
-        
         return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
     }
     
     public String encodeProceduresAsSensorML101(Collection<Procedure> procedureCollection) throws IOException {
-        String responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
-        
-        String procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
-        
-        return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
+        return encodeProcedures(procedureCollection, responseTemplate101, procedureTemplate101);
     }
     
     public String encodeProcedures(Collection<Procedure> procedureCollection, String responseTemplate, String procedureTemplate) throws IOException {
