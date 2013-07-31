@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import java.util.logging.Logger;
 import org.n52.gml.Identifier;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
+import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.Constants;
@@ -186,50 +188,81 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      */
     private Map<String, MultiValueObservation> getObservations(String whereClauseParameterAppend) throws Exception
     {
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+        List<String> tables = createTablesForQuery();
+        
+        String whereClause = createWhereClauseForQuery(whereClauseParameterAppend);
 
-        // set tables
-        List<String> tables = new ArrayList<String>();
-        tables.add(Table.OBSERVATION);
-        tables.add(Table.PROCEDURE);
-        tables.add(Table.SAMPLINGPOINT);
-        tables.add(Table.FEATUREOFINTEREST);
-        tables.add(Table.PROPERTY);
-        tables.add(Table.UNIT);
-        tables.add(Table.VALUE);
-        tables.add(Table.AGGREGATIONTYPE);
-        tables.add(Table.VALIDITY);
-        tables.add(Table.VERIFICATION);
+        List<String> subFields = createSubFieldsForQuery();
         
+        assertMaximumRecordCount(tables, whereClause);
+        
+        ICursor cursor = evaluateQuery(tables, whereClause, subFields);
+
+        // convert cursor entries to abstract observations
+        Fields fields = (Fields) cursor.getFields();
+
+        // map that associates an observation-ID with an observation:
+        Map<String, MultiValueObservation> idObsMap = new HashMap<String, MultiValueObservation>();
+        IRow row;
+		while ((row = cursor.nextRow()) != null) {
+            String obsID = row.getValue(fields.findField(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
+
+            if (!idObsMap.containsKey(obsID)) {
+                MultiValueObservation multiValObs = createMultiValueObservation(row, fields);
+                multiValObs.getResult().addResultValue(createResultValue(row, fields));
+                idObsMap.put(obsID, multiValObs);
+            } else {
+            	idObsMap.get(obsID).getResult().addResultValue(createResultValue(row, fields));
+            }
+
+        }
+
+        return idObsMap;
+    }
+
+	private void assertMaximumRecordCount(List<String> tables, String whereClause) throws ResponseExceedsSizeLimitException {
+		try {
+			ICursor countCursor = evaluateQuery(tables, whereClause, Collections.singletonList("count(*)"));
+			IRow row;
+			if ((row = countCursor.nextRow()) != null) {
+				Object value = row.getValue(0);
+				if (value != null && value instanceof Integer) {
+					if ((int) value > gdb.getMaxNumberOfResults()) {
+						throw new ResponseExceedsSizeLimitException(gdb.getMaxNumberOfResults());
+					}
+				}
+			}
+		} catch (AutomationException e) {
+			LOGGER.warning(e.getMessage());
+		} catch (IOException e) {
+			LOGGER.warning(e.getMessage());
+		}		
+	}
+
+	private ICursor evaluateQuery(List<String> tables,
+			String whereClause, List<String> subFields) throws IOException,
+			AutomationException {
+		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
-        LOGGER.info("Table clause := " + queryDef.getTables());
-        
-        // set sub fields
-        List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
-        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
-        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID));
-        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_BEGIN));
-        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END));
-        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC));
-        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME));
-        subFields.add(gdb.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)); 
-        subFields.add(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION));
-        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
+        if (LOGGER.isLoggable(Level.INFO))
+        	LOGGER.info("Table clause := " + queryDef.getTables());
 
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
-        
-        // create the where clause with joins and constraints
-        StringBuilder whereClause = new StringBuilder();
+        if (LOGGER.isLoggable(Level.INFO))
+        	LOGGER.info("Subfields clause := " + queryDef.getSubFields());
+
+        queryDef.setWhereClause(whereClause);
+        if (LOGGER.isLoggable(Level.INFO))
+        	LOGGER.info("Where clause := " + queryDef.getWhereClause());
+
+        // evaluate the database query
+        ICursor cursor = queryDef.evaluate();
+		return cursor;
+	}
+
+	private String createWhereClauseForQuery(
+			String whereClauseParameterAppend) {
+		StringBuilder whereClause = new StringBuilder();
 
         // joins from OBSERVATION
         whereClause.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST, Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
@@ -250,44 +283,47 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         whereClause.append(" AND ");
         whereClause.append(gdb.join(Table.VALUE, SubField.VALUE_FK_AGGREGATIONTYPE, Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE));
 
-        // where query:
-        queryDef.setWhereClause(whereClause.append(whereClauseParameterAppend).toString());
+        whereClause.append(whereClauseParameterAppend);
+		return whereClause.toString();
+	}
 
-        // Log the query clause
-        if (LOGGER.isLoggable(Level.INFO))
-        	LOGGER.info("Where clause := " + queryDef.getWhereClause());
+	private List<String> createSubFieldsForQuery() {
+		List<String> subFields = new ArrayList<String>();
+        subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID));
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
+        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID));
+        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_BEGIN));
+        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END));
+        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC));
+        subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME));
+        subFields.add(gdb.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)); 
+        subFields.add(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION));
+        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
+		return subFields;
+	}
 
-        // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
-
-        // convert cursor entries to abstract observations
-        Fields fields = (Fields) cursor.getFields();
-
-        IRow row = cursor.nextRow();
-        int count = 0;
-        
-        // map that associates an observation-ID with an observation:
-        Map<String, MultiValueObservation> idObsMap = new HashMap<String, MultiValueObservation>();
-        
-        while (row != null && count < gdb.getMaxNumberOfResults()) {
-            String obsID = row.getValue(fields.findField(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
-
-            MultiValueObservation multiValObs = idObsMap.get(obsID);
-            
-            if (multiValObs == null) {
-                multiValObs = createMultiValueObservation(row, fields);
-                multiValObs.getResult().addResultValue(createResultValue(row, fields));
-                idObsMap.put(obsID, multiValObs);
-            } else {
-                multiValObs.getResult().addResultValue(createResultValue(row, fields));
-            }
-
-            count++;
-            row = cursor.nextRow();
-        }
-
-        return idObsMap;
-    }
+	private List<String> createTablesForQuery() {
+		List<String> tables = new ArrayList<String>();
+		tables.add(Table.OBSERVATION);
+        tables.add(Table.PROCEDURE);
+        tables.add(Table.SAMPLINGPOINT);
+        tables.add(Table.FEATUREOFINTEREST);
+        tables.add(Table.PROPERTY);
+        tables.add(Table.UNIT);
+        tables.add(Table.VALUE);
+        tables.add(Table.AGGREGATIONTYPE);
+        tables.add(Table.VALIDITY);
+        tables.add(Table.VERIFICATION);
+        return tables;
+	}
     
     // /////////////////////////////
     // //////////////////////////// Helper Methods:

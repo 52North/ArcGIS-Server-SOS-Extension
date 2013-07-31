@@ -118,7 +118,7 @@ public class AccessGDBImpl implements AccessGDB {
 
         LOGGER.info("Creating AccessGDBImpl.");
         
-        init("/arcGisSosLocal.properties");
+        init("/arcGisSosLocal.properties", 0);
         
         // Load property for data access
         String dbPath = props.getProperty("database.path");
@@ -140,7 +140,7 @@ public class AccessGDBImpl implements AccessGDB {
         
         LOGGER.info("Creating AccessGDBImpl.");
         
-        init("/arcGisSos.properties");
+        init("/arcGisSos.properties", sos.getMaximumRecordCount());
         
         long start = System.currentTimeMillis();
         
@@ -166,9 +166,10 @@ public class AccessGDBImpl implements AccessGDB {
      * initialization of local variables.
      * 
      * @param propsResourceName
+     * @param maxRecords 
      * @throws IOException
      */
-    public void init(String propsResourceName) throws IOException {
+    public void init(String propsResourceName, int maxRecords) throws IOException {
         
         props = new Properties();
         
@@ -182,7 +183,11 @@ public class AccessGDBImpl implements AccessGDB {
         SubField.initSubfieldNames(props);
 
         // init maxNumberOfResults:
-        maxNumberOfResults = Integer.parseInt(props.getProperty("database.maxNumberOfResults"));
+        if (maxRecords == 0) {
+        	maxNumberOfResults = Integer.parseInt(props.getProperty("database.maxNumberOfResults"));
+        } else {
+        	maxNumberOfResults = maxRecords;
+        }
         
         observationAccess = new AccessGdbForObservationsImpl(this);
         featureAccess = new AccessGdbForFeaturesImpl(this);

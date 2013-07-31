@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
+import org.n52.ows.ExceptionReport;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -46,6 +47,7 @@ import org.n52.sos.db.impl.AccessGDBImpl;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
 
+import com.esri.arcgis.carto.IMapServer3;
 import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.interop.extn.ArcGISExtension;
@@ -99,9 +101,9 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     private String sosContactPersonPostalCode;
     private String sosContactPersonCountry;
     private String sosContactPersonEmail;
-
-	private List<OperationRequestHandler> operationHandlers;
+    private int maximumRecordCount;
     
+	private List<OperationRequestHandler> operationHandlers;
     
     /**
      * constructs a new server object extension
@@ -204,6 +206,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
         }
+        
+        resolveServiceProperties();
      
         try {
             // create database access
@@ -214,7 +218,26 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         }
     }
     
-    /*************************************************************************************
+    private void resolveServiceProperties() {
+		if (this.mapServerDataAccess instanceof IMapServer3) {
+        	try {
+        		IPropertySet propertySet = ((IMapServer3) this.mapServerDataAccess).getServiceConfigurationInfo();
+
+        		Object value = propertySet.getProperty("MaximumRecordCount");
+        		if (value != null) {
+        			this.maximumRecordCount = (int) value;
+        		}
+        		
+    		} catch (AutomationException e) {
+    			LOGGER.warning(e.getMessage());
+    		} catch (IOException e) {
+    			LOGGER.warning(e.getMessage());
+    		}
+    	}
+
+	}
+
+	/*************************************************************************************
      * SOAP methods:
      *************************************************************************************/
     
@@ -421,6 +444,9 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
                 }
                 
             }
+        } catch (ExceptionReport e) {
+            LOGGER.severe("OWS ExceptionReport thrown: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
+            return e.toString().getBytes("utf-8");
         } catch (Exception e) {
             LOGGER.severe("Error while handle REST request: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             
@@ -700,7 +726,11 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         return urlSosExtension;
     }
 
-    public String getSosTitle()
+    public int getMaximumRecordCount() {
+		return maximumRecordCount;
+	}
+
+	public String getSosTitle()
     {
         return sosTitle;
     }
