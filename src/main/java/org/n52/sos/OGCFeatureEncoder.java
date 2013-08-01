@@ -25,10 +25,10 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geometry.Point;
 
@@ -59,7 +59,7 @@ public class OGCFeatureEncoder extends AbstractEncoder {
 			responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
 			featureTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
 		} catch (IOException e) {
-			Logger.getLogger(OGCFeatureEncoder.class.getName()).warning(e.getMessage());
+			Logger.getLogger(OGCFeatureEncoder.class.getName()).warn(e.getMessage(), e);
 		}
     	
     }

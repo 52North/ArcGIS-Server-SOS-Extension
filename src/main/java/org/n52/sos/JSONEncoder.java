@@ -25,14 +25,14 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.n52.om.sampling.Feature;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
+import org.n52.util.logging.Logger;
+
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONArray;
 import com.esri.arcgis.server.json.JSONException;
@@ -158,9 +158,9 @@ public class JSONEncoder {
                 json.put("observedarea", ServerUtilities.getJSONFromEnvelope(o.getObservedArea()));
             }
         } catch (AutomationException e) {
-            LOGGER.log(Level.WARNING, "", e);
+            LOGGER.warn(e.getMessage(), e);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "", e);
+        	LOGGER.warn(e.getMessage(), e);
         }
 
         if (o.getTimeExtent() != null) {

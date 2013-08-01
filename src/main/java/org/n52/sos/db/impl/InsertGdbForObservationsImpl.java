@@ -24,9 +24,9 @@ package org.n52.sos.db.impl;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import org.n52.sos.db.InsertGdbForObservations;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.interop.AutomationException;
 

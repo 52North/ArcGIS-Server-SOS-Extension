@@ -24,7 +24,8 @@
 package org.n52.sos;
 
 import java.io.IOException;
-import java.util.logging.Logger;
+
+import org.n52.util.logging.Logger;
 
 /**
  * Overrides the {@link OGCObservationSWECommonEncoder} and uses AQD specific templates.
@@ -44,7 +45,7 @@ public class AQDObservationEncoder extends OGCObservationSWECommonEncoder {
     		aqdObservationEnvelopeTemplate = AbstractEncoder.readText(
         			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
     	} catch (IOException e) {
-    		LOGGER.warning(e.getMessage());
+    		LOGGER.warn(e.getMessage());
     	}
     }
     

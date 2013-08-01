@@ -18,9 +18,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<arcobjects.version>10.1</arcobjects.version>
 		<arcobjects.local.location>
-			C:\Program Files (x86)\ArcGIS\Desktop10.1\java\lib\arcobjects.jar
+			C:\Program Files
+			(x86)\ArcGIS\Desktop10.1\java\lib\arcobjects.jar
 		</arcobjects.local.location>
 		<ntvinv.location>C:\Program Files (x86)\ArcGIS\Desktop10.1\bin</ntvinv.location>
+		<manifest.classpath>commons-logging-1.0.4.jar</manifest.classpath>
 	</properties>
 
 	<build>
@@ -44,6 +46,17 @@
 					<excludes>
 						<exclude>**/*IT.java</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -80,7 +93,12 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.0.1</version>
-			<scope>provided</scope>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.4</version>
 		</dependency>
 	</dependencies>
 

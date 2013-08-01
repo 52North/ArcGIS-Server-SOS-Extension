@@ -20,21 +20,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.handler.capabilities;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
 
-import org.n52.util.CommonUtilities;
+public class GetObservationProvider extends AbstractMetadataProvider {
 
-/**
- * @author <a href="mailto:broering@52north.org">Arne Broering</a>
- */
-public abstract class AbstractEncoder {
+	private static final String OPERATION_NAME = "GetObservation";
 
-    protected static String readText(InputStream in) throws IOException {
-        return CommonUtilities.readResource(in);
-    }
-    
-    
+	
+	@Override
+	protected String getGetUrl() {
+		return "/GetObservation?f=xml";
+	}
+
+	@Override
+	protected String getOperationName() {
+		return OPERATION_NAME;
+	}
+
+	@Override
+	protected List<Parameter> getParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

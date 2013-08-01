@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimePeriod;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGdbForOfferings;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
@@ -85,7 +85,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
      */
     public Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException
     {
-        LOGGER.info("getObservationOfferings() is called.");
+        LOGGER.debug("getObservationOfferings() is called.");
         
         List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
         
@@ -124,7 +124,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
         for (ObservationOffering offering : offerings) {
             
-            LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
+            LOGGER.debug("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
             
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // request the timeperiod
@@ -158,7 +158,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseTime.append(" AND ");
             whereClauseTime.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
             queryDefTime.setWhereClause(whereClauseTime.toString());
-            LOGGER.info("Where clause := " + queryDefTime.getWhereClause());
+            LOGGER.debug("Where clause := " + queryDefTime.getWhereClause());
 
             ICursor cursorOffering = queryDefTime.evaluate();
             
@@ -201,13 +201,13 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                 tablesProp.add(Table.STATION);
                 tablesProp.add(Table.NETWORK);
                 queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
-                LOGGER.info("Tables clause := " + queryDefProp.getTables());
+                LOGGER.debug("Tables clause := " + queryDefProp.getTables());
 
                 // set sub fields
                 List<String> subFieldsProp = new ArrayList<String>();
                 subFieldsProp.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
                 queryDefProp.setSubFields(gdb.createCommaSeparatedList(subFieldsProp));
-                LOGGER.info("Subfields clause := " + queryDefProp.getSubFields());
+                LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
 
                 // create where clause with joins and constraints
                 StringBuilder whereClauseProp = new StringBuilder();
@@ -221,7 +221,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                 whereClauseProp.append(" AND ");
                 whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
                 queryDefProp.setWhereClause(whereClauseProp.toString());
-                LOGGER.info("Where clause := " + queryDefProp.getWhereClause());
+                LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
 
                 // evaluate the database query
                 ICursor cursorProp = queryDefProp.evaluate();
@@ -327,10 +327,10 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
      */
     public Collection<ObservationOffering> getProceduresAsObservationOfferings() throws IOException
     {
-        LOGGER.info("getObservationOfferings() is called.");
+        LOGGER.debug("getObservationOfferings() is called.");
         
         if (observationOfferingsCache != null) { //TODO Do we need to update this cache at some point?
-            LOGGER.info("Using Offerings cache.");
+            LOGGER.debug("Using Offerings cache.");
         }
         else { 
             
@@ -373,7 +373,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
             for (ObservationOffering offering : offerings) {
                 
-                LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
+                LOGGER.debug("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
                 
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 // request the timeperiod

@@ -35,8 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.n52.gml.Identifier;
 import org.n52.om.observation.MultiValueObservation;
@@ -46,6 +44,7 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGdbForObservations;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
@@ -163,7 +162,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
                 whereClauseParameterAppend.append(" AND ");
                 whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
             } else {
-                LOGGER.warning("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
+                LOGGER.warn("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
             }
         }
 
@@ -233,9 +232,9 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 				}
 			}
 		} catch (AutomationException e) {
-			LOGGER.warning(e.getMessage());
+			LOGGER.warn(e.getMessage(), e);
 		} catch (IOException e) {
-			LOGGER.warning(e.getMessage());
+			LOGGER.warn(e.getMessage(), e);
 		}		
 	}
 
@@ -244,16 +243,13 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 			AutomationException {
 		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
-        if (LOGGER.isLoggable(Level.INFO))
-        	LOGGER.info("Table clause := " + queryDef.getTables());
+       	LOGGER.debug("Table clause := " + queryDef.getTables());
 
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-        if (LOGGER.isLoggable(Level.INFO))
-        	LOGGER.info("Subfields clause := " + queryDef.getSubFields());
+       	LOGGER.debug("Subfields clause := " + queryDef.getSubFields());
 
         queryDef.setWhereClause(whereClause);
-        if (LOGGER.isLoggable(Level.INFO))
-        	LOGGER.info("Where clause := " + queryDef.getWhereClause());
+       	LOGGER.debug("Where clause := " + queryDef.getWhereClause());
 
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
