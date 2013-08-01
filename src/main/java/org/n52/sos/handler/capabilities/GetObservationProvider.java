@@ -22,16 +22,32 @@
  */
 package org.n52.sos.handler.capabilities;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GetObservationProvider extends AbstractMetadataProvider {
 
 	private static final String OPERATION_NAME = "GetObservation";
+	private List<Parameter> parameters;
 
+	public GetObservationProvider() {
+		parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter("responseFormat", Arrays.asList(new String[] {
+			"<ows:Value>http://www.opengis.net/om/2.0</ows:Value>",
+			"<ows:Value>http://aqd.ec.europa.eu/aqd/0.3.7c</ows:Value>"
+		})));
+		parameters.add(new Parameter.AnyValueParameter("observedProperty"));
+		parameters.add(new Parameter.AnyValueParameter("procedure"));
+		parameters.add(new Parameter.AnyValueParameter("offering"));
+		parameters.add(new Parameter.AnyValueParameter("temporalFilter"));
+		parameters.add(new Parameter.AnyValueParameter("spatialFilter"));
+		parameters.add(new Parameter.AnyValueParameter("featureOfInterest"));
+	}
 	
 	@Override
 	protected String getGetSubUrl() {
-		return "/GetObservation?f=xml";
+		return "/GetObservation?f=xml&amp;";
 	}
 
 	@Override
@@ -41,8 +57,7 @@ public class GetObservationProvider extends AbstractMetadataProvider {
 
 	@Override
 	protected List<Parameter> getParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.parameters;
 	}
 	
 }

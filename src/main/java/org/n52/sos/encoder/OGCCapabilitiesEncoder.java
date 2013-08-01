@@ -92,7 +92,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         String[] keywordArray = sd.getKeywordArray();
         String keywordElement = "<ows:Keywords>";
         for (int i = 0; i < keywordArray.length; i++) {
-            keywordElement += "<ows:Keyword>" + keywordArray[i] + "</ows:Keyword>";
+            keywordElement += "<ows:Keyword>" + keywordArray[i].trim() + "</ows:Keyword>";
         }
         keywordElement += "</ows:Keywords>";
         replace(templateCapabilites, SERVICE_KEYWORDS, keywordElement);
