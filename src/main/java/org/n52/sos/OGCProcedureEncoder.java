@@ -25,9 +25,9 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.Procedure;
+import org.n52.util.logging.Logger;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -66,7 +66,7 @@ public class OGCProcedureEncoder extends AbstractEncoder {
 	        responseTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
 	        procedureTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
 		} catch (IOException e) {
-			Logger.getLogger(OGCProcedureEncoder.class.getName()).warning(e.getMessage());
+			Logger.getLogger(OGCProcedureEncoder.class.getName()).warn(e.getMessage(), e);
 		}
         
     }

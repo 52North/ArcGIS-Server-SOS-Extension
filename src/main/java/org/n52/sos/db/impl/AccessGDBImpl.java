@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
@@ -43,6 +42,7 @@ import org.n52.sos.db.AccessGdbForObservations;
 import org.n52.sos.db.AccessGdbForOfferings;
 import org.n52.sos.db.AccessGdbForProcedures;
 import org.n52.sos.db.InsertGdbForObservations;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.carto.IMapServer3;
 import com.esri.arcgis.carto.IMapServerDataAccess;
@@ -204,8 +204,8 @@ public class AccessGDBImpl implements AccessGDB {
      */
     public ServiceDescription getServiceDescription() throws IOException
     {
-        if(this.serviceDescription == null) {
-            LOGGER.info("Creating new ServiceDescription.");
+        if (this.serviceDescription == null) {
+            LOGGER.verbose("Creating new ServiceDescription.");
             
             String title = sos.getSosTitle();
             String description = sos.getSosDescription();
@@ -435,8 +435,8 @@ public class AccessGDBImpl implements AccessGDB {
         // name.
         IRow feature = (IRow) cursor.nextRow();
         while (feature != null) {
-            LOGGER.info("");
-            LOGGER.info("#################################");
+            LOGGER.debug("");
+            LOGGER.debug("#################################");
 
             for (int index = 0; index < fieldCount; index++) {
                 String tmp = fields.getField(index).getName();
@@ -467,7 +467,7 @@ public class AccessGDBImpl implements AccessGDB {
                     tmp = tmp + " = (raster)";
                     break;
                 }
-                LOGGER.info(tmp);
+                LOGGER.debug(tmp);
             }
             feature = (IRow) cursor.nextRow();
         }

@@ -23,14 +23,13 @@
 
 package org.n52.sos.handler;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.n52.oxf.valueDomains.time.ITime;
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.db.AccessGDB;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -63,8 +62,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
             String[] responseProperties) throws Exception
     {
-    	if (LOGGER.isLoggable(Level.INFO))
-    		LOGGER.info("Start " + getOperationName() + " query.");
+   		LOGGER.debug("Start " + getOperationName() + " query.");
         
     	if (responseProperties == null) responseProperties = new String[1];
     	

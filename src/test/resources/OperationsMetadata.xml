@@ -1,0 +1,392 @@
+<ows:OperationsMetadata>
+	<ows:Operation name="GetCapabilities">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/kvp?" />
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="AcceptFormats">
+			<ows:AllowedValues>
+				<ows:Value>text/xml</ows:Value>
+				<ows:Value>application/zip</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="updateSequence">
+			<ows:AllowedValues>
+				<ows:Value>ANY</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="Sections">
+			<ows:AllowedValues>
+				<ows:Value>ServiceIdentification</ows:Value>
+				<ows:Value>ServiceProvider</ows:Value>
+				<ows:Value>OperationsMetadata</ows:Value>
+				<ows:Value>FilterCapabilities</ows:Value>
+				<ows:Value>InsertionCapabilities</ows:Value>
+				<ows:Value>Contents</ows:Value>
+				<ows:Value>All</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="AcceptVersions">
+			<ows:AllowedValues>
+				<ows:Value>2.0.0</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="GetResult">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/kvp?" />
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="featureOfInterest">
+			<ows:AnyValue />
+		</ows:Parameter>
+		<ows:Parameter name="offering">
+			<ows:AllowedValues>
+				<ows:Value>o2</ows:Value>
+				<ows:Value>o1</ows:Value>
+				<ows:Value>test_offering_6</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="observedProperty">
+			<ows:AllowedValues>
+				<ows:Value>temp</ows:Value>
+				<ows:Value>test_observable_property_6</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="GetObservation">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/kvp?" />
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="featureOfInterest">
+			<ows:AllowedValues>
+				<ows:Value>ANY</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="spatialFilter">
+			<ows:AllowedValues>
+				<ows:Range>
+					<ows:MinimumValue>0.123212 2.40110851</ows:MinimumValue>
+					<ows:MaximumValue>0.98009 21.40110852</ows:MaximumValue>
+				</ows:Range>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="responseFormat">
+			<ows:AllowedValues>
+				<ows:Value>http://www.opengis.net/om/2.0</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="temporalFilter">
+			<ows:AllowedValues>
+				<ows:Range>
+					<ows:MinimumValue>2012-07-16T13:30:00.000+02:00</ows:MinimumValue>
+					<ows:MaximumValue>2012-11-19T13:11:00.000+01:00</ows:MaximumValue>
+				</ows:Range>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="offering">
+			<ows:AllowedValues>
+				<ows:Value>urn:ogc:object:feature:Sensor:33D466C0F97F047351A794D2F678C3D06DBD9B86/observations</ows:Value>
+				<ows:Value>o2</ows:Value>
+				<ows:Value>o1</ows:Value>
+				<ows:Value>sensoryou</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:8308B7F482CB055BA49F57E2C660112350DDFB50/observations</ows:Value>
+				<ows:Value>o3</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:D7B0B7C23619CF2262902D00F17B330EAB5029AE/observations</ows:Value>
+				<ows:Value>test_offering_5</ows:Value>
+				<ows:Value>test_offering_4</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:3413E42E911503ED9591575F41984FFA9DC83015/observations</ows:Value>
+				<ows:Value>test_offering_6</ows:Value>
+				<ows:Value>test_offering_1</ows:Value>
+				<ows:Value>test_offering_3</ows:Value>
+				<ows:Value>test_offering_2</ows:Value>
+				<ows:Value>topolino</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="observedProperty">
+			<ows:AllowedValues>
+				<ows:Value>ANY</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="procedure">
+			<ows:AllowedValues>
+				<ows:Value>s2</ows:Value>
+				<ows:Value>s1</ows:Value>
+				<ows:Value>sensorme</ows:Value>
+				<ows:Value>pippo</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:D7B0B7C23619CF2262902D00F17B330EAB5029AE</ows:Value>
+				<ows:Value>http://www.example.org/sensors/101</ows:Value>
+				<ows:Value>http://www.example.org/sensors/102</ows:Value>
+				<ows:Value>http://www.example.org/sensors/103</ows:Value>
+				<ows:Value>http://www.example.org/sensors/104</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:33D466C0F97F047351A794D2F678C3D06DBD9B86</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:3413E42E911503ED9591575F41984FFA9DC83015</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:8308B7F482CB055BA49F57E2C660112350DDFB50</ows:Value>
+				<ows:Value>http://www.example.org/sensors/105</ows:Value>
+				<ows:Value>http://www.example.org/sensors/106</ows:Value>
+				<ows:Value>s3</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="InsertResult">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+	</ows:Operation>
+	<ows:Operation name="GetResultTemplate">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/kvp?" />
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="offering">
+			<ows:AllowedValues>
+				<ows:Value>o2</ows:Value>
+				<ows:Value>o1</ows:Value>
+				<ows:Value>test_offering_6</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="observedProperty">
+			<ows:AllowedValues>
+				<ows:Value>temp</ows:Value>
+				<ows:Value>test_observable_property_6</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="InsertResultTemplate">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+	</ows:Operation>
+	<ows:Operation name="DeleteSensor">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="procedure">
+			<ows:AllowedValues>
+				<ows:Value>s2</ows:Value>
+				<ows:Value>s1</ows:Value>
+				<ows:Value>sensorme</ows:Value>
+				<ows:Value>pippo</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:D7B0B7C23619CF2262902D00F17B330EAB5029AE</ows:Value>
+				<ows:Value>http://www.example.org/sensors/101</ows:Value>
+				<ows:Value>http://www.example.org/sensors/102</ows:Value>
+				<ows:Value>http://www.example.org/sensors/103</ows:Value>
+				<ows:Value>http://www.example.org/sensors/104</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:33D466C0F97F047351A794D2F678C3D06DBD9B86</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:3413E42E911503ED9591575F41984FFA9DC83015</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:8308B7F482CB055BA49F57E2C660112350DDFB50</ows:Value>
+				<ows:Value>http://www.example.org/sensors/105</ows:Value>
+				<ows:Value>http://www.example.org/sensors/106</ows:Value>
+				<ows:Value>s3</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="DescribeSensor">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/kvp?" />
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="procedureDescriptionFormat">
+			<ows:AllowedValues>
+				<ows:Value>http://www.opengis.net/sensorML/1.0.1</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="procedure">
+			<ows:AllowedValues>
+				<ows:Value>s2</ows:Value>
+				<ows:Value>s1</ows:Value>
+				<ows:Value>sensorme</ows:Value>
+				<ows:Value>pippo</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:D7B0B7C23619CF2262902D00F17B330EAB5029AE</ows:Value>
+				<ows:Value>http://www.example.org/sensors/101</ows:Value>
+				<ows:Value>http://www.example.org/sensors/102</ows:Value>
+				<ows:Value>http://www.example.org/sensors/103</ows:Value>
+				<ows:Value>http://www.example.org/sensors/104</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:33D466C0F97F047351A794D2F678C3D06DBD9B86</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:3413E42E911503ED9591575F41984FFA9DC83015</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:8308B7F482CB055BA49F57E2C660112350DDFB50</ows:Value>
+				<ows:Value>http://www.example.org/sensors/105</ows:Value>
+				<ows:Value>http://www.example.org/sensors/106</ows:Value>
+				<ows:Value>s3</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="UpdateSensorDescription">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="description">
+			<ows:AnyValue />
+		</ows:Parameter>
+		<ows:Parameter name="procedureDescriptionFormat">
+			<ows:AllowedValues>
+				<ows:Value>http://www.opengis.net/sensorML/1.0.1</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="procedure">
+			<ows:AllowedValues>
+				<ows:Value>s2</ows:Value>
+				<ows:Value>s1</ows:Value>
+				<ows:Value>sensorme</ows:Value>
+				<ows:Value>pippo</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:D7B0B7C23619CF2262902D00F17B330EAB5029AE</ows:Value>
+				<ows:Value>http://www.example.org/sensors/101</ows:Value>
+				<ows:Value>http://www.example.org/sensors/102</ows:Value>
+				<ows:Value>http://www.example.org/sensors/103</ows:Value>
+				<ows:Value>http://www.example.org/sensors/104</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:33D466C0F97F047351A794D2F678C3D06DBD9B86</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:3413E42E911503ED9591575F41984FFA9DC83015</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:8308B7F482CB055BA49F57E2C660112350DDFB50</ows:Value>
+				<ows:Value>http://www.example.org/sensors/105</ows:Value>
+				<ows:Value>http://www.example.org/sensors/106</ows:Value>
+				<ows:Value>s3</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="InsertObservation">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="observation">
+			<ows:AnyValue />
+			<ows:DataType
+				ows:reference="http://schemas.opengis.net/om/2.0/observation.xsd#OM_Observation" />
+		</ows:Parameter>
+		<ows:Parameter name="offering">
+			<ows:AllowedValues>
+				<ows:Value>urn:ogc:object:feature:Sensor:33D466C0F97F047351A794D2F678C3D06DBD9B86/observations</ows:Value>
+				<ows:Value>o2</ows:Value>
+				<ows:Value>o1</ows:Value>
+				<ows:Value>sensoryou</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:8308B7F482CB055BA49F57E2C660112350DDFB50/observations</ows:Value>
+				<ows:Value>o3</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:D7B0B7C23619CF2262902D00F17B330EAB5029AE/observations</ows:Value>
+				<ows:Value>test_offering_5</ows:Value>
+				<ows:Value>test_offering_4</ows:Value>
+				<ows:Value>urn:ogc:object:feature:Sensor:3413E42E911503ED9591575F41984FFA9DC83015/observations</ows:Value>
+				<ows:Value>test_offering_6</ows:Value>
+				<ows:Value>test_offering_1</ows:Value>
+				<ows:Value>test_offering_3</ows:Value>
+				<ows:Value>test_offering_2</ows:Value>
+				<ows:Value>topolino</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="GetObservationById">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="observation">
+			<ows:AllowedValues>
+				<ows:Value>test_observation_1</ows:Value>
+				<ows:Value>test_observation_2</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="GetFeatureOfInterest">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Get
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/kvp?" />
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="featureOfInterest">
+			<ows:AllowedValues>
+				<ows:Value>ANY</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="spatialFilter">
+			<ows:AllowedValues>
+				<ows:Range>
+					<ows:MinimumValue>0.123212 2.40110851</ows:MinimumValue>
+					<ows:MaximumValue>0.98009 21.40110852</ows:MaximumValue>
+				</ows:Range>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="observedProperty">
+			<ows:AllowedValues>
+				<ows:Value>ANY</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="procedure">
+			<ows:AllowedValues>
+				<ows:Value>ANY</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Operation name="InsertSensor">
+		<ows:DCP>
+			<ows:HTTP>
+				<ows:Post
+					xlink:href="http://sensorweb.demo.52north.org/52n-sos-webapp-4.0.0-Beta1/sos/soap" />
+			</ows:HTTP>
+		</ows:DCP>
+		<ows:Parameter name="observableProperty">
+			<ows:AnyValue />
+		</ows:Parameter>
+		<ows:Parameter name="procedureDescriptionFormat">
+			<ows:AllowedValues>
+				<ows:Value>http://www.opengis.net/sensorML/1.0.1</ows:Value>
+			</ows:AllowedValues>
+		</ows:Parameter>
+		<ows:Parameter name="procedureDescription">
+			<ows:AnyValue />
+		</ows:Parameter>
+		<ows:Parameter name="metadata">
+			<ows:AnyValue />
+			<ows:DataType
+				ows:reference="http://schemas.opengis.net/sos/2.0/sosInsertionCapabilities.xsd#InsertionCapabilities" />
+		</ows:Parameter>
+	</ows:Operation>
+	<ows:Parameter name="service">
+		<ows:AllowedValues>
+			<ows:Value>SOS</ows:Value>
+		</ows:AllowedValues>
+	</ows:Parameter>
+	<ows:Parameter name="version">
+		<ows:AllowedValues>
+			<ows:Value>2.0.0</ows:Value>
+		</ows:AllowedValues>
+	</ows:Parameter>
+</ows:OperationsMetadata>

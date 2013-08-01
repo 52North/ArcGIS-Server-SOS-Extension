@@ -20,21 +20,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.sos.handler.capabilities;
 
-import java.io.IOException;
-import java.io.InputStream;
+public interface OperationsMetadataProvider {
 
-import org.n52.util.CommonUtilities;
+	public String createMarkup();
 
-/**
- * @author <a href="mailto:broering@52north.org">Arne Broering</a>
- */
-public abstract class AbstractEncoder {
-
-    protected static String readText(InputStream in) throws IOException {
-        return CommonUtilities.readResource(in);
-    }
-    
-    
 }

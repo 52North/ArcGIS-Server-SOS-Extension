@@ -60,7 +60,7 @@ public class AccessGdbForOfferingsIT extends EsriTestBase {
             procedureIDs.add("procedureID");
             ContactDescription serviceContact = new ContactDescription("", "", "", "", "", "", "", "", "", "");
             ServiceDescription serviceDescription = new ServiceDescription("title", "description", new String[]{"keyword"}, "providerName", "providerSite", new ContactDescription[]{serviceContact}, procedureIDs); 
-            String caps = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDescription, offerings);
+            String caps = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDescription, offerings, null);
             
             OutputStream out = new FileOutputStream("c:/temp/capabilities.xml");
             out.write(caps.getBytes());

@@ -27,10 +27,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGdbForProcedures;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
@@ -58,7 +58,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      * @throws IOException
      */
     public List<String> getProcedureIdList() throws AutomationException, IOException {
-        LOGGER.info("Querying procedure list from DB.");
+        LOGGER.debug("Querying procedure list from DB.");
         
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         

@@ -26,10 +26,10 @@ package org.n52.sos;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
+import org.n52.util.logging.Logger;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -67,7 +67,7 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     		observationEnvelopeTemplate = AbstractEncoder.readText(
         			OGCObservationSWECommonEncoder.class.getResourceAsStream(observationEnvelopeTemplateFile));
     	} catch (IOException e) {
-    		LOGGER.warning(e.getMessage());
+    		LOGGER.warn(e.getMessage(), e);
     	}
     }
     
