@@ -30,12 +30,12 @@ import java.util.logging.Logger;
 import org.junit.Assert;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
-import org.n52.sos.JSONEncoder;
-import org.n52.sos.JSONObservationEncoder;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
+import org.n52.sos.encoder.JSONObservationEncoder;
 import org.n52.sos.it.EsriTestBase;
+import org.n52.sos.json.JSONEncoder;
 
 import com.esri.arcgis.server.json.JSONObject;
 

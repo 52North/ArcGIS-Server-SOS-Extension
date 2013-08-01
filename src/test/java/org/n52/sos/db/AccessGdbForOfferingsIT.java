@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.Test;
-import org.n52.sos.JSONEncoder;
-import org.n52.sos.OGCCapabilitiesEncoder;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
+import org.n52.sos.encoder.OGCCapabilitiesEncoder;
 import org.n52.sos.it.EsriTestBase;
+import org.n52.sos.json.JSONEncoder;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>

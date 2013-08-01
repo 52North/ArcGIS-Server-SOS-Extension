@@ -31,7 +31,10 @@ import java.util.Scanner;
  */
 public class CommonUtilities {
     
-    /**
+    public static final String NEW_LINE_CHAR = System.getProperty("line.separator");
+	private static final String TAB_CHAR = "\t";
+
+	/**
      * produces a single String representation of a stringArray.
      */
     public static String arrayToString(String[] stringArray) {
@@ -53,9 +56,25 @@ public class CommonUtilities {
 		StringBuilder sb = new StringBuilder();
 		while (sc.hasNext()) {
 			sb.append(sc.nextLine());
-			sb.append(System.getProperty("line.separator"));
+			sb.append(NEW_LINE_CHAR);
 		}
 		sc.close();
+		return sb.toString();
+	}
+
+	public static String convertExceptionToString(Exception e) {
+		StringBuilder sb = new StringBuilder(e.getMessage());
+		sb.append(":");
+		sb.append(NEW_LINE_CHAR);
+
+		int count = 0;
+		for (StackTraceElement ste : e.getStackTrace()) {
+			sb.append(TAB_CHAR);
+			sb.append(ste.toString());
+			if (++count < e.getStackTrace().length) 
+				sb.append(NEW_LINE_CHAR);
+		}
+		
 		return sb.toString();
 	}
     

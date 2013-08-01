@@ -20,12 +20,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.handler.capabilities;
+package org.n52.ows;
 
-public interface OperationsMetadataProvider {
+import org.n52.util.CommonUtilities;
 
-	public String createMarkup();
+public class NoApplicableCodeException extends ExceptionReport {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String CODE = "NoApplicableCode";
+
+	public NoApplicableCodeException(String text) {
+		super(CODE, text);
+	}
 	
-	public void setServiceURL(String url);
+	public NoApplicableCodeException(Exception e) {
+		super(CODE, CommonUtilities.convertExceptionToString(e));
+	}
 
 }

@@ -20,21 +20,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos;
+package org.n52.ows;
 
-import java.io.IOException;
-import java.io.InputStream;
+public class InvalidParameterValueException extends ExceptionReport {
 
-import org.n52.util.CommonUtilities;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String CODE = "InvalidParameterValue";
+	
+	public InvalidParameterValueException(String text) {
+		super(CODE, text);
+	}
 
-/**
- * @author <a href="mailto:broering@52north.org">Arne Broering</a>
- */
-public abstract class AbstractEncoder {
-
-    protected static String readText(InputStream in) throws IOException {
-        return CommonUtilities.readResource(in);
-    }
-    
-    
 }

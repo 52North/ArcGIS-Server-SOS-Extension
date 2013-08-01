@@ -25,8 +25,8 @@ package org.n52.sos.handler;
 import java.util.Collection;
 
 import org.n52.om.sampling.Feature;
-import org.n52.sos.OGCFeatureEncoder;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.encoder.OGCFeatureEncoder;
 
 import com.esri.arcgis.server.json.JSONObject;
 

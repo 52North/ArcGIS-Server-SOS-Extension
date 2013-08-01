@@ -40,14 +40,24 @@ public abstract class AbstractMetadataProvider implements OperationsMetadataProv
 		InputStream res = AbstractMetadataProvider.class.getResourceAsStream(templateFile);
 		template = CommonUtilities.readResource(res);
 	}
+
+	private String serviceURL;
 	
 
-
+	@Override
+	public void setServiceURL(String url) {
+		this.serviceURL = url;
+	}
+	
 	@Override
 	public String createMarkup() {
 		return template.replace(OPERATION_NAME_KEY, getOperationName()).
 				replace(PARAMETERS_NAME_KEY, createParametersMarkup()).
-				replace(GET_URL_KEY, getGetUrl());
+				replace(GET_URL_KEY, createGetUrl());
+	}
+
+	private String createGetUrl() {
+		return this.serviceURL.concat(getGetSubUrl());
 	}
 
 	private String createParametersMarkup() {
@@ -56,15 +66,16 @@ public abstract class AbstractMetadataProvider implements OperationsMetadataProv
 		if (params == null || params.size() == 0) return "";
 		
 		StringBuilder sb = new StringBuilder();
+		String sep = CommonUtilities.NEW_LINE_CHAR;
 		for (Parameter parameter : params) {
 			sb.append(parameter.createMarkup());
-			sb.append(System.getProperty("line.separator"));
+			sb.append(sep);
 		}
 		
 		return sb.toString();
 	}
 	
-	protected abstract String getGetUrl();
+	protected abstract String getGetSubUrl();
 
 	protected abstract String getOperationName();
 

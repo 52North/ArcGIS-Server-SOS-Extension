@@ -20,12 +20,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.handler.capabilities;
+package org.n52.ows;
 
-public interface OperationsMetadataProvider {
+public class VersionNegotiationFailedException extends ExceptionReport {
 
-	public String createMarkup();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String CODE = "VersionNegotiationFailed";
 	
-	public void setServiceURL(String url);
-
+	public VersionNegotiationFailedException(String text) {
+		super(CODE, text);
+	}
+	
+	
 }

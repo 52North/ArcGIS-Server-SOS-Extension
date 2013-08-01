@@ -24,6 +24,8 @@ package org.n52.util.logging;
 
 import java.io.IOException;
 
+import org.n52.util.CommonUtilities;
+
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ILog2;
 
@@ -74,15 +76,10 @@ public class Logger {
 	
 	private String createConcatenatedMessage(String message, Exception e) {
 		StringBuilder sb = new StringBuilder(message);
-		String sep = System.getProperty("line.separator");
 		sb.append(":");
-		sb.append(sep);
+		sb.append(CommonUtilities.NEW_LINE_CHAR);
 		
-		for (StackTraceElement ste : e.getStackTrace()) {
-			sb.append("\t");
-			sb.append(ste.toString());
-			sb.append(sep);
-		}
+		sb.append(CommonUtilities.convertExceptionToString(e));
 		
 		return sb.toString();
 	}

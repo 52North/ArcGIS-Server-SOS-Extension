@@ -69,7 +69,7 @@ public class Parameter {
 		StringBuilder sb = new StringBuilder();
 		for (String string : values) {
 			sb.append(string);
-			sb.append(System.getProperty("line.separator"));
+			sb.append(CommonUtilities.NEW_LINE_CHAR);
 		}
 		return sb.toString();
 	}

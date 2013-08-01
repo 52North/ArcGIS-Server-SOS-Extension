@@ -22,16 +22,22 @@
  */
 package org.n52.sos.handler.capabilities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetObservationByIDProvider extends AbstractMetadataProvider {
 
 	private static final String OPERATION_NAME = "GetObservationByID";
+	private List<Parameter> parameters;
 
+	public GetObservationByIDProvider() {
+		parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter.AnyValueParameter("observation"));
+	}
 	
 	@Override
-	protected String getGetUrl() {
-		return "/GetObservationByID?f=xml";
+	protected String getGetSubUrl() {
+		return "/GetObservationByID?f=xml&amp;";
 	}
 
 	@Override
@@ -41,8 +47,7 @@ public class GetObservationByIDProvider extends AbstractMetadataProvider {
 
 	@Override
 	protected List<Parameter> getParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		return parameters;
 	}
 	
 }
