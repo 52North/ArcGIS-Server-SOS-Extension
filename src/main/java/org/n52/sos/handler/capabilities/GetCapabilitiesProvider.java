@@ -31,7 +31,7 @@ public class GetCapabilitiesProvider extends AbstractMetadataProvider {
 
 	
 	@Override
-	protected String getGetUrl() {
+	protected String getGetSubUrl() {
 		return "/GetCapabilities?f=xml";
 	}
 

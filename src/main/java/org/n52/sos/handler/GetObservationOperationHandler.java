@@ -25,6 +25,7 @@ package org.n52.sos.handler;
 import java.util.Map;
 
 import org.n52.om.observation.MultiValueObservation;
+import org.n52.ows.InvalidParameterValueException;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.encoder.AQDObservationEncoder;
@@ -116,7 +117,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             result = new OGCObservationSWECommonEncoder().wrapInEnvelope(result);
         }
         else {
-            throw new IllegalArgumentException("Specified responseFormat '" + responseFormat + "' is unsupported. Please use either '"+Constants.RESPONSE_FORMAT_OM+"', '"+Constants.RESPONSE_FORMAT_AQ+"', or '"+Constants.RESPONSE_FORMAT_RDF+"'.");
+            throw new InvalidParameterValueException("Specified responseFormat '" + responseFormat + "' is unsupported. Please use either '"+Constants.RESPONSE_FORMAT_OM+"', '"+Constants.RESPONSE_FORMAT_AQ+"', or '"+Constants.RESPONSE_FORMAT_RDF+"'.");
         }
         
         return result.getBytes("utf-8");

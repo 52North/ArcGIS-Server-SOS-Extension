@@ -42,17 +42,26 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 	private static final String GET_CAPABILITIES_OPERATION_NAME = "GetCapabilities";
 	private static ArrayList<OperationsMetadataProvider> operationsMetadataProviders;
 
-	static {
-		ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
-		
-		operationsMetadataProviders = new ArrayList<OperationsMetadataProvider>();
-		for (OperationsMetadataProvider omp : loader) {
-			operationsMetadataProviders.add(omp);
-		}
-	}
 	
     public GetCapabilitiesOperationHandler() {
         super();
+    }
+    
+    @Override
+    public void initialize(String urlSosExtension) {
+    	super.initialize(urlSosExtension);
+    	
+        synchronized (GetCapabilitiesOperationHandler.class) {
+        	if (operationsMetadataProviders == null) {
+            	ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
+        		
+        		operationsMetadataProviders = new ArrayList<OperationsMetadataProvider>();
+        		for (OperationsMetadataProvider omp : loader) {
+        			omp.setServiceURL(sosUrlExtension);
+        			operationsMetadataProviders.add(omp);
+        		}
+            }	
+		}
     }
     
     /**

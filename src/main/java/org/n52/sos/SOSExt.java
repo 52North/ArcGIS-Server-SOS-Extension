@@ -36,6 +36,9 @@ import java.util.ServiceLoader;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
 import org.n52.ows.ExceptionReport;
+import org.n52.ows.InvalidParameterValueException;
+import org.n52.ows.InvalidRequestException;
+import org.n52.ows.NoApplicableCodeException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -44,6 +47,7 @@ import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.db.impl.AccessGDBImpl;
 import org.n52.sos.encoder.JSONObservationEncoder;
+import org.n52.sos.handler.OGCOperationRequestHandler;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.sos.json.JSONEncoder;
 import org.n52.util.ExceptionSupporter;
@@ -130,7 +134,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         LOGGER.info("Start initializing SOE");
         
         this.mapServerDataAccess = (IMapServerDataAccess) soh.getServerObject();
-        initializeOperationHandlers();
         
         LOGGER.info(this.getClass().getName() + " initialized.");
     }
@@ -141,7 +144,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     	this.operationHandlers = new ArrayList<OperationRequestHandler>();
     	
     	for (OperationRequestHandler h : loader) {
-			h.setSosUrlExtension(this.urlSosExtension);
+			h.initialize(this.urlSosExtension);
 			this.operationHandlers.add(h);
 		}
     	
@@ -212,6 +215,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         
         resolveServiceProperties();
      
+        initializeOperationHandlers();
+        
         try {
             // create database access
             this.geoDB = new AccessGDBImpl(this);
@@ -413,7 +418,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             } else {
                 
                 if (geoDB == null) {
-                    throw new RuntimeException ("Database connection null.");
+                    throw new NullPointerException("Database connection null.");
                 }
                 
                 // extract operation input parameters to Map:
@@ -449,24 +454,33 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             }
         } catch (ExceptionReport e) {
             LOGGER.info("OWS ExceptionReport thrown: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            return e.toString().getBytes("utf-8");
+            return prepareExceptionResponse(e, responseProperties);
         } catch (Exception e) {
             LOGGER.severe("Error while handle REST request: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
-            
-            // send out error:
-            return ServerUtilities.sendError(3, "An exception occurred: " + e.toString(), ExceptionSupporter.createStringArrayFromStackTrace(e.getStackTrace())).getBytes("utf-8");
+            return prepareExceptionResponse(new NoApplicableCodeException(e), responseProperties);
         }
     }
 
     
-    private OperationRequestHandler resolveHandler(String operationName) throws Exception {
+    private byte[] prepareExceptionResponse(ExceptionReport e,
+			String[] responseProperties) {
+    	responseProperties[0] = OGCOperationRequestHandler.DEFAULT_RESPONSE_PROPERTIES;
+    	try {
+			return e.toString().getBytes("utf-8");
+		} catch (UnsupportedEncodingException e1) {
+			LOGGER.severe(e1.getMessage(), e1);
+			throw new RuntimeException(e1);
+		}
+	}
+
+	private OperationRequestHandler resolveHandler(String operationName) throws Exception {
     	for (OperationRequestHandler h : this.operationHandlers) {
 			if (h.canHandle(operationName)) {
 				return h;
 			}
 		}
     	
-    	throw new Exception("Operation '" + operationName + "' not supported on this resource.");
+    	throw new InvalidRequestException("Operation '" + operationName + "' not supported on this resource.");
     }
 
 	/*************************************************************************************
@@ -645,7 +659,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         LOGGER.info("getResource() is called.");
 
         if (geoDB == null) {
-            throw new Exception("Database access object not instantiated.");
+            throw new NullPointerException("Database access object not instantiated.");
         }
 
         // this.serverLog.addMessage(1, 8000, "getResource() is called.");
@@ -682,7 +696,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             } else if (proceduresFromDB.size() > 1) {
                 json = JSONEncoder.encodeProcedures(proceduresFromDB);
             } else if (proceduresFromDB.size() == 0) {
-                throw new Exception("Procedure with name: '" + procedureID + "' not in DB.");
+                throw new InvalidParameterValueException("Procedure with name: '" + procedureID + "' not in DB.");
             }
         }
 

@@ -30,7 +30,7 @@ public class GetObservationProvider extends AbstractMetadataProvider {
 
 	
 	@Override
-	protected String getGetUrl() {
+	protected String getGetSubUrl() {
 		return "/GetObservation?f=xml";
 	}
 

@@ -24,6 +24,9 @@
 package org.n52.sos.handler;
 
 
+import org.n52.ows.ExceptionReport;
+import org.n52.ows.InvalidParameterValueException;
+import org.n52.ows.MissingParameterValueException;
 import org.n52.oxf.valueDomains.time.ITime;
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.oxf.valueDomains.time.ITimePosition;
@@ -40,7 +43,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
 
     private static final String SERVICE_KEY = "service";
 	private static final String REQUEST_KEY = "request";
-	private static final String DEFAULT_RESPONSE_PROPERTIES = "{ \"Content-Disposition\":\"inline; filename=\\\"ogc-sos-response.xml\\\"\", \"Content-Type\":\"application/xml\" }";
+	public static final String DEFAULT_RESPONSE_PROPERTIES = "{ \"Content-Disposition\":\"inline; filename=\\\"ogc-sos-response.xml\\\"\", \"Content-Type\":\"application/xml\" }";
 
 	protected static Logger LOGGER = Logger.getLogger(OGCOperationRequestHandler.class.getName());
     
@@ -55,7 +58,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     }
     
     @Override
-    public void setSosUrlExtension(String urlSosExtension) {
+    public void initialize(String urlSosExtension) {
     	this.sosUrlExtension = urlSosExtension;
     }
 
@@ -69,7 +72,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
         responseProperties[0] = DEFAULT_RESPONSE_PROPERTIES;
         
         if (inputObject == null) {
-            throw new IllegalArgumentException("Error, no parameters specified.");
+            throw new MissingParameterValueException("Error, no parameters specified.");
         }
         
         // check 'service' parameter:
@@ -87,18 +90,19 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
      * @throws IllegalArgumentException in case parameter is not given or value is not allowed.
      * 
      * @return the value of the checked parameter.
+     * @throws ExceptionReport 
      */
-    public String checkMandatoryParameter(JSONObject inputObject, String parameterName, String allowedValue) {
+    public String checkMandatoryParameter(JSONObject inputObject, String parameterName, String allowedValue) throws ExceptionReport {
         String parameterValue = null;
         if (inputObject.has(parameterName)) {
             parameterValue = inputObject.getString(parameterName);
             
             if (! parameterValue.equalsIgnoreCase(allowedValue)) {
-                throw new IllegalArgumentException("Error, '" + parameterName + "' parameter != '"+ allowedValue +"'.");
+                throw new InvalidParameterValueException("Error, '" + parameterName + "' parameter != '"+ allowedValue +"'.");
             }
         }
         else {
-            throw new IllegalArgumentException("Error, operation requires '" + parameterName + "' parameter with value '" + allowedValue + "'.");
+            throw new MissingParameterValueException("Error, operation requires '" + parameterName + "' parameter with value '" + allowedValue + "'.");
         }
         return parameterValue;
     }

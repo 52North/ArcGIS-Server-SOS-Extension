@@ -32,6 +32,7 @@ import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.handler.capabilities.OperationsMetadataProvider;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
 /**
@@ -179,16 +180,17 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     	if (operations == null || operations.size() == 0) return "";
     	
     	StringBuilder sb = new StringBuilder();
+    	String sep = CommonUtilities.NEW_LINE_CHAR;
     	sb.append("<ows:OperationsMetadata>");
-    	sb.append(System.getProperty("line.separator"));
+    	sb.append(sep);
     	
     	for (OperationsMetadataProvider omp : operations) {
 			sb.append(omp.createMarkup());
-			sb.append(System.getProperty("line.separator"));
+			sb.append(sep);
 		}
     	
     	sb.append("</ows:OperationsMetadata>");
-    	sb.append(System.getProperty("line.separator"));
+    	sb.append(sep);
     	
     	return sb.toString();
 	}

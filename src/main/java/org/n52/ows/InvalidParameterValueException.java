@@ -20,12 +20,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.handler.capabilities;
+package org.n52.ows;
 
-public interface OperationsMetadataProvider {
+public class InvalidParameterValueException extends ExceptionReport {
 
-	public String createMarkup();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String CODE = "InvalidParameterValue";
 	
-	public void setServiceURL(String url);
+	public InvalidParameterValueException(String text) {
+		super(CODE, text);
+	}
 
 }
