@@ -25,10 +25,10 @@ package org.n52.sos.handler;
 import java.util.Map;
 
 import org.n52.om.observation.MultiValueObservation;
-import org.n52.sos.AQDObservationEncoder;
 import org.n52.sos.Constants;
-import org.n52.sos.OGCObservationSWECommonEncoder;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.encoder.AQDObservationEncoder;
+import org.n52.sos.encoder.OGCObservationSWECommonEncoder;
 
 import com.esri.arcgis.server.json.JSONObject;
 

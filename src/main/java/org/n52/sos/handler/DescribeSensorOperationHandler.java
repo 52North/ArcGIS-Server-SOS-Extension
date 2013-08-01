@@ -25,9 +25,9 @@ package org.n52.sos.handler;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.n52.sos.OGCProcedureEncoder;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.encoder.OGCProcedureEncoder;
 
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONObject;

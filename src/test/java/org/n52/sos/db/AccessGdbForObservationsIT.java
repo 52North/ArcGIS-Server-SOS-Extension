@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
-import org.n52.sos.AQDObservationEncoder;
 import org.n52.sos.db.impl.SubField;
+import org.n52.sos.encoder.AQDObservationEncoder;
 import org.n52.sos.it.EsriTestBase;
 
 public class AccessGdbForObservationsIT extends EsriTestBase {

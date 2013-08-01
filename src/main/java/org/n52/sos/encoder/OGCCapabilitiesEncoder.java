@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.n52.sos;
+package org.n52.sos.encoder;
 
 import java.io.IOException;
 import java.util.Collection;

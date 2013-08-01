@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ServiceLoader;
 
-import org.n52.sos.OGCCapabilitiesEncoder;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.encoder.OGCCapabilitiesEncoder;
 import org.n52.sos.handler.capabilities.OperationsMetadataProvider;
 
 import com.esri.arcgis.server.json.JSONObject;

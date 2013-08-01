@@ -43,7 +43,9 @@ import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.db.impl.AccessGDBImpl;
+import org.n52.sos.encoder.JSONObservationEncoder;
 import org.n52.sos.handler.OperationRequestHandler;
+import org.n52.sos.json.JSONEncoder;
 import org.n52.util.ExceptionSupporter;
 import org.n52.util.logging.Logger;
 
