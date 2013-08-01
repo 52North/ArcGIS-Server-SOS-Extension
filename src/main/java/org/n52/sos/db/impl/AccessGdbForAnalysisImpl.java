@@ -24,10 +24,10 @@
 package org.n52.sos.db.impl;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.n52.sos.DBInspector;
 import org.n52.sos.db.AccessGdbForAnalysis;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.carto.IMapServer3;
 import com.esri.arcgis.carto.IMapServerDataAccess;
@@ -54,7 +54,7 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
     private DBInspector soe;
 
     public AccessGdbForAnalysisImpl(DBInspector soe) throws AutomationException, IOException {
-        LOGGER.info("Creating AccessGdbForAnalysisImpl.");
+        LOGGER.debug("Creating AccessGdbForAnalysisImpl.");
         
         this.soe = soe;
         
@@ -108,7 +108,7 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
                 json.append("Table count:", countAsString);
             }
         } catch (Exception e) {
-            LOGGER.severe(e.getLocalizedMessage());
+            LOGGER.severe(e.getLocalizedMessage(), e);
             throw new IOException(e);
         }
         
@@ -141,7 +141,7 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
                 json.append("Table count:", countAsString);
             }
         } catch (Exception e) {
-            LOGGER.severe(e.getLocalizedMessage());
+            LOGGER.severe(e.getLocalizedMessage(), e);
             
             json.append("ERROR:", "while trying to read table '" + soe.getTable() + "' with specified primary key '" + soe.getTablePkField() + "'");
         }

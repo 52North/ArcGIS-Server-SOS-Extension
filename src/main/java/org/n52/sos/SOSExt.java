@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.logging.Logger;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
@@ -46,6 +45,7 @@ import org.n52.sos.db.AccessGDB;
 import org.n52.sos.db.impl.AccessGDBImpl;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.carto.IMapServer3;
 import com.esri.arcgis.carto.IMapServerDataAccess;
@@ -61,6 +61,7 @@ import com.esri.arcgis.system.IObjectConstruct;
 import com.esri.arcgis.system.IPropertySet;
 import com.esri.arcgis.system.IRESTRequestHandler;
 import com.esri.arcgis.system.ServerUtilities;
+
 
 /**
  * The main class of this ArcGIS Server Object Extension (SOE).
@@ -123,10 +124,10 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      */
     public void init(IServerObjectHelper soh) throws IOException, AutomationException
     {
+    	Logger.init(ServerUtilities.getServerLogger());
         LOGGER.info("Start initializing SOE");
         
         this.mapServerDataAccess = (IMapServerDataAccess) soh.getServerObject();
-        
         initializeOperationHandlers();
         
         LOGGER.info(this.getClass().getName() + " initialized.");
@@ -229,9 +230,9 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         		}
         		
     		} catch (AutomationException e) {
-    			LOGGER.warning(e.getMessage());
+    			LOGGER.warn(e.getMessage());
     		} catch (IOException e) {
-    			LOGGER.warning(e.getMessage());
+    			LOGGER.warn(e.getMessage());
     		}
     	}
 
@@ -290,7 +291,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     @Override
     public String getSchema() throws IOException, AutomationException
     {
-        LOGGER.info("getSchema() is called...");
+        LOGGER.verbose("getSchema() is called...");
 
         return createSchema();
     }
@@ -445,7 +446,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
                 
             }
         } catch (ExceptionReport e) {
-            LOGGER.severe("OWS ExceptionReport thrown: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
+            LOGGER.info("OWS ExceptionReport thrown: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             return e.toString().getBytes("utf-8");
         } catch (Exception e) {
             LOGGER.severe("Error while handle REST request: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));

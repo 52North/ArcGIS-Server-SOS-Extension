@@ -25,16 +25,11 @@ package org.n52.util;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class CommonUtilities {
-    
-    static Log LOGGER = LogFactory.getLog(CommonUtilities.class);
     
     /**
      * produces a single String representation of a stringArray.

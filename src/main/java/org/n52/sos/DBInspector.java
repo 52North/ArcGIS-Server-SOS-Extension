@@ -27,11 +27,10 @@
 package org.n52.sos;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.n52.sos.db.impl.AccessGdbForAnalysisImpl;
 import org.n52.util.ExceptionSupporter;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.interop.AutomationException;
@@ -123,18 +122,18 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
     public void construct(IPropertySet propertySet) throws IOException
     {
 
-        LOGGER.info("construct() is called...");
+        LOGGER.debug("construct() is called...");
 
         // TODO --> read in maxNumOfResults from Manager
 
         try {
-            LOGGER.info("Reading properties...");
+            LOGGER.debug("Reading properties...");
 
             this.tableName = (String) propertySet.getProperty("tableToAnalyze");
             this.tablePkField = (String) propertySet.getProperty("tablePkField");
 
         } catch (Exception e) {
-            LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
+            LOGGER.severe("There was a problem while reading properties", e);
             throw new IOException(e);
         }
 
@@ -158,7 +157,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
     @Override
     public String getSchema() throws IOException, AutomationException
     {
-        LOGGER.info("getSchema() is called...");
+        LOGGER.verbose("getSchema() is called...");
 
         JSONObject arcGisSos = ServerUtilities.createResource("DB_Analyzer_for_ArcGIS_SOS_Extension", "A_DBAnalyzer_for_the_SOS_extension_for_ArcGIS_Server", false, false);
 
@@ -265,7 +264,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error while handle REST request", e);
+            LOGGER.severe("Error while handle REST request", e);
 
             // send out error:
             return ServerUtilities.sendError(3, "An exception occurred: " + e.toString(), ExceptionSupporter.createStringArrayFromStackTrace(e.getStackTrace())).getBytes("utf-8");

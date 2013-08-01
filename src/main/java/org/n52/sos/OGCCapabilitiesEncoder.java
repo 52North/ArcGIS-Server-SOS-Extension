@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.handler.capabilities.OperationsMetadataProvider;
+import org.n52.util.logging.Logger;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -73,7 +73,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
 			template = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
 			offeringTemplate = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
 		} catch (IOException e) {
-			Logger.getLogger(OGCCapabilitiesEncoder.class.getName()).warning(e.getMessage());
+			Logger.getLogger(OGCCapabilitiesEncoder.class.getName()).warn(e.getMessage(), e);
 		}
     	
     }

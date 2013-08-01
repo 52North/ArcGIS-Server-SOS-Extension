@@ -26,10 +26,10 @@ package org.n52.sos.db.impl;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import org.n52.om.sampling.Feature;
 import org.n52.sos.db.AccessGdbForFeatures;
+import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.IRow;
