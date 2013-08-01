@@ -24,7 +24,8 @@ package org.n52.sos;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
+
+import org.n52.util.CommonUtilities;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -32,18 +33,8 @@ import java.util.Scanner;
 public abstract class AbstractEncoder {
 
     protected static String readText(InputStream in) throws IOException {
-        return readResource(in);
+        return CommonUtilities.readResource(in);
     }
     
-    private static String readResource(InputStream res) {
-		Scanner sc = new Scanner(res);
-		StringBuilder sb = new StringBuilder();
-		while (sc.hasNext()) {
-			sb.append(sc.nextLine());
-			sb.append(System.getProperty("line.separator"));
-		}
-		sc.close();
-		return sb.toString();
-	}
     
 }

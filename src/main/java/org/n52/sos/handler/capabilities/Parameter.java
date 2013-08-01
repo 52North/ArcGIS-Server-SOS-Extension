@@ -25,7 +25,8 @@ package org.n52.sos.handler.capabilities;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
+
+import org.n52.util.CommonUtilities;
 
 
 public class Parameter {
@@ -36,19 +37,9 @@ public class Parameter {
 	
 	static {
 		InputStream stream = Parameter.class.getResourceAsStream("template_parameter.xml");
-		template = readResource(stream);
+		template = CommonUtilities.readResource(stream);
 	}
 	
-	private static String readResource(InputStream res) {
-		Scanner sc = new Scanner(res);
-		StringBuilder sb = new StringBuilder();
-		while (sc.hasNext()) {
-			sb.append(sc.nextLine());
-			sb.append(System.getProperty("line.separator"));
-		}
-		sc.close();
-		return sb.toString();
-	}
 	
 	private String name;
 	private List<String> values;

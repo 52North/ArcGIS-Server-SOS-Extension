@@ -24,7 +24,8 @@ package org.n52.sos.handler.capabilities;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Scanner;
+
+import org.n52.util.CommonUtilities;
 
 
 public abstract class AbstractMetadataProvider implements OperationsMetadataProvider {
@@ -37,19 +38,9 @@ public abstract class AbstractMetadataProvider implements OperationsMetadataProv
 
 	static {
 		InputStream res = AbstractMetadataProvider.class.getResourceAsStream(templateFile);
-		template = readResource(res);
+		template = CommonUtilities.readResource(res);
 	}
 	
-    public static String readResource(InputStream res) {
-		Scanner sc = new Scanner(res);
-		StringBuilder sb = new StringBuilder();
-		while (sc.hasNext()) {
-			sb.append(sc.nextLine());
-			sb.append(System.getProperty("line.separator"));
-		}
-		sc.close();
-		return sb.toString();
-	}
 
 
 	@Override

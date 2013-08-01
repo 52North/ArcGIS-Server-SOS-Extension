@@ -23,7 +23,8 @@
 package org.n52.ows;
 
 import java.io.InputStream;
-import java.util.Scanner;
+
+import org.n52.util.CommonUtilities;
 
 /**
  * Class which represents an OWS Common 1.1.0 ExceptionReport.
@@ -46,19 +47,9 @@ public class ExceptionReport extends Exception {
 	
 	static {
 		InputStream stream = ExceptionReport.class.getResourceAsStream(TEMPLATE_FILE);
-		template = readResource(stream);
+		template = CommonUtilities.readResource(stream);
 	}
 	
-	private static String readResource(InputStream res) {
-		Scanner sc = new Scanner(res);
-		StringBuilder sb = new StringBuilder();
-		while (sc.hasNext()) {
-			sb.append(sc.nextLine());
-			sb.append(System.getProperty("line.separator"));
-		}
-		sc.close();
-		return sb.toString();
-	}
 	
 	public ExceptionReport(String code, String text) {
 		super(code.concat(": ").concat(text));
