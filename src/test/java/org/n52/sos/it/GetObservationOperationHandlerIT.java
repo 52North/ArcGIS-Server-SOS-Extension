@@ -42,7 +42,7 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     {
         super.setUp();
         getObsOpHandler = new GetObservationOperationHandler();
-        getObsOpHandler.setSosUrlExtension("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
+        getObsOpHandler.initialize("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
     }
 
     /**

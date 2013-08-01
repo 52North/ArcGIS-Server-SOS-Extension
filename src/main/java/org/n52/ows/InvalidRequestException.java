@@ -20,12 +20,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.handler.capabilities;
+package org.n52.ows;
 
-public interface OperationsMetadataProvider {
+public class InvalidRequestException extends ExceptionReport {
 
-	public String createMarkup();
-	
-	public void setServiceURL(String url);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String CODE = "InvalidRequestException";
+
+	public InvalidRequestException(String text) {
+		super(CODE, text);
+	}
 
 }

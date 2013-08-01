@@ -22,7 +22,6 @@
  */
 package org.n52.sos.handler.capabilities;
 
-import java.util.Collections;
 import java.util.List;
 
 public class GetCapabilitiesProvider extends AbstractMetadataProvider {
@@ -31,8 +30,8 @@ public class GetCapabilitiesProvider extends AbstractMetadataProvider {
 
 	
 	@Override
-	protected String getGetUrl() {
-		return "/GetCapabilities?f=xml";
+	protected String getGetSubUrl() {
+		return "/GetCapabilities?f=xml&amp;";
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class GetCapabilitiesProvider extends AbstractMetadataProvider {
 
 	@Override
 	protected List<Parameter> getParameters() {
-		return Collections.singletonList((Parameter) new Parameter.AnyValueParameter("test"));
+		return null;
 	}
 
 	

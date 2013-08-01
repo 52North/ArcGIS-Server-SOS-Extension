@@ -25,9 +25,11 @@ package org.n52.sos.handler;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.n52.sos.OGCProcedureEncoder;
+import org.n52.ows.InvalidParameterValueException;
+import org.n52.ows.MissingParameterValueException;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.encoder.OGCProcedureEncoder;
 
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONObject;
@@ -63,13 +65,13 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
         // check 'procedureDescriptionFormat' parameter:
         String[] procedureDescriptionFormat = null;
         if (! inputObject.has("procedureDescriptionFormat")) {
-            throw new IllegalArgumentException("Error, operation requires 'procedureDescriptionFormat' parameter with value: '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
+            throw new MissingParameterValueException("Error, operation requires 'procedureDescriptionFormat' parameter with value: '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
         }
         else {
             procedureDescriptionFormat = inputObject.getString("procedureDescriptionFormat").split(",");
 
             if (procedureDescriptionFormat.length != 1) {
-                throw new IllegalArgumentException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
+                throw new InvalidParameterValueException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
             }
             else if (procedureDescriptionFormat[0].equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)) {
                 return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_20);
@@ -78,7 +80,7 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
                 return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_101);
             }
             else {
-                throw new IllegalArgumentException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
+                throw new InvalidParameterValueException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
             }
         }
     }

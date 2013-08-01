@@ -63,7 +63,7 @@ public interface OperationRequestHandler extends Comparable<OperationRequestHand
 	 * set the public url for the extension
 	 * @param urlSosExtension the public URL
 	 */
-	void setSosUrlExtension(String urlSosExtension);
+	void initialize(String urlSosExtension);
 
 	
 	/**
