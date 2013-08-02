@@ -113,11 +113,9 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         }
         else if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_AQ)) {
             result = new AQDObservationEncoder().encodeObservations(observationCollection);
-            result = new AQDObservationEncoder().wrapInEnvelope(result);
         }
         else if (responseFormat == null || responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_OM)) {
             result = new OGCObservationSWECommonEncoder().encodeObservations(observationCollection);
-            result = new OGCObservationSWECommonEncoder().wrapInEnvelope(result);
         }
         else {
             throw new InvalidParameterValueException("Specified responseFormat '" + responseFormat + "' is unsupported. Please use either '"+Constants.RESPONSE_FORMAT_OM+"', '"+Constants.RESPONSE_FORMAT_AQ+"', or '"+Constants.RESPONSE_FORMAT_RDF+"'.");
