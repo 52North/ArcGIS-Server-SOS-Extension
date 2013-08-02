@@ -182,6 +182,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
      * 
      * @param temporalFilterOGC
      * @return
+     * @throws InvalidParameterValueException 
      */
     protected static String convertTemporalFilterFromOGCtoESRI(String temporalFilterOGC)
     {
