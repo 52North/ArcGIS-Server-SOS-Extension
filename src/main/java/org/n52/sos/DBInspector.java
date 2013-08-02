@@ -85,6 +85,7 @@ public class DBInspector implements IServerObjectExtension, IObjectConstruct, IR
      */
     public void init(IServerObjectHelper soh) throws IOException, AutomationException
     {
+    	Logger.init(ServerUtilities.getServerLogger());
         LOGGER.info("Start initializing " + this.getClass().getName() + " SOE.");
 
         this.mapServerDataAccess = (IMapServerDataAccess) soh.getServerObject();
