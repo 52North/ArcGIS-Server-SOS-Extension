@@ -21,7 +21,7 @@
 					<DisplayName>${extension.displayName}</DisplayName>
 					<Description>${extension.description} - version ${TIME}</Description>
 					<Properties>
-						<urlSosExtension>http://myServer/arcgis/rest/services/myMapServer/MapServer/exts/mySosExtension</urlSosExtension>
+						<urlSosExtension>http://myServer/arcgis/rest/services/myMapServer/MapServer/exts/${soe.name}</urlSosExtension>
 						<title>AirQualitySOS</title>
 						<description>Air quality observation across Europe</description>
 						<keywords>Air quality, CO, O3, Carbon Monoxide, Ozone</keywords>

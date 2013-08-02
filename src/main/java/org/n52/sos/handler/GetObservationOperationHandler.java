@@ -22,6 +22,8 @@
  */
 package org.n52.sos.handler;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.n52.om.observation.MultiValueObservation;
@@ -48,6 +50,10 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 	private static final String SPATIAL_FILTER_KEY = "spatialFilter";
 	private static final String TEMPORAL_FILTER_KEY = "temporalFilter";
 	private static final String RESPONSE_FORMAT_KEY = "responseFormat";
+	
+    private static List<String> supportedValueReferences = Arrays.asList(new String[] {
+        	"om:phenomenonTime"	
+        });
 
 	public GetObservationOperationHandler() {
         super();
@@ -88,11 +94,8 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             String spatialFilterOGC = inputObject.getString(SPATIAL_FILTER_KEY);
             spatialFilter = convertSpatialFilterFromOGCtoESRI(spatialFilterOGC);
         }
-        String temporalFilter = null;
-        if (inputObject.has(TEMPORAL_FILTER_KEY)) {
-            String temporalFilterOGC = inputObject.getString(TEMPORAL_FILTER_KEY);
-            temporalFilter = convertTemporalFilterFromOGCtoESRI(temporalFilterOGC);
-        }
+        
+        String temporalFilter = createTemporalFilter(inputObject);
         
         String responseFormat = null;
         if (inputObject.has(RESPONSE_FORMAT_KEY)) {
@@ -122,6 +125,30 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         
         return result.getBytes("utf-8");
     }
+
+	private String createTemporalFilter(JSONObject inputObject)
+			throws InvalidParameterValueException {
+		String temporalFilter = null;
+        if (inputObject.has(TEMPORAL_FILTER_KEY)) {
+            String temporalFilterOGC = inputObject.getString(TEMPORAL_FILTER_KEY);
+            
+        	String[] params = temporalFilterOGC.split(",");
+        	if (params.length != 2) {
+        		throw new InvalidParameterValueException("The temporalFilter must consist of two comma separated values: valueReference,iso8601Time");
+        	}
+        	
+        	/*
+        	 * TODO: once we decide to support other valueReferences we have to
+        	 * come up with a better mechanism (see also AccessGdbForObservationsImpl.createTemporalClauseSDE(String))
+        	 */
+        	if (!supportedValueReferences.contains(params[0].trim())) {
+        		throw new InvalidParameterValueException("The value reference "+params[0].trim()+" is currently not supported for temporalFilter");
+        	}
+            
+            temporalFilter = convertTemporalFilterFromOGCtoESRI(params[1].trim());
+        }
+		return temporalFilter;
+	}
 
     private String constructInvokedURL(String[] offerings,
 			String[] featuresOfInterest, String[] observedProperties,
