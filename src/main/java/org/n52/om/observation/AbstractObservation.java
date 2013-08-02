@@ -23,6 +23,9 @@
 
 package org.n52.om.observation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.n52.gml.Identifier;
 import org.n52.om.result.IResult;
 import org.n52.oxf.valueDomains.time.ITime;
@@ -46,6 +49,21 @@ public abstract class AbstractObservation {
     protected String unit;
 
     protected ITime resultTime;
+
+	private static List<ValueMappingMatcher> staticValueMappingMatchers;
+	
+	static {
+		staticValueMappingMatchers = new ArrayList<ValueMappingMatcher>();
+		staticValueMappingMatchers.add(new ValueMappingMatcher(
+				new ValueMappingMatcher.MatcherEvaluation() {
+			private CharSequence phrase = "The daily average or daily mean is the average";
+
+			@Override
+			public boolean matches(String value) {
+				return value.contains(phrase);
+			}
+		}, "Fixed measurement"));
+	}
 
     public AbstractObservation(Identifier identifier, String procedure, String observedProperty, String featureOfInterest, String unit, ITime resultTime) {
         this.identifier = identifier;
@@ -117,5 +135,15 @@ public abstract class AbstractObservation {
     {
         return unit;
     }
+    
+
+	protected String applyStaticValueMapping(String value) {
+		for (ValueMappingMatcher vmm : staticValueMappingMatchers) {
+			if (vmm.matches(value)) {
+				return vmm.getMappedValue();
+			}
+		}
+		return value;
+	}
 
 }

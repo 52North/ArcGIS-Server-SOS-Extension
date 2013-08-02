@@ -75,7 +75,7 @@ public class GetObservationOperationHandlerTest {
 	private String samplingFeature = "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_SamplingPoint.xml#GB_SamplingPoint_64";
 	private String unit = "http://dd.eionet.europa.eu/vocabulary/aq/observationunit/mg.m-3";
 	private String unitCode = "mg.m-3";
-	private String aggregationType = "The daily average or daily mean is the average of all valid hourly values for a day. A daily or 24-hourly average is calculated if at least 18 valid hourly values are available.";
+	private String aggregationType = "test";
 
 	private List<Date> times;
 

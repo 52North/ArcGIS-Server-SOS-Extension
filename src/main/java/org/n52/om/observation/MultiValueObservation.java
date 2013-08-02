@@ -61,7 +61,7 @@ public class MultiValueObservation extends AbstractObservation {
 		this.multiResult = new MultiMeasureResult();
 		this.samplingPointID = samplingFeatureID;
 		this.unitNotation = unitNotation;
-		this.aggregationType = aggregationType;
+		this.aggregationType = applyStaticValueMapping(aggregationType);
 	}
 
 
