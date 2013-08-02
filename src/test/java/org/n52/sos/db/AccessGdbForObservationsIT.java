@@ -49,7 +49,7 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
             Map<String, MultiValueObservation> idObsList = gdb.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, where);
         
             AQDObservationEncoder encoder = new AQDObservationEncoder();
-            String result = encoder.wrapInEnvelope(encoder.encodeObservations(idObsList));
+            String result = encoder.encodeObservations(idObsList);
             
             OutputStream out = new FileOutputStream("c:/temp/observations.xml");
             out.write(result.getBytes());

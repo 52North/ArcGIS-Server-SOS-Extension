@@ -24,11 +24,15 @@
 package org.n52.sos.encoder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
+import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.util.logging.Logger;
 
 /**
@@ -86,6 +90,9 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     {
         StringBuilder encodedObservations = new StringBuilder();
 
+        List<ITimePosition> startTimes = new ArrayList<ITimePosition>();
+        List<ITimePosition> endTimes = new ArrayList<ITimePosition>();
+        
         Set<String> obsIdSet = idObsList.keySet();
         for (String obsId : obsIdSet) {
 
@@ -112,13 +119,32 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
             observation = observation.replace(VALUES, allValues);
             
             encodedObservations.append(observation);
+            
+            startTimes.add(multiValObs.getResult().getDateTimeBegin());
+            endTimes.add(multiValObs.getResult().getDateTimeEnd());
         }
-        return encodedObservations.toString();
+        return wrapInEnvelope(encodedObservations.toString(), startTimes, endTimes);
     }
 
 
-    public String wrapInEnvelope(String result) throws IOException {
-        String responseTemplate = getObservationEnvelopeTemplate().replace(OBSERVATIONS, result);
+    private String wrapInEnvelope(String result, List<ITimePosition> startTimes, List<ITimePosition> endTimes) throws IOException {
+        String start, end;
+    	if (startTimes != null && startTimes.size() > 0) {
+    		if (startTimes.size() != 1) {
+    			Collections.sort(startTimes);
+    		}
+    		start = startTimes.get(0).toISO8601Format();
+    	} else start = "";
+    	
+    	if (endTimes != null && endTimes.size() > 0) {
+    		if (endTimes.size() != 1) {
+    			Collections.sort(endTimes);
+    		}
+    		end = endTimes.get(endTimes.size() - 1).toISO8601Format();
+    	} else end = "";
+    	
+    	String responseTemplate = getObservationEnvelopeTemplate().replace(OBSERVATIONS, result).
+    			replace(OBSERVATION_PHENTIME_START, start).replace(OBSERVATION_PHENTIME_END, end);
 
         return responseTemplate;
     }
