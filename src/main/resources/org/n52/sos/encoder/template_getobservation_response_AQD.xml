@@ -72,7 +72,6 @@ http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd"
 			</aqd:reportingAuthority>
 			<aqd:reportingPeriod>
 				<gml:TimePeriod gml:id="ReportingTimePeriod">
-					<!-- ARNE: does this equal aggregated 'phenomenonTime' of all observations? -->
 					<gml:beginPosition>@observation-phentime-start@</gml:beginPosition> 
 					<gml:endPosition>@observation-phentime-end@</gml:endPosition>
 				</gml:TimePeriod>
