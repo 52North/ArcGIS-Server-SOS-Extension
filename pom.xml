@@ -66,6 +66,10 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.15</version>
 				</plugin>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -159,6 +163,7 @@
 			<properties>
 				<soe.tmp.target>${project.build.directory}/soe-temp</soe.tmp.target>
 				<soe.name>52nArcGisSos</soe.name>
+				<soe.config.xml>Config.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
 				<extension.class>org.n52.sos.SOSExt</extension.class>
 				<extension.id>${extension.class}</extension.id>
@@ -177,9 +182,34 @@
 					<name>disable-sos-soe</name>
 				</property>
 			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>rename-dbanalyzer-config</id>
+								<phase>prepare-package</phase>
+								<configuration>
+									<target>
+										<move
+											file="${soe.tmp.target}/${soe.config.xml}"
+											tofile="${soe.tmp.target}/Config.xml" />
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<finalName>${soe.name}</finalName>
+			</build>
 			<properties>
 				<soe.tmp.target>${project.build.directory}/soe-temp</soe.tmp.target>
 				<soe.name>DBInspector</soe.name>
+				<soe.config.xml>Config_DBAnalyzer.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
 				<extension.class>org.n52.sos.DBInspector</extension.class>
 				<extension.id>${extension.class}</extension.id>
@@ -204,7 +234,7 @@
 						<directory>src/main/soe</directory>
 						<filtering>true</filtering>
 						<includes>
-							<include>Config.xml</include>
+							<include>${soe.config.xml}</include>
 						</includes>
 						<targetPath>${soe.tmp.target}</targetPath>
 					</resource>
@@ -259,9 +289,9 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.7</version>
 						<executions>
 							<execution>
+								<id>rename-to-dot-soe</id>
 								<phase>install</phase>
 								<configuration>
 									<target>
