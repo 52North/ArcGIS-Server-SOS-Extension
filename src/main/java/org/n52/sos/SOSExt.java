@@ -149,6 +149,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 		}
     	
     	Collections.sort(this.operationHandlers);
+    	LOGGER.info("Registered Operation Handlers: " + this.operationHandlers.toString());
 	}
 
 	/**
