@@ -37,7 +37,7 @@ public class NoApplicableCodeException extends ExceptionReport {
 	}
 	
 	public NoApplicableCodeException(Exception e) {
-		super(CODE, CommonUtilities.convertExceptionToString(e));
+		super(CODE, "<![CDATA["+CommonUtilities.convertExceptionToString(e)+"]]>");
 	}
 
 }
