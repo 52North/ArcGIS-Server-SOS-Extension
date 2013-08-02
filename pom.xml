@@ -275,7 +275,6 @@
 				</property>
 			</activation>
 			<build>
-		<!-- 	Arne: Config.xml already referenced in assembly.xml, isn't it?	
 				<resources>
 					<resource>
 						<directory>src/main/soe</directory>
@@ -285,7 +284,7 @@
 						</includes>
 						<targetPath>${soe.tmp.target}</targetPath>
 					</resource>
-				</resources>-->
+				</resources>
 				<plugins>
 					<plugin>
 						<groupId>org.codehaus.gmaven</groupId>
