@@ -137,6 +137,14 @@ public abstract class AbstractObservation {
     }
     
 
+	/**
+	 * this method transform original values to static mappings,
+	 * provided through the {@link #staticValueMappingMatchers} 
+	 * repository. 
+	 * 
+	 * @param value original value
+	 * @return the static mapping for the original value
+	 */
 	protected String applyStaticValueMapping(String value) {
 		for (ValueMappingMatcher vmm : staticValueMappingMatchers) {
 			if (vmm.matches(value)) {
