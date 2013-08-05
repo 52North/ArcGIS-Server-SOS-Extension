@@ -75,6 +75,7 @@ public class GetObservationOperationHandlerTest {
 	private String samplingFeature = "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_SamplingPoint.xml#GB_SamplingPoint_64";
 	private String unit = "http://dd.eionet.europa.eu/vocabulary/aq/observationunit/mg.m-3";
 	private String unitCode = "mg.m-3";
+	private String unitLabel = "ozone-or-what";
 	private String aggregationType = "test";
 
 	private List<Date> times;
@@ -137,6 +138,7 @@ public class GetObservationOperationHandlerTest {
 					samplingFeature,
 					unit,
 					unitCode,
+					unitLabel,
 					aggregationType,
 					time);
 			
@@ -205,5 +207,6 @@ public class GetObservationOperationHandlerTest {
 		Assert.assertThat(response, containsString(samplingFeature));
 		Assert.assertThat(response, containsString(unit));
 		Assert.assertThat(response, containsString(unitCode));
+		Assert.assertThat(response, containsString(unitLabel));
 	}
 }

@@ -58,6 +58,7 @@
 						<swe:field name="@observation-unit-notation@">
 							<swe:Quantity definition="@observation-property@">
 								<swe:uom xlink:href="@observation-unit-id@" />
+								<swe:label>@observation-unit-label@</swe:label>
 							</swe:Quantity>
 						</swe:field>
 					</swe:DataRecord>

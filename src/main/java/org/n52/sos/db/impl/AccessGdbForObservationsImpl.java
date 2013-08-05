@@ -296,6 +296,8 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_DEFINITION));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_LABEL));
         subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_BEGIN));
         subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END));
         subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC));
@@ -370,6 +372,12 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             unitNotation = Constants.NULL_VALUE;
         }
         
+        // unit notation
+        String unitLabel = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_LABEL)));
+        if (unitLabel == null) {
+        	unitLabel = Constants.NULL_VALUE;
+        }
+        
         // aggregation type
         String aggregationType = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION)));
         if (aggregationType == null) {
@@ -380,7 +388,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         Date resultDate = (Date) row.getValue(fields.findField(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME)));
         ITimePosition resultTimePos = TimeConverter.createTimeFromDate(resultDate, null);
 
-        return new MultiValueObservation(obsIdentifier, procID, obsPropID, featureID, samplingPointID, unitID, unitNotation, aggregationType, resultTimePos);
+        return new MultiValueObservation(obsIdentifier, procID, obsPropID, featureID, samplingPointID, unitID, unitNotation, unitLabel, aggregationType, resultTimePos);
     }
 
     /**

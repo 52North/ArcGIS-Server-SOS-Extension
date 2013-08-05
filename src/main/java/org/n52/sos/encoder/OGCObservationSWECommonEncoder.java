@@ -55,6 +55,7 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     protected static String OBSERVATION_SAMPLING_POINT = "@observation-sampling-point@";
     protected static String OBSERVATION_UNIT_ID = "@observation-unit-id@";
     protected static String OBSERVATION_UNIT_NOTATION = "@observation-unit-notation@";
+    protected static String OBSERVATION_UNIT_LABEL = "@observation-unit-label@";
     protected static String OBSERVATION_AGGREGATION_TYPE = "@observation-aggregation-type@";
     protected static String ELEMENT_COUNT = "@element-count@";
     protected static String VALUES = "@values@";
@@ -108,6 +109,7 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
             observation = observation.replace(OBSERVATION_ID, multiValObs.getIdentifier().getIdentifierValue());
             observation = observation.replace(OBSERVATION_UNIT_ID, multiValObs.getUnit());
             observation = observation.replace(OBSERVATION_UNIT_NOTATION, multiValObs.getUnitNotation());
+            observation = observation.replace(OBSERVATION_UNIT_LABEL, multiValObs.getUnitLabel());
             observation = observation.replace(OBSERVATION_PHENTIME_START, multiValObs.getResult().getDateTimeBegin().toISO8601Format());
             observation = observation.replace(OBSERVATION_PHENTIME_END, multiValObs.getResult().getDateTimeEnd().toISO8601Format());
             observation = observation.replace(OBSERVATION_PROCEDURE, multiValObs.getProcedure());

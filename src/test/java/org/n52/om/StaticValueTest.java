@@ -34,7 +34,7 @@ public class StaticValueTest {
 	public void testValueMatchingReplacement() {
 		MultiValueObservation ao = new MultiValueObservation(new Identifier(null, "id"),
 				"proc", "obs", "foi", "sf",
-				"unit", "not", "The daily average or daily mean is the average of all va", null);
+				"unit", "not", "ozone?", "The daily average or daily mean is the average of all va", null);
 		
 		Assert.assertThat(ao.getAggregationType(), is("Fixed measurement"));
 	}

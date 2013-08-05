@@ -41,6 +41,8 @@ public class MultiValueObservation extends AbstractObservation {
 	protected String unitNotation;
 	
 	protected String aggregationType;
+
+	private String unitLabel;
 	
 	public MultiValueObservation(
 			Identifier identifier, 
@@ -50,6 +52,7 @@ public class MultiValueObservation extends AbstractObservation {
 			String samplingFeatureID,
 			String unitID,
 			String unitNotation,
+			String unitLabel,
 			String aggregationType,
 			ITime resultTime) {
 		super(identifier, 
@@ -61,6 +64,7 @@ public class MultiValueObservation extends AbstractObservation {
 		this.multiResult = new MultiMeasureResult();
 		this.samplingPointID = samplingFeatureID;
 		this.unitNotation = unitNotation;
+		this.unitLabel = unitLabel;
 		this.aggregationType = applyStaticValueMapping(aggregationType);
 	}
 
@@ -86,4 +90,8 @@ public class MultiValueObservation extends AbstractObservation {
 	public String getAggregationType() {
             return aggregationType;
         }
+
+	public String getUnitLabel() {
+		return unitLabel;
+	}
 }
