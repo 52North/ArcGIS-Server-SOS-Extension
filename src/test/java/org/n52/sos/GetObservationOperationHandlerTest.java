@@ -75,7 +75,8 @@ public class GetObservationOperationHandlerTest {
 	private String samplingFeature = "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_SamplingPoint.xml#GB_SamplingPoint_64";
 	private String unit = "http://dd.eionet.europa.eu/vocabulary/aq/observationunit/mg.m-3";
 	private String unitCode = "mg.m-3";
-	private String aggregationType = "The daily average or daily mean is the average of all valid hourly values for a day. A daily or 24-hourly average is calculated if at least 18 valid hourly values are available.";
+	private String unitLabel = "ozone-or-what";
+	private String aggregationType = "test";
 
 	private List<Date> times;
 
@@ -137,10 +138,11 @@ public class GetObservationOperationHandlerTest {
 					samplingFeature,
 					unit,
 					unitCode,
+					unitLabel,
 					aggregationType,
 					time);
 			
-			mvo.getResult().addResultValue(new MeasureResult(time, time, "1", "3", 40.0));
+			mvo.getResult().addResultValue(new MeasureResult(time, time, "1", "3", "summer", 40.0));
 			
 			result.put("GB_Observation_"+j, mvo);			
 		}
@@ -205,5 +207,6 @@ public class GetObservationOperationHandlerTest {
 		Assert.assertThat(response, containsString(samplingFeature));
 		Assert.assertThat(response, containsString(unit));
 		Assert.assertThat(response, containsString(unitCode));
+		Assert.assertThat(response, containsString(unitLabel));
 	}
 }
