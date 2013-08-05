@@ -303,6 +303,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)); 
         subFields.add(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
+        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION));
 		return subFields;
 	}
 
@@ -412,12 +413,18 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         if (verification == null) {
             verification = Constants.NULL_VALUE;
         }
+        
+        //aggregationType
+        String aggregationType = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION)));
+        if (aggregationType == null) {
+        	aggregationType = Constants.NULL_VALUE;
+        }
 
         // result
         Object numValue = row.getValue(fields.findField(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC)));
         double value = (Double) numValue;
 
-        return new MeasureResult(startTimePos, endTimePos, validity, verification, value);
+        return new MeasureResult(startTimePos, endTimePos, validity, verification, aggregationType, value);
     }
  
     /**

@@ -140,7 +140,7 @@ public class GetObservationOperationHandlerTest {
 					aggregationType,
 					time);
 			
-			mvo.getResult().addResultValue(new MeasureResult(time, time, "1", "3", 40.0));
+			mvo.getResult().addResultValue(new MeasureResult(time, time, "1", "3", "summer", 40.0));
 			
 			result.put("GB_Observation_"+j, mvo);			
 		}

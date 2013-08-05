@@ -166,9 +166,11 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     	result.append(",");
     	result.append(resultValue.getDateTimeEnd().toISO8601Format());
     	result.append(",");
+    	result.append(resultValue.getVerification());
+    	result.append(",");
     	result.append(resultValue.getValidity());
     	result.append(",");
-    	result.append(resultValue.getVerification());
+    	result.append(resultValue.getAggregationNotation());
     	result.append(",");
     	result.append(resultValue.getValue());
     	result.append("@@");
