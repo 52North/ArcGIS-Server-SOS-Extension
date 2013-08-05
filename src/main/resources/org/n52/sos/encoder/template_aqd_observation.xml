@@ -57,8 +57,8 @@
 									</swe:field>
 									<swe:field name="Pollutant">
 										<swe:Quantity definition="@observation-property@">
-											<swe:uom xlink:href="@observation-unit-id@" code="@observation-unit-notation@" />
 											<swe:label>@observation-unit-label@</swe:label>
+											<swe:uom xlink:href="@observation-unit-id@" code="@observation-unit-notation@" />
 										</swe:Quantity>
 									</swe:field>
 								</swe:DataRecord>
