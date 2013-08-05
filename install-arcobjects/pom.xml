@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>install-arcobjects</artifactId>
+	<groupId>org.n52.arcobjects</groupId>
+	<packaging>pom</packaging>
+	<version>0.0.1</version>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<arcobjects.version>10.1</arcobjects.version>
+		<arcobjects.local.location>
+			C:\Program Files (x86)\ArcGIS\Desktop10.1\java\lib\arcobjects.jar
+		</arcobjects.local.location>
+	</properties>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>install-to-repo</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.esri</groupId>
+							<artifactId>arcobjects</artifactId>
+							<version>${arcobjects.version}</version>
+							<file>${arcobjects.local.location}</file>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

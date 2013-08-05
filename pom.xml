@@ -175,6 +175,52 @@
 				<soe.final.name>${soe.name}.soe</soe.final.name>
 			</properties>
 		</profile>
+ 		<profile>
+			<id>create-sos-soe-EEA</id>
+			<activation>
+				<property>
+					<name>disable-sos-soe-EEA</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>rename-customer-specific-config-file</id>
+								<phase>prepare-package</phase>
+								<configuration>
+									<target>
+										<move
+											file="${soe.tmp.target}/${soe.config.xml}"
+											tofile="${soe.tmp.target}/Config.xml" />
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<finalName>${soe.name}</finalName>
+			</build>
+			<properties>
+				<soe.tmp.target>${project.build.directory}/soe-temp</soe.tmp.target>
+				<soe.name>52nArcGisSos</soe.name>
+				<soe.config.xml>Config_EEA.xml</soe.config.xml>
+				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
+				<extension.class>org.n52.sos.SOSExt</extension.class>
+				<extension.id>${extension.class}</extension.id>
+				<extension.displayName>SOS</extension.displayName>
+				<extension.description>${project.description}</extension.description>
+				<maven.build.timestamp.format>yyyy-MM-dd_HH:mm</maven.build.timestamp.format>
+				<TIME>${maven.build.timestamp}</TIME>
+				<soe.uuid>uuid</soe.uuid>
+				<soe.final.name>${soe.name}.soe</soe.final.name>
+			</properties>
+		</profile>
 		<profile>
 			<id>create-analyzer-soe</id>
 			<activation>
