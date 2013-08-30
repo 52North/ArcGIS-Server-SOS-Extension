@@ -36,7 +36,7 @@ import org.n52.sos.it.EsriTestBase;
  */
 public class InsertGdbForObservationsIT extends EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(AccessObservationGDBIT.class.getName());
+    static Logger LOGGER = Logger.getLogger(InsertGdbForObservationsIT.class.getName());
     
     
     /**

@@ -23,6 +23,8 @@
 package org.n52.util;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Scanner;
 
 
@@ -34,6 +36,20 @@ public class CommonUtilities {
     public static final String NEW_LINE_CHAR = System.getProperty("line.separator");
 	private static final String TAB_CHAR = "\t";
 
+
+	/**
+	 * produces a Strin[] out of a String Collection. 
+	 */
+    public static String[] toArray(Collection<String> stringCollection) {
+        String[] sArray = new String[stringCollection.size()];
+        int i=0;
+        for (Iterator<String> iterator = stringCollection.iterator(); iterator.hasNext();) {
+            sArray[i] = (String) iterator.next();
+            i++;
+        }
+        return sArray;
+    }
+    
 	/**
      * produces a single String representation of a stringArray.
      */

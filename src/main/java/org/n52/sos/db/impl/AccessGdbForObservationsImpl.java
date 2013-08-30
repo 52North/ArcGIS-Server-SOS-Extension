@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -44,6 +43,7 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGdbForObservations;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
@@ -155,7 +155,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             // get the IDs of all features which are within the specified
             // spatialFilter:
             Collection<String> featureList = gdb.queryFeatureIDsForSpatialFilter(spatialFilter);
-            String[] featureArray = toArray(featureList);
+            String[] featureArray = CommonUtilities.toArray(featureList);
             
             if (featureList.size() > 0) {
                 // append the list of feature IDs:
@@ -496,13 +496,4 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
     }
     
     
-    private static String[] toArray(Collection<String> stringCollection) {
-        String[] sArray = new String[stringCollection.size()];
-        int i=0;
-        for (Iterator<String> iterator = stringCollection.iterator(); iterator.hasNext();) {
-            sArray[i] = (String) iterator.next();
-            i++;
-        }
-        return sArray;
-    }
 }

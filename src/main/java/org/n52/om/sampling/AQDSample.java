@@ -23,7 +23,7 @@
 
 package org.n52.om.sampling;
 
-import org.n52.gml.Identifier;
+import java.net.URI;
 
 import com.esri.arcgis.geometry.IGeometry;
 
@@ -32,9 +32,7 @@ import com.esri.arcgis.geometry.IGeometry;
  * 
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class AQDSample extends Feature{
-
-    private String localId;
+public class AQDSample extends Feature {
     
     private String namespace;
     
@@ -44,18 +42,19 @@ public class AQDSample extends Feature{
     
     private double kerbDistance;
 
-    public AQDSample(Identifier identifier, 
+    public AQDSample(
+    		URI uri, 
+            String gmlId, 
+            int localId,
             String name, 
             String description, 
             String sampledFeatureURI, 
             IGeometry shape, 
-            String localId, 
             String namespace,
             double inletHeight,
             double buildingDistance,
             double kerbDistance) throws IllegalArgumentException {
-        super(identifier, namespace, description, sampledFeatureURI, shape);
-        this.localId = localId;
+        super(uri, gmlId, localId, namespace, description, sampledFeatureURI, shape);
         this.namespace = namespace;
         this.inletHeight = inletHeight;
         this.buildingDistance = buildingDistance;
@@ -63,11 +62,6 @@ public class AQDSample extends Feature{
     }
 
     // getters and setters
-
-    public String getLocalId()
-    {
-        return localId;
-    }
 
     public String getNamespace()
     {

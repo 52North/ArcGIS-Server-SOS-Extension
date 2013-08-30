@@ -1,17 +1,13 @@
 <sos:featureMember>
-	<aqd:AQD_Sample gml:id="@feature-id@">
+	<aqd:AQD_Sample @feature-gml-id@>
 		@feature-sampled-href@
-		<sams:shape>
-			<gml:Point gml:id="@feature-id@-point-location" srsDimension="2" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
-				<gml:pos>@feature-point-location@</gml:pos>
-			</gml:Point>
-		</sams:shape>
-		<aqd:inspireId>
+		@feature-geometry@
+	<!-- <aqd:inspireId>
 			<base:Identifier>
 				<base:localId>@feature-local-id@</base:localId>
 				<base:namespace>@feature-namespace@</base:namespace>
 			</base:Identifier>
-		</aqd:inspireId>
+		</aqd:inspireId> -->
 		<aqd:inletHeight uom="m">@feature-inlet-height@</aqd:inletHeight>
 		<aqd:builldingDistance uom="m">@feature-building-distance@</aqd:builldingDistance>
 		<aqd:kerbDistance uom="m">@feature-kerb-distance@</aqd:kerbDistance>

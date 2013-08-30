@@ -26,10 +26,13 @@ package org.n52.sos.encoder;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.activation.UnsupportedDataTypeException;
+
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
 import org.n52.util.logging.Logger;
 
+import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.Point;
 
 /**
@@ -41,12 +44,12 @@ public class OGCFeatureEncoder extends AbstractEncoder {
      * definition of anchor variables within template files:
      */
     private static String FEATURES = "@features@";
-    private static String FEATURE_ID = "@feature-id@";
+    private static String FEATURE_GML_ID = "@feature-gml-id@";
     private static String FEATURE_POINT = "@feature-point-location@";
     private static String FEATURE_NAME = "@feature-name@";
     private static String FEATURE_SAMPLED = "@feature-sampled-href@";
     private static String FEATURE_DESCRIPTION = "@feature-description@";
-    private static String FEATURE_LOCAL_ID = "@feature-local-id@";
+    private static String FEATURE_GEOMETRY = "@feature-geometry@";
     private static String FEATURE_NAMESPACE = "@feature-namespace@";
     private static String FEATURE_INLET_HEIGHT = "@feature-inlet-height@";
     private static String FEATURE_BUILDING_DISTANCE = "@feature-building-distance@";
@@ -70,17 +73,43 @@ public class OGCFeatureEncoder extends AbstractEncoder {
         
         for (Feature feature : featureCollection) {
             
-            String featureString = featureTemplate.replace(FEATURE_ID, feature.getIdentifier().getIdentifierValue());
+        	// TODO replace String with StringBuffer in the following
+        	
+            String featureString = featureTemplate;
             
-            Point p = (Point)feature.getShape();
-            featureString = featureString.replace(FEATURE_POINT, p.getX() + " " + p.getY());
+            if (feature.getGmlId() != null) {
+            	featureString.replace(FEATURE_GML_ID, "gml:id=\"" + feature.getGmlId() + "\"");
+            }
             
-            //featureString = featureString.replace(FEATURE_HREF, feature.getHref().toString()); // TODO replace with URL to feature
+            if (feature.getShape() != null) {
+            	IGeometry geometry = feature.getShape();
+            	
+	            int dimension  = geometry.getDimension();
+	            int epsgCode   = geometry.getSpatialReference().getFactoryCode();
+	            String epsgUrn = "urn:ogc:def:crs:EPSG::" + epsgCode;
+	            
+            	if (geometry instanceof Point) {
+		            Point p = (Point)geometry;
+		            featureString = featureString.replace(FEATURE_POINT, p.getX() + " " + p.getY());
+		            
+		            String featureGeometry =
+		            "sams:shape>"
+					+	"<gml:Point gml:id=\"SamplingFeaturePoint_" + feature.getLocalId() + "\" srsDimension=\"" + dimension + "\" srsName=\"" + epsgUrn + "\">"
+					+		"<gml:pos>@feature-point-location@</gml:pos>"
+					+	"</gml:Point>"
+					+"</sams:shape>";
+		            
+		            featureString = featureString.replace(FEATURE_GEOMETRY, featureGeometry);
+            	}
+            	else {
+					throw new UnsupportedDataTypeException("Cannot encode geometry of feature.");
+				}
+            }
             
             if (feature.getSampledFeature() != null) {
                 featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature xlink:href=\""+ feature.getSampledFeature() + "\"/>");
             } else {
-                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature xsi:nil=\"true\"/>");
+                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature nilReason=\"inapplicable\"");
             }
             
             if (feature.getName() != null) {
@@ -97,13 +126,10 @@ public class OGCFeatureEncoder extends AbstractEncoder {
             
             if (feature instanceof AQDSample) {
                 AQDSample aqdSample = (AQDSample) feature;
-                featureString = featureString.replace(FEATURE_LOCAL_ID, aqdSample.getLocalId());
-                featureString = featureString.replace(FEATURE_NAMESPACE, aqdSample.getNamespace());
                 featureString = featureString.replace(FEATURE_INLET_HEIGHT, aqdSample.getInletHeight()+"");
                 featureString = featureString.replace(FEATURE_BUILDING_DISTANCE, aqdSample.getBuildingDistance()+"");
                 featureString = featureString.replace(FEATURE_KERB_DISTANCE, aqdSample.getKerbDistance()+"");
             }
-            
             
             // add features to the allFeatures String
             allFeatures += featureString + "\n";

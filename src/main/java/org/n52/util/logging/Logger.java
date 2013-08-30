@@ -85,14 +85,24 @@ public class Logger {
 	}
 
 	protected final void log(int level, int code, String message) {
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(this.name);
+		sb.append("] ");
+		sb.append(message);
+		
+		//
+		// log to console (for local debugging):
+		//
+		System.out.println("Class: '" + this.name + "' - Code: '" + code + "' - Level: '" + level + "' - Message: '" + message + "'");
+		
+		//
+		// log through ArcGIS Server:
+		//
 		if (serverLogger == null) return;
 		
 		try {
-			StringBuilder sb = new StringBuilder();
-			sb.append("[");
-			sb.append(this.name);
-			sb.append("] ");
-			sb.append(message);
 			serverLogger.addMessage(level, code, sb.toString());
 		} catch (AutomationException e) {
 		} catch (IOException e) {

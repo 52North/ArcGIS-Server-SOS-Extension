@@ -25,7 +25,9 @@ package org.n52.sos.it;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.n52.sos.db.impl.AccessGDBImpl;
 
 import com.esri.arcgis.interop.AutomationException;
@@ -39,7 +41,7 @@ import com.esri.arcgis.system.esriLicenseStatus;
  */
 public class EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(EsriTestBase.class.getName());
+    private static Logger LOGGER = Logger.getLogger(EsriTestBase.class.getName());
     
     protected AoInitialize aoInit;
     
@@ -48,7 +50,8 @@ public class EsriTestBase {
     /**
      * @throws java.lang.Exception
      */
-    protected void setUp() throws Exception
+    @Before
+    public void setUp() throws Exception
     {
         // Initialize engine console application
         EngineInitializer.initializeEngine();
@@ -60,7 +63,8 @@ public class EsriTestBase {
         gdb = new AccessGDBImpl();
     }
     
-    protected void tearDown() throws Exception
+    @After
+    public void tearDown() throws Exception
     {
         // Ensure any ESRI libraries are unloaded in the correct order
         aoInit.shutdown();

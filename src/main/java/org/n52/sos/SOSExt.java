@@ -46,10 +46,10 @@ import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.db.impl.AccessGDBImpl;
+import org.n52.sos.encoder.JSONEncoder;
 import org.n52.sos.encoder.JSONObservationEncoder;
 import org.n52.sos.handler.OGCOperationRequestHandler;
 import org.n52.sos.handler.OperationRequestHandler;
-import org.n52.sos.json.JSONEncoder;
 import org.n52.util.ExceptionSupporter;
 import org.n52.util.logging.Logger;
 
@@ -342,10 +342,10 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
 
-/*
         // create a schema object for the GetFeatureOfInterest operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
-               
+        
+/*    
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
 */      

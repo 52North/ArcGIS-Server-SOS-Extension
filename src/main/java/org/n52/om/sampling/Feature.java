@@ -38,21 +38,22 @@ import com.esri.arcgis.interop.AutomationException;
  * variable is set) or provided with complete content (href isn't set, but rest
  * of attributes are set (boundedBy is optional)
  * 
- * @author Kiesow, staschc
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class Feature {
 
-    /** reference to sampling feature */
-    private URI href;
+    /** identifier of feature */
+    private URI uri;
+    
+    /** local identifier of feature */
+    private String gmlId;
 
-    /** identifier of feature (optional) */
-    private Identifier identifer;
-
-    /** description of feature (optional) */
+    private int localId;
+    
+    /** description of feature  */
     private String description;
 
-    /** name of feature (optional) */
+    /** name of feature  */
     private String name;
 
     /** reference to the sampled feature (might be a lake for example) */
@@ -61,32 +62,37 @@ public class Feature {
     /** geometry of the sampling feature */
     private IGeometry shape;
 
-    public Feature(Identifier identifier, String name, String description, String sampledFeatureURI, IGeometry shape) throws IllegalArgumentException {
-        this.identifer = identifier;
+    public Feature(URI uri, String gmlId, int localId, String name, String description, String sampledFeatureURI, IGeometry shape) throws IllegalArgumentException {
+        this.uri = uri;
+        this.gmlId = gmlId;
+        this.localId = localId;
         this.name = name;
         this.description = description;
         this.sampledFeature = sampledFeatureURI;
         this.shape = shape;
     }
 
+    //
+    // getters and setters
+    //
+    
     /**
-     * constructor for sampling features which are referenced
      * 
-     * @param href
-     *            reference to the SamplingFeature
+     * @return Returns URI of the feature
      */
-    public Feature(URI href) {
-        this.href = href;
+    public URI getUri()
+    {
+        return uri;
     }
 
-    // getters and setters
-    /**
-     * 
-     * @return Returns identifier of the feature
-     */
-    public Identifier getIdentifier()
+    public String getGmlId()
     {
-        return identifer;
+        return gmlId;
+    }
+    
+    public int getLocalId()
+    {
+        return localId;
     }
 
     public String getDescription()
@@ -112,11 +118,6 @@ public class Feature {
     public IGeometry getShape()
     {
         return shape;
-    }
-
-    public URI getHref()
-    {
-        return href;
     }
 
     /**

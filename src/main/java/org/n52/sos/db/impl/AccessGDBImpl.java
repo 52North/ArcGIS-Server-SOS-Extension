@@ -97,12 +97,12 @@ public class AccessGDBImpl implements AccessGDB {
     
     private ServiceDescription serviceDescription;
     
-    private AccessGdbForObservationsImpl observationAccess;
-    private AccessGdbForFeaturesImpl featureAccess;
-    private AccessGdbForProceduresImpl procedureAccess;
-    private AccessGdbForOfferingsImpl offeringAccess;
-    private AccessGdbForAnalysisImpl analysisAccess;
-    private InsertGdbForObservationsImpl observationInsert;
+    private AccessGdbForObservations observationAccess;
+    private AccessGdbForFeatures featureAccess;
+    private AccessGdbForProcedures procedureAccess;
+    private AccessGdbForOfferings offeringAccess;
+    private AccessGdbForAnalysis analysisAccess;
+    private InsertGdbForObservations observationInsert;
 
     /**
      * Creates an AccessObservationGDB object and connects to the DB specified

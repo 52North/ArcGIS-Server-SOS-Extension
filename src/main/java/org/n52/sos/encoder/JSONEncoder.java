@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.n52.sos.json;
+package org.n52.sos.encoder;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -258,11 +258,12 @@ public class JSONEncoder {
     {
         JSONObject json = new JSONObject();
 
-        if (foi.getIdentifier() != null) {
-            json.put("id", foi.getIdentifier().getIdentifierValue());
-            if (foi.getIdentifier().getCodeSpace() != null) {
-                json.put("codeSpace", foi.getIdentifier().getCodeSpace().toString());
-            }
+        if (foi.getUri() != null) {
+            json.put("uri", foi.getUri());
+        }
+        
+        if (foi.getGmlId() != null) {
+            json.put("gml-id", foi.getGmlId());
         }
         
         json.put("name", foi.getName());
@@ -312,7 +313,7 @@ public class JSONEncoder {
         JSONArray jsonFeatureIDArray = new JSONArray();
         for (Feature f : fois) {
             JSONObject feature = new JSONObject();
-            feature.put("id", f.getIdentifier().getIdentifierValue());
+            feature.put("gml-id", f.getGmlId());
             jsonFeatureIDArray.put(feature);
         }
         json.put("features", jsonFeatureIDArray);
