@@ -253,7 +253,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         if (shape instanceof Point) {
             point = (Point) shape;
         } else {
-            throw new UnsupportedDataTypeException("Shape of the feature '" + gmlId + "' is no point.");
+            LOGGER.warn("Shape of the feature '" + gmlId + "' is no point.");
         }
         
         // inletHeight

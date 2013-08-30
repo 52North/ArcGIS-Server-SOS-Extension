@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sos:GetFeatureOfInterestResponse
-	xsi:schemaLocation="http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd
- 		http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+	xmlns:aqd="http://aqd.ec.europa.eu/aqd/0.3.6b" 
 	xmlns:sos="http://www.opengis.net/sos/2.0"
  	xmlns:gml="http://www.opengis.net/gml/3.2"
 	xmlns:sam="http://www.opengis.net/sampling/2.0"
 	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
- 	xmlns:xlink="http://www.w3.org/1999/xlink">
+ 	xmlns:xlink="http://www.w3.org/1999/xlink"
+ 	xsi:schemaLocation="
+http://aqd.ec.europa.eu/aqd/0.3.6b http://dd.eionet.europa.eu/schemas/id2011850eu/AirQualityReporting_0.3.6b.xsd 
+http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd" >
 	@features@
 </sos:GetFeatureOfInterestResponse>

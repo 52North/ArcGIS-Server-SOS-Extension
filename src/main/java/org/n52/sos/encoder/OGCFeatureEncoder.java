@@ -78,7 +78,10 @@ public class OGCFeatureEncoder extends AbstractEncoder {
             String featureString = featureTemplate;
             
             if (feature.getGmlId() != null) {
-            	featureString.replace(FEATURE_GML_ID, "gml:id=\"" + feature.getGmlId() + "\"");
+            	featureString = featureString.replace(FEATURE_GML_ID, "gml:id=\"" + feature.getGmlId() + "\"");
+            }
+            else {
+            	featureString = featureString.replace(FEATURE_GML_ID, "");
             }
             
             if (feature.getShape() != null) {
@@ -93,9 +96,9 @@ public class OGCFeatureEncoder extends AbstractEncoder {
 		            featureString = featureString.replace(FEATURE_POINT, p.getX() + " " + p.getY());
 		            
 		            String featureGeometry =
-		            "sams:shape>"
+		            "<sams:shape>"
 					+	"<gml:Point gml:id=\"SamplingFeaturePoint_" + feature.getLocalId() + "\" srsDimension=\"" + dimension + "\" srsName=\"" + epsgUrn + "\">"
-					+		"<gml:pos>@feature-point-location@</gml:pos>"
+					+		"<gml:pos>" + p.getX() + " " + p.getY() + "</gml:pos>"
 					+	"</gml:Point>"
 					+"</sams:shape>";
 		            
@@ -105,11 +108,14 @@ public class OGCFeatureEncoder extends AbstractEncoder {
 					throw new UnsupportedDataTypeException("Cannot encode geometry of feature.");
 				}
             }
+            else {
+            	featureString = featureString.replace(FEATURE_GEOMETRY, "");
+            }
             
             if (feature.getSampledFeature() != null) {
-                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature xlink:href=\""+ feature.getSampledFeature() + "\"/>");
+                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature xlink:href=\""+ feature.getSampledFeature() + "\" />");
             } else {
-                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature nilReason=\"inapplicable\"");
+                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature nilReason=\"inapplicable\" />");
             }
             
             if (feature.getName() != null) {

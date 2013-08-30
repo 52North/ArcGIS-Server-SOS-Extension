@@ -46,7 +46,7 @@ public class AccessGdbForFeaturesIT extends EsriTestBase {
             long millis;
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, new String[] { "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7" }, null, null);
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(null, new String[] { "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1" }, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             Assert.assertNotNull("Without Entries", featuresOfInterest);
@@ -86,7 +86,7 @@ public class AccessGdbForFeaturesIT extends EsriTestBase {
             long millis;
             LOGGER.info("######################################");
             millis = System.currentTimeMillis();
-            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(new String[] { "GB_SamplingFeature_4" }, null, null, null);
+            featuresOfInterest = gdb.getFeatureAccess().getFeaturesOfInterest(new String[] { "" }, null, null, null);
             LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
             LOGGER.info("Count: " + featuresOfInterest.size());
             Assert.assertNotNull("Without Entries", featuresOfInterest);

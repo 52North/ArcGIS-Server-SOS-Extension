@@ -22,7 +22,11 @@
  */
 package org.n52.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -93,5 +97,12 @@ public class CommonUtilities {
 		
 		return sb.toString();
 	}
+	
+	public static void saveFile(File filename, String stringToStoreInFile) throws IOException {
+        OutputStream out = new FileOutputStream(filename);
+        out.write(stringToStoreInFile.getBytes());
+        out.flush();
+        out.close();
+    }
     
 }
