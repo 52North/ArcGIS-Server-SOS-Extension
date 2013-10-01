@@ -67,7 +67,9 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     {
    		LOGGER.debug("Start " + getOperationName() + " query.");
         
-    	if (responseProperties == null) responseProperties = new String[1];
+    	if (responseProperties == null || responseProperties.length == 0){
+    		responseProperties = new String[1];
+    	}
     	
         responseProperties[0] = DEFAULT_RESPONSE_PROPERTIES;
         
@@ -216,6 +218,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
 	public int compareTo(OperationRequestHandler o) {
 		return this.getExecutionPriority() - o.getExecutionPriority();
 	}
+
 	public static void main(String[] args)
     {
         String timeOGC1 = "2011-10-18T10:00/2011-10-19T10:00";

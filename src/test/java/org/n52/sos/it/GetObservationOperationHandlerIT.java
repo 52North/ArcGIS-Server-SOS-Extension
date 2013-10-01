@@ -52,14 +52,15 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     public void testInvokeOGCOperation()
     {
         JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[0];
+        String[] responseProperties = new String[1];
         
         // init the JSONObject to simulate a GetObservation request:
         inputObject = inputObject.put("version", "2.0.0");
         inputObject = inputObject.put("service", "SOS");
         inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "ES1865A,ES1863A");
+        inputObject = inputObject.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
+        inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
+        inputObject = inputObject.put("temporalFilter", "");
         
         try {
             String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
@@ -75,18 +76,18 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     /**
      * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
      */
-    @Test
+    //@Test
     public void testInvokeOGCOperation_RDF()
     {
         JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[0];
+        String[] responseProperties = new String[1];
         
         // init the JSONObject to simulate a GetObservation request:
         inputObject = inputObject.put("version", "2.0.0");
         inputObject = inputObject.put("service", "SOS");
         inputObject = inputObject.put("request", "GetObservation");
         inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "ES1865A,ES1863A");
+        inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
         inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
         
         try {
