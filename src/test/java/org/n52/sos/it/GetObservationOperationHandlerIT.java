@@ -60,7 +60,8 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
         inputObject = inputObject.put("request", "GetObservation");
         inputObject = inputObject.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
         inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
-        inputObject = inputObject.put("temporalFilter", "");
+        inputObject = inputObject.put("temporalFilter", "om:phenomenonTime,2013-04-15T00:00:00/2013-04-20T00:00:00");
+        //inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
         
         try {
             String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
@@ -73,31 +74,5 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
         }
     }
 
-    /**
-     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
-     */
-    //@Test
-    public void testInvokeOGCOperation_RDF()
-    {
-        JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[1];
-        
-        // init the JSONObject to simulate a GetObservation request:
-        inputObject = inputObject.put("version", "2.0.0");
-        inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
-        inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
-        
-        try {
-            String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
-            
-            System.out.println(result);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
+
 }
