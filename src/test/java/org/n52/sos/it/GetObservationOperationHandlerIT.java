@@ -61,7 +61,8 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
         inputObject = inputObject.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
         inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
         inputObject = inputObject.put("temporalFilter", "om:phenomenonTime,2013-04-15T00:00:00/2013-04-20T00:00:00");
-        //inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
+        inputObject = inputObject.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
+      //inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
         
         try {
             String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));

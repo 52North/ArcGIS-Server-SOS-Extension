@@ -106,7 +106,7 @@ public class GetObservationOperationHandlerTest {
 	private void initMultiObservationDB() throws Exception {
 		Map<String, MultiValueObservation> staticMap = createStaticMap(TIMES_COUNT);
 
-		Mockito.when(observationDBMultiObservations.getObservations(null, null, null, new String[] {"GB_StationProcess_1"}, null, null, null))
+		Mockito.when(observationDBMultiObservations.getObservations(null, null, null, new String[] {"GB_StationProcess_1"}, null, null, null, null))
 				.thenReturn(staticMap);
 		
 		Mockito.when(geoDBMultiObservations.getObservationAccess()).thenReturn(observationDBMultiObservations);		
@@ -115,7 +115,7 @@ public class GetObservationOperationHandlerTest {
 	private void initDefaultDB() throws Exception {
 		Map<String, MultiValueObservation> staticMap = createStaticMap(1);
 
-		Mockito.when(observationDB.getObservations(null, null, null, new String[] {"GB_StationProcess_1"}, null, null, null))
+		Mockito.when(observationDB.getObservations(null, null, null, new String[] {"GB_StationProcess_1"}, null, null, null, null))
 				.thenReturn(staticMap);
 		
 		Mockito.when(geoDB.getObservationAccess()).thenReturn(observationDB);		

@@ -35,6 +35,6 @@ public interface AccessGdbForObservations {
 	Map<String, MultiValueObservation> getObservations(String[] offerings,
 			String[] featuresOfInterest, String[] observedProperties,
 			String[] procedures, String spatialFilter, String temporalFilter,
-			String where) throws Exception;
+			String[] aggregationTypes, String where) throws Exception;
 
 }

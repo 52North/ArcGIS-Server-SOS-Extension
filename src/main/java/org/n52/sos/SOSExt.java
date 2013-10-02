@@ -337,7 +337,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         ogcOperationArray.put(ServerUtilities.createOperation("GetCapabilities", "service, request", "json, xml", false));
         
         // create a schema object for the DescribeSensor operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, responseFormat", "json, xml", false));
+        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, aggreagtionTypes, responseFormat", "json, xml", false));
         
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
@@ -570,12 +570,16 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         if (inputObject.has("temporalFilter")) {
             temporalFilter = inputObject.getString("temporalFilter");
         }
+        String[] aggregationTypes = null;
+        if (inputObject.has("aggregationTypes")) {
+        	aggregationTypes = inputObject.getString("aggregationTypes").split(",");
+        }
         String where = null;
         if (inputObject.has("where")) {
             where = inputObject.getString("where");
         }
 
-        Map<String, MultiValueObservation> observations = this.geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, where);
+        Map<String, MultiValueObservation> observations = this.geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, aggregationTypes, where);
 
         JSONObject json = JSONObservationEncoder.encodeObservations(observations);
         return json.toString().getBytes("utf-8");

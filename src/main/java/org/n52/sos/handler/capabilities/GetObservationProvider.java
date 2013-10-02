@@ -43,6 +43,45 @@ public class GetObservationProvider extends AbstractMetadataProvider {
 		parameters.add(new Parameter.AnyValueParameter("temporalFilter"));
 		parameters.add(new Parameter.AnyValueParameter("spatialFilter"));
 		parameters.add(new Parameter.AnyValueParameter("featureOfInterest"));
+		parameters.add(new Parameter("aggregationType", Arrays.asList(new String[] {
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1h</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/3y</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/8h</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/highsummer</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/maxd8h</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/summer</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/winter</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ddc</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1dmf</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_nt</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_nv</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_min</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_max</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_dc</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_nv</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_min</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_max</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_dc</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_max19</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_max4</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_max25</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_max26</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_max36</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_ex180</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_ex200</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_ex240</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_ex350</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_ex400</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_ex10</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_ex50</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_ex120</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1ydx_ex125</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_ex100</ows:Value>",
+				"<ows:Value>http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1y_pe50</ows:Value>",
+			})));
 	}
 	
 	@Override

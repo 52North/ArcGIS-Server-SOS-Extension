@@ -50,6 +50,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 	private static final String SPATIAL_FILTER_KEY = "spatialFilter";
 	private static final String TEMPORAL_FILTER_KEY = "temporalFilter";
 	private static final String RESPONSE_FORMAT_KEY = "responseFormat";
+	private static final String AGGREGATION_TYPE = "aggregationType";
 	
     private static List<String> supportedValueReferences = Arrays.asList(new String[] {
         	"om:phenomenonTime"	
@@ -102,9 +103,15 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             responseFormat = inputObject.getString(RESPONSE_FORMAT_KEY);
         }
         
+        String[] aggregationTypes = null;
+        if (inputObject.has(AGGREGATION_TYPE)) {
+        	aggregationTypes = inputObject.getString(AGGREGATION_TYPE).split(",");
+        }
+        
+        
         String result;
            
-        Map<String, MultiValueObservation> observationCollection = geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, null);
+        Map<String, MultiValueObservation> observationCollection = geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, aggregationTypes, null);
         
         if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_RDF)) {
         	constructInvokedURL(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, responseFormat);

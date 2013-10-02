@@ -35,13 +35,12 @@ public abstract class AbstractMetadataProvider implements OperationsMetadataProv
 	private static final String GET_URL_KEY = "${getUrl}";
 	private static final String templateFile = "template_operation.xml";
 	private static String template;
-
+	private String serviceURL;
+	
 	static {
 		InputStream res = AbstractMetadataProvider.class.getResourceAsStream(templateFile);
 		template = CommonUtilities.readResource(res);
 	}
-
-	private String serviceURL;
 	
 
 	@Override

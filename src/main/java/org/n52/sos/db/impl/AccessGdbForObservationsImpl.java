@@ -120,6 +120,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             String[] procedures,
             String spatialFilter,
             String temporalFilter,
+            String[] aggregationTypes,
             String where) throws Exception
     {
         
@@ -171,7 +172,13 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             whereClauseParameterAppend.append(" AND ");
             whereClauseParameterAppend.append(createTemporalClauseSDE(temporalFilter));
         }
-
+        
+        // build query for aggregation type
+        if (aggregationTypes != null) {
+            whereClauseParameterAppend.append(" AND ");
+            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
+        }
+        
         // build query for the where clause
         if (where != null) {
             whereClauseParameterAppend.append(" AND ");
@@ -306,6 +313,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION));
+        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
 		return subFields;
 	}
 

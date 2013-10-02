@@ -40,9 +40,9 @@ public class Parameter {
 		template = CommonUtilities.readResource(stream);
 	}
 	
-	
 	private String name;
 	private List<String> values;
+	
 	
 	public Parameter() {
 	}
@@ -51,10 +51,9 @@ public class Parameter {
 		this.name = name;
 	}
 	
-	
-	public Parameter(String name, List<String> vals) {
+	public Parameter(String name, List<String> values) {
 		this(name);
-		this.values = vals;
+		this.values = values;
 	}
 
 	public String createMarkup() {
