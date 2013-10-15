@@ -37,7 +37,7 @@ public class MeasureResult implements IResult {
 
 	private String verification;
 
-	private double value;
+	private Double value;
 
 	private ITimePosition dateTimeBegin;
 
@@ -50,7 +50,7 @@ public class MeasureResult implements IResult {
 	 */
 	public MeasureResult(ITimePosition dateTimeBegin,
 			ITimePosition dateTimeEnd, String validity, String verification,
-			String aggregationNotation, double value) {
+			String aggregationNotation, Double value) {
 		this.validity = validity;
 		this.verification = verification;
 		this.value = value;
@@ -80,7 +80,7 @@ public class MeasureResult implements IResult {
 	}
 
 	public Double getValue() {
-		return new Double(value);
+		return value;
 	}
 
 }

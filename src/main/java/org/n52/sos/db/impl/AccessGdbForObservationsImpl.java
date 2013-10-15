@@ -70,34 +70,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      */
     public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws Exception
     {
-        // create the where clause with joins and constraints
-        StringBuilder whereClauseParameterAppend = new StringBuilder();
-
-        // joins from OBSERVATION
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST, Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE, Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY, Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT, Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
-
-        // joins FROM VALUE
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.VALUE, SubField.VALUE_FK_OBSERVATION, Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.VALUE, SubField.VALUE_FK_VALIDITY, Table.VALIDITY, SubField.VALIDITY_PK_VALIDITY));
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.VALUE, SubField.VALUE_FK_VERIFICATION, Table.VERIFICATION, SubField.VERIFICATION_PK_VERIFICATION));
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.join(Table.VALUE, SubField.VALUE_FK_AGGREGATIONTYPE, Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE));
-
-        // where query:
-        whereClauseParameterAppend.append(" AND ");
-        whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID), observationIdentifiers));
-
-        return getObservations(whereClauseParameterAppend.toString());
+        return getObservations(gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID), observationIdentifiers));
     }
 
     /**
@@ -123,31 +96,31 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             String[] aggregationTypes,
             String where) throws Exception
     {
-        
         StringBuilder whereClauseParameterAppend = new StringBuilder();
+        
+        boolean isFirst = true;
         
         // build query for offerings
         if (offerings != null) {
-            throw new UnsupportedOperationException("Parameter 'offering' not yet supported.");
-//            whereClause.append(" AND ");
-//            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.OFFERING, SubField.OFFERING_OFFERING_NAME), offerings));
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
+        	whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID), offerings));
         }
         
         // build query for feature of interest
         if (featuresOfInterest != null) {
-            whereClauseParameterAppend.append(" AND ");
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featuresOfInterest));
         }
 
         // build query for observed property
         if (observedProperties != null) {
-            whereClauseParameterAppend.append(" AND ");
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID), observedProperties));
         }
 
         // build query for procedure
         if (procedures != null) {
-            whereClauseParameterAppend.append(" AND ");
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedures));
         }
 
@@ -159,8 +132,8 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             String[] featureArray = CommonUtilities.toArray(featureList);
             
             if (featureList.size() > 0) {
-                // append the list of feature IDs:
-                whereClauseParameterAppend.append(" AND ");
+            	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);          
+            	// append the list of feature IDs:
                 whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
             } else {
                 LOGGER.warn("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
@@ -169,40 +142,39 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
         // build query for temporal filter
         if (temporalFilter != null) {
-            whereClauseParameterAppend.append(" AND ");
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(createTemporalClauseSDE(temporalFilter));
         }
         
         // build query for aggregation type
         if (aggregationTypes != null) {
-            whereClauseParameterAppend.append(" AND ");
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
         }
         
         // build query for the where clause
         if (where != null) {
-            whereClauseParameterAppend.append(" AND ");
+        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(where);
         }
 
         return getObservations(whereClauseParameterAppend.toString());
     }
 
+    
     /**
      * This method serves as a skeleton for the other 2 methods above and
      * expects a WHERE clause append that parameterizes the database query.
      */
-    private Map<String, MultiValueObservation> getObservations(String whereClauseParameterAppend) throws Exception
+    private Map<String, MultiValueObservation> getObservations(String whereClause) throws Exception
     {
-        List<String> tables = createTablesForQuery();
-        
-        String whereClause = createWhereClauseForQuery(whereClauseParameterAppend);
+        String tables = createFromClause();
 
         List<String> subFields = createSubFieldsForQuery();
         
-        assertMaximumRecordCount(tables, whereClause);
+        //assertMaximumRecordCount(tables, whereClause);
         
-        ICursor cursor = evaluateQuery(tables, whereClause, subFields);
+        ICursor cursor = evaluateQuery(tables, whereClause, gdb.createCommaSeparatedList(subFields));
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
@@ -220,15 +192,14 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             } else {
             	idObsMap.get(obsID).getResult().addResultValue(createResultValue(row, fields));
             }
-
         }
 
         return idObsMap;
     }
 
-	private void assertMaximumRecordCount(List<String> tables, String whereClause) throws ResponseExceedsSizeLimitException {
+	private void assertMaximumRecordCount(String tables, String whereClause) throws ResponseExceedsSizeLimitException {
 		try {
-			ICursor countCursor = evaluateQuery(tables, whereClause, Collections.singletonList("count(*)"));
+			ICursor countCursor = evaluateQuery(tables, whereClause, "count(*)");
 			IRow row;
 			if ((row = countCursor.nextRow()) != null) {
 				Object value = row.getValue(0);
@@ -244,15 +215,15 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 			LOGGER.warn(e.getMessage(), e);
 		}		
 	}
-
-	private ICursor evaluateQuery(List<String> tables,
-			String whereClause, List<String> subFields) throws IOException,
-			AutomationException {
+	
+	private ICursor evaluateQuery(String tables, String whereClause, String subFields) 
+			throws IOException, AutomationException
+	{
 		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        queryDef.setTables(tables);
        	LOGGER.debug("Table clause := " + queryDef.getTables());
 
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        queryDef.setSubFields(subFields);
        	LOGGER.debug("Subfields clause := " + queryDef.getSubFields());
 
         queryDef.setWhereClause(whereClause);
@@ -263,33 +234,6 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 		return cursor;
 	}
 
-	private String createWhereClauseForQuery(
-			String whereClauseParameterAppend) {
-		StringBuilder whereClause = new StringBuilder();
-
-        // joins from OBSERVATION
-        whereClause.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST, Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE, Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY, Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT, Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
-
-        // joins from VALUE
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.VALUE, SubField.VALUE_FK_OBSERVATION, Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.VALUE, SubField.VALUE_FK_VALIDITY, Table.VALIDITY, SubField.VALIDITY_PK_VALIDITY));
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.VALUE, SubField.VALUE_FK_VERIFICATION, Table.VERIFICATION, SubField.VERIFICATION_PK_VERIFICATION));
-        whereClause.append(" AND ");
-        whereClause.append(gdb.join(Table.VALUE, SubField.VALUE_FK_AGGREGATIONTYPE, Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE));
-
-        whereClause.append(whereClauseParameterAppend);
-		return whereClause.toString();
-	}
-
 	private List<String> createSubFieldsForQuery() {
 		List<String> subFields = new ArrayList<String>();
         subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID));
@@ -297,6 +241,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID));
+        subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
         subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_RESOURCE));
@@ -314,22 +259,28 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
+        subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
 		return subFields;
 	}
 
-	private List<String> createTablesForQuery() {
-		List<String> tables = new ArrayList<String>();
-		tables.add(Table.OBSERVATION);
-        tables.add(Table.PROCEDURE);
-        tables.add(Table.SAMPLINGPOINT);
-        tables.add(Table.FEATUREOFINTEREST);
-        tables.add(Table.PROPERTY);
-        tables.add(Table.UNIT);
-        tables.add(Table.VALUE);
-        tables.add(Table.AGGREGATIONTYPE);
-        tables.add(Table.VALIDITY);
-        tables.add(Table.VERIFICATION);
-        return tables;
+	private String createFromClause() {
+		String fromClause = 
+		Table.OBSERVATION +
+		" LEFT JOIN " + Table.FEATUREOFINTEREST	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_FEATUREOFINTEREST	+ " = " + Table.FEATUREOFINTEREST + "." + SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST +
+		" LEFT JOIN " + Table.PROCEDURE 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROCEDURE 			+ " = " + Table.PROCEDURE + "." + SubField.PROCEDURE_PK_PROCEDURE +
+		" LEFT JOIN " + Table.PROPERTY 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROPERTY 			+ " = " + Table.PROPERTY + "." + SubField.PROPERTY_PK_PROPERTY +
+		" LEFT JOIN " + Table.SAMPLINGPOINT 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
+		" LEFT JOIN " + Table.VALUE 			+ " ON " + Table.VALUE + "." + SubField.VALUE_FK_OBSERVATION 					+ " = " + Table.OBSERVATION + "." + SubField.OBSERVATION_PK_OBSERVATION +
+		
+		" LEFT JOIN " + Table.VALIDITY 			+ " ON " + Table.VALUE + "." + SubField.VALUE_FK_VALIDITY 						+ " = " + Table.VALIDITY + "." + SubField.VALIDITY_PK_VALIDITY +
+		" LEFT JOIN " + Table.VERIFICATION 		+ " ON " + Table.VALUE + "." + SubField.VALUE_FK_VERIFICATION 					+ " = " + Table.VERIFICATION + "." + SubField.VERIFICATION_PK_VERIFICATION +
+		" LEFT JOIN " + Table.AGGREGATIONTYPE 	+ " ON " + Table.VALUE + "." + SubField.VALUE_FK_AGGREGATIONTYPE 				+ " = " + Table.AGGREGATIONTYPE + "." + SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE +
+		
+		" LEFT JOIN " + Table.STATION 			+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
+		" LEFT JOIN " + Table.UNIT 				+ " ON " + Table.UNIT + "." + SubField.UNIT_PK_UNIT 							+ " = " + Table.VALUE + "." + SubField.VALUE_PK_VALUE + 
+		" LEFT JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID;
+		
+		return fromClause;
 	}
     
     // /////////////////////////////
@@ -438,7 +389,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
         // result
         Object numValue = row.getValue(fields.findField(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC)));
-        double value = (Double) numValue;
+        Double value = (Double) numValue;
 
         return new MeasureResult(startTimePos, endTimePos, validity, verification, aggregationType, value);
     }
@@ -503,5 +454,17 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         return clause;
     }
     
-    
+
+    /**
+     * helper method to reduce code length. Appends "AND" to WHERE clause if 'isFirst == false'.
+     */
+    private boolean ifIsFirstAppendAND (StringBuilder whereClauseParameterAppend, boolean isFirst) {
+    	if (isFirst == false) {
+    		whereClauseParameterAppend.append(" AND ");
+    	}
+    	else {
+    		isFirst = false;
+    	}
+    	return isFirst;
+    }
 }

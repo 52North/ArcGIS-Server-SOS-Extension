@@ -1,5 +1,7 @@
 package org.n52.sos.db;
 
+import static org.hamcrest.CoreMatchers.is;
+
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -24,22 +26,27 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
     @Test
     public void testGetObservationsStringArray()
     {
-        String[] observationIdentifiers = { "GB_Observation_59" };
+        String observationID = "GB_Observation_59";
 
         try {
-            gdb.getObservationAccess().getObservations(observationIdentifiers);
+        	Map<String, MultiValueObservation> result = gdb.getObservationAccess().getObservations(new String[]{observationID});
+        	
+        	for (String key : result.keySet()) {
+        		Assert.assertEquals(key, observationID);
+        	}
+        	
         } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
     }
     
-
+    
 	@Test
     public void testGetObservations()
     {
         try {
-            String[] offerings = null;
+            String[] offerings = new String[]{"Network_GBXXXX"};
             String spatialFilter = null; //"{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}";
             String temporalFilter = "after:2013-04-15T01:00:00";
             String where = null;//"value_numeric > 9";
@@ -49,7 +56,7 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
             String[] aggregationTypes = new String[]{"http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d"};
             
             Map<String, MultiValueObservation> idObsList = gdb.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, aggregationTypes, where);
-        
+            
             AQDObservationEncoder encoder = new AQDObservationEncoder();
             String result = encoder.encodeObservations(idObsList);
             

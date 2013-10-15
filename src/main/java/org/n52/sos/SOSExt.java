@@ -314,7 +314,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         // create a schema object for the 'observations' resource:
         JSONObject observationsObject = ServerUtilities.createResource("observations", "description of observations resource", false, false);
         JSONArray observationsQueryOp = new JSONArray();
-        observationsQueryOp.put(ServerUtilities.createOperation("query", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, where", "json", false));
+        observationsQueryOp.put(ServerUtilities.createOperation("query", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, aggregationType, where", "json", false));
         observationsObject.put("operations", observationsQueryOp);
         
 //        observationsQueryOp.put(ServerUtilities.createOperation("diagram", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, where", "jpeg", false));
@@ -337,7 +337,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         ogcOperationArray.put(ServerUtilities.createOperation("GetCapabilities", "service, request", "json, xml", false));
         
         // create a schema object for the DescribeSensor operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, aggreagtionTypes, responseFormat", "json, xml", false));
+        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, aggregationType, responseFormat", "json, xml", false));
         
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
@@ -571,8 +571,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             temporalFilter = inputObject.getString("temporalFilter");
         }
         String[] aggregationTypes = null;
-        if (inputObject.has("aggregationTypes")) {
-        	aggregationTypes = inputObject.getString("aggregationTypes").split(",");
+        if (inputObject.has("aggregationType")) {
+        	aggregationTypes = inputObject.getString("aggregationType").split(",");
         }
         String where = null;
         if (inputObject.has("where")) {

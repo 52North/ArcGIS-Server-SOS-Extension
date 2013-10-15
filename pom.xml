@@ -94,10 +94,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.0.1</version>
-			<scope>test</scope>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
