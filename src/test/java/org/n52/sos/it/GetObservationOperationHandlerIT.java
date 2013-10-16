@@ -22,6 +22,8 @@
  */
 package org.n52.sos.it;
 
+import java.util.Map;
+
 import org.junit.Test;
 import org.n52.sos.handler.GetObservationOperationHandler;
 
@@ -42,7 +44,7 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     {
         super.setUp();
         getObsOpHandler = new GetObservationOperationHandler();
-        getObsOpHandler.initialize("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
+        getObsOpHandler.initialize(ITConstants.getInstance().getSosUrl1());
     }
 
     /**
@@ -55,10 +57,12 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
         String[] responseProperties = new String[1];
         
         // init the JSONObject to simulate a GetObservation request:
-        inputObject = inputObject.put("version", "2.0.0");
-        inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
+        Map<String, String> kvp = ITConstants.getInstance().getSosGetObservation1();
+        
+        inputObject = inputObject.put("version", kvp.get("version"));
+        inputObject = inputObject.put("service", kvp.get("service"));
+        inputObject = inputObject.put("request", kvp.get("request"));
+        inputObject = inputObject.put("observedProperty", kvp.get("observedProperty"));
         inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
         inputObject = inputObject.put("temporalFilter", "om:phenomenonTime,2013-04-15T00:00:00/2013-04-20T00:00:00");
         inputObject = inputObject.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
