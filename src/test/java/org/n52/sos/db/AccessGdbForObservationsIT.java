@@ -48,9 +48,9 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
         try {
             String[] offerings = new String[]{"Network_GBXXXX"};
             String spatialFilter = null; //"{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}";
-            String temporalFilter = "after:2013-04-15T01:00:00";
+            String temporalFilter = "before:2013-04-15T01:00:00";
             String where = null;//"value_numeric > 9";
-            String[] observedProperties = new String[]{"http://dd.eionet.europa.eu/vocabularies/aq/pollutant/7"};
+            String[] observedProperties = new String[]{"http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1"};
             String[] procedures = null;
             String[] featuresOfInterest = null;
             String[] aggregationTypes = new String[]{"http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d"};

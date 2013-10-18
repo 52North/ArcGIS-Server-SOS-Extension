@@ -172,7 +172,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
         List<String> subFields = createSubFieldsForQuery();
         
-        //assertMaximumRecordCount(tables, whereClause);
+        assertMaximumRecordCount(tables, whereClause);
         
         ICursor cursor = evaluateQuery(tables, whereClause, gdb.createCommaSeparatedList(subFields));
 

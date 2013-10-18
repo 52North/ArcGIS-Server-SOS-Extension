@@ -22,26 +22,27 @@ import org.n52.util.CommonUtilities;
  * @author Arne
  */
 public class SosGetIT extends EsriTestBase {
-	
-    private static Logger LOGGER = Logger.getLogger(SosGetIT.class.getName());
 
-	public static final String SOS_ENDPOINT = "http://localhost:6080/arcgis/rest/services/AirQualitySOS/MapServer/exts/52nArcGisSos/GetObservation";
-	
+	private static Logger LOGGER = Logger.getLogger(SosGetIT.class.getName());
+
 	@Test
-	public void testGetObservation () {
-		
+	public void testGetObservation() {
+
 		HttpClient client = new DefaultHttpClient();
-		
+
 		try {
-			String requestURL = CommonUtilities.concatRequestParameters(SOS_ENDPOINT, ITConstants.getInstance().getSosGetObservation1());
+			String requestURL = CommonUtilities.concatRequestParameters(
+					ITConstants.getInstance().getSosGetObservationEndpointAgs(),
+					ITConstants.getInstance().getSosGetObservationAgs());
 			LOGGER.info("request: " + requestURL);
-			
+
 			HttpGet request = new HttpGet(requestURL);
 			HttpResponse response = client.execute(request);
 
-			String result = CommonUtilities.readResource(response.getEntity().getContent());
-			
-	        LOGGER.info("result: " + result);
+			String result = CommonUtilities.readResource(response.getEntity()
+					.getContent());
+
+			LOGGER.info("result: " + result);
 		} catch (Exception e) {
 			fail();
 		} finally {

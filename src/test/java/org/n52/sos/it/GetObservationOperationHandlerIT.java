@@ -44,7 +44,7 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     {
         super.setUp();
         getObsOpHandler = new GetObservationOperationHandler();
-        getObsOpHandler.initialize(ITConstants.getInstance().getSosUrl1());
+        getObsOpHandler.initialize(ITConstants.getInstance().getSosGetObservationEndpointAgs());
     }
 
     /**
@@ -57,16 +57,16 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
         String[] responseProperties = new String[1];
         
         // init the JSONObject to simulate a GetObservation request:
-        Map<String, String> kvp = ITConstants.getInstance().getSosGetObservation1();
+        Map<String, String> kvp = ITConstants.getInstance().getSosGetObservationLocal();
         
         inputObject = inputObject.put("version", kvp.get("version"));
         inputObject = inputObject.put("service", kvp.get("service"));
         inputObject = inputObject.put("request", kvp.get("request"));
         inputObject = inputObject.put("observedProperty", kvp.get("observedProperty"));
-        inputObject = inputObject.put("featureOfInterest", "GB_SamplingFeature_849");
-        inputObject = inputObject.put("temporalFilter", "om:phenomenonTime,2013-04-15T00:00:00/2013-04-20T00:00:00");
-        inputObject = inputObject.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
-      //inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
+        inputObject = inputObject.put("featureOfInterest", kvp.get("featureOfInterest"));
+        inputObject = inputObject.put("temporalFilter", kvp.get("temporalFilter"));
+        inputObject = inputObject.put("aggregationType", kvp.get("aggregationType"));
+      //inputObject = inputObject.put("responseFormat", kvp.get("responseFormat"));
         
         try {
             String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
