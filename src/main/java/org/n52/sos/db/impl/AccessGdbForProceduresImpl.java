@@ -165,32 +165,32 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
 
         // set tables
-        List<String> tablesProp = new ArrayList<String>();
-        tablesProp.add(Table.NETWORK);
-        tablesProp.add(Table.STATION);
-        tablesProp.add(Table.SAMPLINGPOINT);
-        tablesProp.add(Table.OBSERVATION);
-        tablesProp.add(Table.PROCEDURE);
-        queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
+//        List<String> tablesProp = new ArrayList<String>();
+//        tablesProp.add(Table.NETWORK);
+//        tablesProp.add(Table.STATION);
+//        tablesProp.add(Table.SAMPLINGPOINT);
+//        tablesProp.add(Table.OBSERVATION);
+//        tablesProp.add(Table.PROCEDURE);
+        queryDefProp.setTables(createFromClause());//gdb.createCommaSeparatedList(tablesProp));
         LOGGER.debug("Tables clause := " + queryDefProp.getTables());
 
         // set sub fields
         List<String> subFieldsProp = new ArrayList<String>();
-        subFieldsProp.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        queryDefProp.setSubFields(gdb.createCommaSeparatedList(subFieldsProp));
+        subFieldsProp.add(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
+        queryDefProp.setSubFields("*");//gdb.createCommaSeparatedList(subFieldsProp));
         LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
 
         // create where clause with joins and constraints
-        StringBuilder whereClauseProp = new StringBuilder();
-        whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));
-        whereClauseProp.append(" AND ");
-        whereClauseProp.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
-        whereClauseProp.append(" AND ");
-        whereClauseProp.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
-        whereClauseProp.append(" AND ");
-        whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
-        queryDefProp.setWhereClause(whereClauseProp.toString());
-        LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
+        String whereClauseProp = createFromClause();//= new StringBuilder();
+//        whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));
+//        whereClauseProp.append(" AND ");
+//        whereClauseProp.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
+//        whereClauseProp.append(" AND ");
+//        whereClauseProp.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
+//        whereClauseProp.append(" AND ");
+//        whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
+//        queryDefProp.setWhereClause(whereClauseProp.toString());
+//        LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
 
         // evaluate the database query
         ICursor cursorProp = queryDefProp.evaluate();
@@ -216,4 +216,24 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         
         return procedures;
     }
+    
+    private String createFromClause() {
+    	
+//    	LEFT JOIN Airquality_E2a.DBO.STATION ON Airquality_E2a.DBO.STATION.FK_NETWORK_GID = Airquality_E2a.DBO.NETWORK.pk_network 
+//    	LEFT JOIN Airquality_E2a.DBO.SamplingPoint ON Airquality_E2a.DBO.SAMPLINGPOINT.FK_STATION = Airquality_E2a.DBO.STATION.PK_STATION 
+//    	LEFT JOIN Airquality_E2a.DBO.Observation ON Airquality_E2a.DBO.Observation.fk_samplingpoint = Airquality_E2a.DBO.SamplingPoint.PK_SAMPLINGPOINT 
+//    	LEFT JOIN Airquality_E2a.DBO.Procedures ON Airquality_E2a.DBO.Observation.fk_procedure = Airquality_E2a.DBO.Procedures.pk_procedure
+    	
+		String fromClause = 
+		Table.NETWORK +
+		" LEFT JOIN " + Table.STATION			+ " ON " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID				+ " = " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK +
+		
+		" LEFT JOIN " + Table.SAMPLINGPOINT		+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
+		
+		" LEFT JOIN " + Table.OBSERVATION	 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
+		
+		" LEFT JOIN " + Table.PROCEDURE 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROCEDURE 			+ " = " + Table.PROCEDURE + "." + SubField.PROCEDURE_PK_PROCEDURE;
+		
+		return fromClause;
+	}
 }

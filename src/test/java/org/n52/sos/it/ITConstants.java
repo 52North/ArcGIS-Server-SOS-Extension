@@ -41,9 +41,9 @@ public class ITConstants {
 	    SOS_GETOBSERVATION_LOCAL.put("version", "2.0.0");
 	    SOS_GETOBSERVATION_LOCAL.put("request", "GetObservation");
 	    SOS_GETOBSERVATION_LOCAL.put("offering", "Network_GBXXXX");
-	    SOS_GETOBSERVATION_LOCAL.put("procedure", "GB_StationProcess_7");
-	    SOS_GETOBSERVATION_LOCAL.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
-	    SOS_GETOBSERVATION_LOCAL.put("temporalFilter", "om:phenomenonTime,2013-04-01T01:00:00/2013-04-10T01:00:00");
+	    SOS_GETOBSERVATION_LOCAL.put("procedure", "GB_StationProcess_3189");
+	    SOS_GETOBSERVATION_LOCAL.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1");
+	    SOS_GETOBSERVATION_LOCAL.put("temporalFilter", "om:phenomenonTime,2013-03-01T01:00:00/2013-04-15T01:00:00");
 	    SOS_GETOBSERVATION_LOCAL.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
 	    SOS_GETOBSERVATION_LOCAL.put("f", "xml");
 	    
@@ -51,9 +51,9 @@ public class ITConstants {
 	    SOS_GETOBSERVATION_AGS.put("version", "2.0.0");
 	    SOS_GETOBSERVATION_AGS.put("request", "GetObservation");
 	    SOS_GETOBSERVATION_AGS.put("offering", "Network_GBXXXX");
-	    SOS_GETOBSERVATION_AGS.put("procedure", "GB_StationProcess_7");
-	    SOS_GETOBSERVATION_AGS.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
-	    SOS_GETOBSERVATION_AGS.put("temporalFilter", "om:phenomenonTime,2013-04-01T01:00:00/2013-04-10T01:00:00");
+	    SOS_GETOBSERVATION_AGS.put("procedure", "GB_StationProcess_3189");
+	    SOS_GETOBSERVATION_AGS.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1");
+	    SOS_GETOBSERVATION_AGS.put("temporalFilter", "om:phenomenonTime,2013-03-01T01:00:00/2013-04-15T01:00:00");
 	    SOS_GETOBSERVATION_AGS.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
 	    SOS_GETOBSERVATION_AGS.put("f", "xml");
 	}

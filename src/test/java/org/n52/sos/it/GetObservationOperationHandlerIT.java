@@ -57,7 +57,7 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
         String[] responseProperties = new String[1];
         
         // init the JSONObject to simulate a GetObservation request:
-        Map<String, String> kvp = ITConstants.getInstance().getSosGetObservationLocal();
+        Map<String, String> kvp = ITConstants.getInstance().getSosGetObservationAgs();
         
         inputObject = inputObject.put("version", kvp.get("version"));
         inputObject = inputObject.put("service", kvp.get("service"));
