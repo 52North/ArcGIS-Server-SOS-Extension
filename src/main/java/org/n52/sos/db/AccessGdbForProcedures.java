@@ -36,4 +36,5 @@ public interface AccessGdbForProcedures {
 
 	List<String> getProcedureIdList() throws AutomationException, IOException;
 
+	Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException;
 }

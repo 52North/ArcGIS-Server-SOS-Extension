@@ -58,5 +58,10 @@ public class Procedure {
     {
         return resource;
     }
+    
+    @Override
+    public String toString() {
+    	return "[Procedure: " + id + ", " + resource + "]";
+    }
 
 }

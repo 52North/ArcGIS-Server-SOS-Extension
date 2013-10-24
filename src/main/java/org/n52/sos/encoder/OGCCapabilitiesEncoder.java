@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.n52.sos.Constants;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
@@ -57,11 +58,11 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     private static final String PROVIDER_COUNTRY = "@provider-country@";
     private static final String PROVIDER_EMAIL = "@provider-email@";
     private static final String CONTENTS_OFFERINGS = "@contents-offerings@";
+    private static final String CONTENTS_RESPONSE_FORMATS = "@contents-response-formats@"; 
     private static final String OFFERING_IDENTIFIER = "@offering-identifier@";
     private static final String OFFERING_PROCEDURE = "@offering-procedure@";
     private static final String OFFERING_OBSERVABLE_PROPERTIES = "@offering-observable-properties@";
-    private static final String OFFERING_LOWER_CORNER = "@offering-lower-corner@";
-    private static final String OFFERING_UPPER_CORNER = "@offering-upper-corner@";
+    private static final String OFFERING_OBSERVED_AREA = "@offering-observed-area@";
     private static final String OFFERING_BEGIN_POSITION = "@offering-begin-position@";
     private static final String OFFERING_END_POSITION = "@offering-end-position@";
     private static final String OPERATIONS_METADATA = "@operations-metadata@";
@@ -115,46 +116,51 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         StringBuilder allOfferings = new StringBuilder();
         StringBuilder templateOffering = new StringBuilder(offeringTemplate);
         
-        for (Iterator<ObservationOffering> iterator = obsOfferings.iterator(); iterator.hasNext();) {
-            //LOGGER.info("Offering: " + j++);
-
-            StringBuilder offering = templateOffering;
+        for (ObservationOffering obsOff : obsOfferings){
+            StringBuilder offeringString = new StringBuilder(templateOffering);
             
-            ObservationOffering obsOff = (ObservationOffering) iterator.next();
-            
-            replace(offering, OFFERING_IDENTIFIER, obsOff.getName());
-            replace(offering, OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure
+            replace(offeringString, OFFERING_IDENTIFIER, obsOff.getName());
+            replace(offeringString, OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure
             
             String[] obsPropArray = obsOff.getObservedProperties();
             String obsPropElements = "";
             for (int i = 0; i < obsPropArray.length; i++) {
                 obsPropElements += "<swes:observableProperty>" + obsPropArray[i] + "</swes:observableProperty>";
             }
-            replace(offering, OFFERING_OBSERVABLE_PROPERTIES, obsPropElements);
+            replace(offeringString, OFFERING_OBSERVABLE_PROPERTIES, obsPropElements);
             
             // e.g.: <gml:lowerCorner>50.7167 7.76667</gml:lowerCorner>
             if (!obsOff.getObservedArea().isEmpty()) {
                 double lowerX = obsOff.getObservedArea().getLowerLeft().getX();
                 double lowerY = obsOff.getObservedArea().getLowerLeft().getY();
-                replace(offering, OFFERING_LOWER_CORNER, lowerY + " " + lowerX); 
-                
                 double upperX = obsOff.getObservedArea().getUpperRight().getX();
                 double upperY = obsOff.getObservedArea().getUpperRight().getY();
-                replace(offering, OFFERING_UPPER_CORNER, upperY + " " + upperX);    
+            
+                String observedArea = "<sos:observedArea>" +
+                		"<gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\">" +
+                		"<gml:lowerCorner>" + lowerY + " " + lowerX + "</gml:lowerCorner>" +
+                		"<gml:upperCorner>" + upperY + " " + upperX + "</gml:upperCorner>" +
+                		"</gml:Envelope>" +
+                		"</sos:observedArea>";
+                
+                replace(offeringString, OFFERING_OBSERVED_AREA, observedArea);    
+            }
+            else {
+            	replace(offeringString, OFFERING_OBSERVED_AREA, "");
             }
             
             // e.g.: <gml:beginPosition>2009-01-11T16:22:25.00Z</gml:beginPosition>
             
             if (obsOff.getTimeExtent() != null) {
                 String beginPos = obsOff.getTimeExtent().getStart().toISO8601Format();
-                replace(offering, OFFERING_BEGIN_POSITION, beginPos);
+                replace(offeringString, OFFERING_BEGIN_POSITION, beginPos);
                 
                 String endPos = obsOff.getTimeExtent().getEnd().toISO8601Format();
-                replace(offering, OFFERING_END_POSITION, endPos);
+                replace(offeringString, OFFERING_END_POSITION, endPos);
             }
             
             // add offering to the allOfferings String
-            allOfferings.append(offering).append("\n");
+            allOfferings.append(offeringString).append("\n");
         }
         
         // add the offerings to the Capabilities document:
@@ -162,7 +168,12 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         
         replace(templateCapabilites, OPERATIONS_METADATA, createOperationsMetadataMarkup(operations));
         
-        // LOGGER.info("generated Capabilities: " + templateCapabilites);
+        // add the supported response formats:
+        String[] responseFormats = new String[] {
+        		Constants.RESPONSE_FORMAT_OM, 
+        		Constants.RESPONSE_FORMAT_AQ
+        };
+        replace(templateCapabilites, CONTENTS_RESPONSE_FORMATS, createResponseFormats(responseFormats));
         
         return templateCapabilites.toString();
     }
@@ -195,6 +206,15 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     	return sb.toString();
 	}
 
+    private String createResponseFormats (String[] responseFormats) {
+    	StringBuilder sb = new StringBuilder();
+    	
+    	for (int i = 0; i < responseFormats.length; i++) {
+			sb.append("<sos:responseFormat>" + responseFormats[i] + "</sos:responseFormat>");
+		}
+    	
+    	return sb.toString();
+    }
 
 	public static StringBuilder replace(StringBuilder builder,
             String replaceWhat,

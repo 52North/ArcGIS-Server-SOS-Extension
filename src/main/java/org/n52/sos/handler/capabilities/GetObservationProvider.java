@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.n52.sos.Constants;
+
 public class GetObservationProvider extends AbstractMetadataProvider {
 
 	private static final String OPERATION_NAME = "GetObservation";
@@ -34,8 +36,8 @@ public class GetObservationProvider extends AbstractMetadataProvider {
 	public GetObservationProvider() {
 		parameters = new ArrayList<Parameter>();
 		parameters.add(new Parameter("responseFormat", Arrays.asList(new String[] {
-			"<ows:Value>http://www.opengis.net/om/2.0</ows:Value>",
-			"<ows:Value>http://aqd.ec.europa.eu/aqd/0.3.7c</ows:Value>"
+			"<ows:Value>"+ Constants.RESPONSE_FORMAT_OM +"</ows:Value>",
+			"<ows:Value>"+ Constants.RESPONSE_FORMAT_AQ +"</ows:Value>"
 		})));
 		parameters.add(new Parameter.AnyValueParameter("observedProperty"));
 		parameters.add(new Parameter.AnyValueParameter("procedure"));

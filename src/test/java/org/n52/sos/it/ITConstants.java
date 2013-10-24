@@ -16,16 +16,26 @@ public class ITConstants {
 	private static ITConstants testConstants;
 	
 	//
-	// constants:
+	// static access constants:
+	//
+	public static final String NETWORK_ID = "Network_GBXXXX";
+	
+	//
+	// parameter groups for GetObservation operation requests & according endpoints:
 	//
 	private static Map<String, String> SOS_GETOBSERVATION_LOCAL = new HashMap<String, String>();
-	private static String SOS_GETOBSERVATION_ENDPOINT_LOCAL = "http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension/GetObservation";
+	private static String SOS_GETOBSERVATION_ENDPOINT_LOCAL = "http://localhost:6080/arcgis/rest/services/AirQualitySOS/MapServer/exts/52nArcGisSos/GetObservation";
 	
 	private static Map<String, String> SOS_GETOBSERVATION_AGS = new HashMap<String, String>();
 	private static String SOS_GETOBSERVATION_ENDPOINT_AGS = "http://ags.dev.52north.org:6080/arcgis/rest/services/EEA/AirQualitySos/MapServer/exts/52nArcGisSos/GetObservation";
+
+	
+	//
+	// methods:
+	//
 	
 	private ITConstants () {
-		
+
 		// init GetObservation Query Group 1:
 		SOS_GETOBSERVATION_LOCAL.put("service", "SOS");
 	    SOS_GETOBSERVATION_LOCAL.put("version", "2.0.0");

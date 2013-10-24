@@ -57,24 +57,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         this.gdb = accessGDB;
     }
     
-//  /**
-//  * DUMMY
-//  */
-// public Collection<ObservationOffering> getObservationOfferings() 
-// {
-//     LOGGER.info("Creating DUMMY ObservationOfferings.");
-//     
-//     List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
-//     
-//     try {
-//         Envelope envelope = new Envelope();
-//         ObservationOffering offering = new ObservationOffering("id", "name", new String[] { "observedProperties" }, "procedureIdentifier", envelope, new TimePeriod("2013-01-01/2013-03-31"));
-//         offerings.add(offering);
-//     } catch (Exception e) {
-//         e.printStackTrace();
-//     }
-//     return offerings;
-// }
     
     /**
      * This method can be used to retrieve all {@link ObservationOffering}s
@@ -89,7 +71,8 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         
         List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
         
-        // create request to get all networks as offerings:
+        // ~~~~~~~~~~~~~~~~~~~~
+        // request all networks:
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
 
         // set tables
@@ -319,8 +302,10 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
     }
     
     /**
-     * This method can be used to retrieve all {@link ObservationOffering}s
-     * associated with the SOS.
+     * META: Currently this method is not used. Instead {@link getNetworksAsObservationOfferings()} is used.
+     * 
+     * This method can be used to retrieve all {@link ObservationOffering}s associated with the SOS.
+     * Thereby, there is 1 ObservationOffering per 1 Procedure.
      * 
      * @return all offerings from the Geodatabase
      * @throws IOException

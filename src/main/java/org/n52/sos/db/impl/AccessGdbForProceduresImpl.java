@@ -26,8 +26,12 @@ package org.n52.sos.db.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import org.n52.oxf.valueDomains.time.ITimePosition;
+import org.n52.oxf.valueDomains.time.TimePeriod;
+import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGdbForProcedures;
 import org.n52.util.logging.Logger;
@@ -36,6 +40,8 @@ import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
+import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -145,6 +151,69 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
             procedures.add(new Procedure(id, resource));
         }
 
+        return procedures;
+    }
+    
+    
+    /**
+     * 
+     */
+    public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
+    {   
+        Collection<Procedure> procedures = new ArrayList<Procedure>();
+        
+        IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
+
+        // set tables
+        List<String> tablesProp = new ArrayList<String>();
+        tablesProp.add(Table.NETWORK);
+        tablesProp.add(Table.STATION);
+        tablesProp.add(Table.SAMPLINGPOINT);
+        tablesProp.add(Table.OBSERVATION);
+        tablesProp.add(Table.PROCEDURE);
+        queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
+        LOGGER.debug("Tables clause := " + queryDefProp.getTables());
+
+        // set sub fields
+        List<String> subFieldsProp = new ArrayList<String>();
+        subFieldsProp.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        queryDefProp.setSubFields(gdb.createCommaSeparatedList(subFieldsProp));
+        LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
+
+        // create where clause with joins and constraints
+        StringBuilder whereClauseProp = new StringBuilder();
+        whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));
+        whereClauseProp.append(" AND ");
+        whereClauseProp.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
+        whereClauseProp.append(" AND ");
+        whereClauseProp.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
+        whereClauseProp.append(" AND ");
+        whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
+        queryDefProp.setWhereClause(whereClauseProp.toString());
+        LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
+
+        // evaluate the database query
+        ICursor cursorProp = queryDefProp.evaluate();
+        
+        List<String> proceduresList = new ArrayList<String>();
+        Fields fields = (Fields) cursorProp.getFields();
+
+        IRow row;
+        while ((row = cursorProp.nextRow()) != null) {
+            String procedureID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+            if (! proceduresList.contains(procedureID)) {
+            	proceduresList.add(procedureID);
+            }
+        }
+        
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // now query all procedures in the list:
+        
+        String[] procedureIdentifierArray = new String[]{};
+        procedureIdentifierArray = proceduresList.toArray(procedureIdentifierArray);
+        
+        procedures = this.getProcedures(procedureIdentifierArray); 
+        
         return procedures;
     }
 }
