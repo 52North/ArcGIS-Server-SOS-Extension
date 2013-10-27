@@ -37,7 +37,6 @@ public class SubField {
     public static String OBSERVATION_FK_SAMPLINGPOINT;
     public static String OBSERVATION_FK_PROCEDURE;
     public static String OBSERVATION_FK_PROPERTY;
-    public static String OBSERVATION_FK_UNIT;
     
     public static String VALUE_PK_VALUE;
     public static String VALUE_FK_OBSERVATION;
@@ -51,6 +50,7 @@ public class SubField {
     public static String VALUE_DATETIME_UPDATED;
     public static String VALUE_RESULTTIME;
     public static String VALUE_FK_AGGREGATIONTYPE;
+    public static String VALUE_FK_UNIT;
     
     public static String PROPERTY_PK_PROPERTY;
     public static String PROPERTY_ID;
@@ -129,7 +129,6 @@ public class SubField {
         OBSERVATION_FK_SAMPLINGPOINT = props.getProperty("database.table.OBSERVATION.FK_SAMPLINGPOINT");
         OBSERVATION_FK_PROCEDURE = props.getProperty("database.table.OBSERVATION.FK_PROCEDURE");
         OBSERVATION_FK_PROPERTY = props.getProperty("database.table.OBSERVATION.FK_PROPERTY");
-        OBSERVATION_FK_UNIT = props.getProperty("database.table.OBSERVATION.FK_UNIT");
     
         VALUE_PK_VALUE = props.getProperty("database.table.VALUE.PK_VALUE");
     	VALUE_FK_OBSERVATION = props.getProperty("database.table.VALUE.FK_OBSERVATION");
@@ -143,6 +142,7 @@ public class SubField {
     	VALUE_DATETIME_UPDATED = props.getProperty("database.table.VALUE.DATETIME_UPDATED");
     	VALUE_RESULTTIME = props.getProperty("database.table.VALUE.RESULTTIME");
     	VALUE_FK_AGGREGATIONTYPE = props.getProperty("database.table.VALUE.FK_AGGREGATION_TYPE");
+    	VALUE_FK_UNIT = props.getProperty("database.table.VALUE.FK_UNIT");
     	
         PROPERTY_PK_PROPERTY = props.getProperty("database.table.PROPERTY.PK_PROPERTY");
         PROPERTY_ID = props.getProperty("database.table.PROPERTY.ID");

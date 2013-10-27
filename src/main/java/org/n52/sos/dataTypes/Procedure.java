@@ -23,6 +23,9 @@
 
 package org.n52.sos.dataTypes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
@@ -38,6 +41,15 @@ public class Procedure {
      */
     private String resource;
     
+    /**
+     * the features of interest observed by this procedure.
+     */
+    private List<String> featuresOfInterest;
+    
+    /**
+     * the outputs of this procedure.
+     */
+    private List<Output> outputs;
     
 
     /**
@@ -59,9 +71,83 @@ public class Procedure {
         return resource;
     }
     
-    @Override
+    public List<String> getFeaturesOfInterest() 
+    {
+		return featuresOfInterest;
+	}
+
+	public List<Output> getOutputs() 
+	{
+		return outputs;
+	}
+
+	public void setFeaturesOfInterest(List<String> featuresOfInterest) {
+		this.featuresOfInterest = featuresOfInterest;
+	}
+
+	public void setOutputs(List<Output> outputs) {
+		this.outputs = outputs;
+	}
+
+	public void addOutput(String property, String unit) {
+		if (this.outputs == null) {
+			this.outputs = new ArrayList<Output>();
+		}
+		this.outputs.add(new Output(property, unit));
+	}
+	
+	public void addFeatureOfInterest(String featureID) {
+		if (this.featuresOfInterest == null) {
+			this.featuresOfInterest = new ArrayList<String>();
+		}
+		this.featuresOfInterest.add(featureID);
+	}
+	
+	@Override
     public String toString() {
-    	return "[Procedure: " + id + ", " + resource + "]";
+    	StringBuilder result = new StringBuilder("[Procedure: " + id + " [features: ");
+    	
+    	for (String featureID : this.getFeaturesOfInterest()) {
+			result.append(featureID + " ");
+		}
+    	result.append("] [outputs: ");
+    	
+    	for (Output output : this.getOutputs()) {
+			result.append(output.toString() + " ");
+		}
+    	result.append("]");
+    	result.append("]");
+    	
+    	return result.toString();
     }
 
+    /**
+     * Represents the output of a Procedure.
+     * 
+     * @author Arne
+     */
+    class Output {
+    	
+    	private String unitNotation;
+    	
+    	private String observedPropertyID;
+
+    	public Output(String observedProperty, String unit) {
+    		this.unitNotation = unit;
+    		this.observedPropertyID = observedProperty;
+    	}
+    	
+    	public String getUnit() {
+    		return unitNotation;
+    	}
+
+    	public String getObservedProperty() {
+    		return observedPropertyID;
+    	}
+    	
+    	@Override
+        public String toString() {
+        	return "[Output: " + observedPropertyID + ", " + unitNotation + "]";
+        }
+    }
 }

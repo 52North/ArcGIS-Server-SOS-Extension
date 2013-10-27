@@ -1,9 +1,11 @@
 package org.n52.sos.db;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.Test;
+import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.it.EsriTestBase;
 import org.n52.sos.it.ITConstants;
 
@@ -34,8 +36,10 @@ public class AccessGdbForProceduresIT extends EsriTestBase {
         String[] procedureIdentifiers2 = { "GB_StationProcess_2", "GB_StationProcess_3" };
 
         try {
-            System.out.println(gdb.getProcedureAccess().getProcedures(procedureIdentifiers1).toArray()[0]);
-            System.out.println(gdb.getProcedureAccess().getProcedures(procedureIdentifiers2).toArray()[0]);
+        	System.out.println(gdb.getProcedureAccess().getProcedures(procedureIdentifiers2).toArray()[0]);
+        	
+        	System.out.println(gdb.getProcedureAccess().getProcedures(procedureIdentifiers1).toArray()[0]);
+            
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -48,7 +52,13 @@ public class AccessGdbForProceduresIT extends EsriTestBase {
     	String networkID = ITConstants.NETWORK_ID;
     	
     	try {
-            System.out.println(gdb.getProcedureAccess().getProceduresForNetwork(networkID).toArray()[0]);
+            Collection<Procedure> procedures = gdb.getProcedureAccess().getProceduresForNetwork(networkID);
+            
+            int counter = 1;
+            for (Procedure procedure : procedures) {
+				System.out.println(counter++ + ".: " + procedure);
+			}
+            
         } catch (Exception e) {
             e.printStackTrace();
             fail();

@@ -111,129 +111,183 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      * @throws IOException
      * @throws AutomationException
      */
-    public Collection<Procedure> getProcedures(String[] procedureIdentifierArray) throws AutomationException, IOException
+    public Collection<Procedure> getProcedures(String[] procedureIdentifierArray) throws AutomationException, IOException 
     {
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-
+        
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
+        tables.add(Table.OBSERVATION);
+        tables.add(Table.VALUE);
+        tables.add(Table.UNIT);
+        tables.add(Table.PROPERTY);
+        tables.add(Table.FEATUREOFINTEREST);
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
-//        LOGGER.info("Table clause := " + queryDef.getTables());
+        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
+        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-//        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
+        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
 
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
+        	// joins:
+        	whereClause.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE));
+        	whereClause.append(" AND ");
+        	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+        	whereClause.append(" AND ");
+        	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+        	whereClause.append(" AND ");
+        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_OBSERVATION) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
+        	whereClause.append(" AND ");
+        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT) + " = " + gdb.concatTableAndField(Table.UNIT, SubField.UNIT_PK_UNIT));
+        	whereClause.append(" AND ");
+        	
+        	// identifiers:
+        	whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
             
             queryDef.setWhereClause(whereClause.toString());
         }
-//        LOGGER.info(queryDef.getWhereClause());
-
+        LOGGER.info(queryDef.getWhereClause());
+        
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
-
+        
         Fields fields = (Fields) cursor.getFields();
+        
         IRow row;
-        List<Procedure> procedures = new ArrayList<Procedure>();
+        List<Procedure> procedureList = new ArrayList<Procedure>();
         while ((row = cursor.nextRow()) != null) {
 
-            String id = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
-
-            String resource = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
-
-            procedures.add(new Procedure(id, resource));
+            String procedureID 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+            String resource 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
+        	String unit 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION))).toString();
+        	String property 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID))).toString();
+        	String feature 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID))).toString();
+        	
+            // case: procedure new
+            if (procedureList.contains(procedureID) == false) {
+            	Procedure procedure = new Procedure(procedureID, resource);
+            	
+            	procedure.addFeatureOfInterest(feature);
+            	procedure.addOutput(property, unit);
+            	
+            	procedureList.add(procedure);
+            }
+            // case: procedure is already present in procedureList
+            else {
+                int index = procedureList.indexOf(procedureID);
+                Procedure procedure = procedureList.get(index);
+                                
+                procedure.addFeatureOfInterest(feature);
+                procedure.addOutput(property, unit);
+            }
         }
 
-        return procedures;
+        return procedureList;
     }
     
-    
+
     /**
-     * 
+     * @return a {@link Collection} of all {@link Procedure}s for a given networkID.
      */
     public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
     {   
-        Collection<Procedure> procedures = new ArrayList<Procedure>();
+    	
+    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // request all procedures for network with ID 'networkID':
+        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
-        IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
+        // set sub fields
+        List<String> subFields = new ArrayList<String>();
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
+        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
+        queryDef.setSubFields(" DISTINCT " + gdb.createCommaSeparatedList(subFields));
+        LOGGER.info("SELECT " + queryDef.getSubFields());
 
         // set tables
-//        List<String> tablesProp = new ArrayList<String>();
-//        tablesProp.add(Table.NETWORK);
-//        tablesProp.add(Table.STATION);
-//        tablesProp.add(Table.SAMPLINGPOINT);
-//        tablesProp.add(Table.OBSERVATION);
-//        tablesProp.add(Table.PROCEDURE);
-        queryDefProp.setTables(createFromClause());//gdb.createCommaSeparatedList(tablesProp));
-        LOGGER.debug("Tables clause := " + queryDefProp.getTables());
-
-        // set sub fields
-        List<String> subFieldsProp = new ArrayList<String>();
-        subFieldsProp.add(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
-        queryDefProp.setSubFields("*");//gdb.createCommaSeparatedList(subFieldsProp));
-        LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
+        //queryDef.setTables(createFromClause());
+        List<String> tables = new ArrayList<String>();
+        tables.add(Table.PROCEDURE);
+        tables.add(Table.OBSERVATION);
+        tables.add(Table.SAMPLINGPOINT);
+        tables.add(Table.STATION);     
+        tables.add(Table.NETWORK);
+        tables.add(Table.UNIT);
+        tables.add(Table.VALUE);
+        tables.add(Table.PROPERTY);
+        tables.add(Table.FEATUREOFINTEREST);
+        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        LOGGER.debug("FROM " + queryDef.getTables());
 
         // create where clause with joins and constraints
-        String whereClauseProp = createFromClause();//= new StringBuilder();
-//        whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));
-//        whereClauseProp.append(" AND ");
-//        whereClauseProp.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
-//        whereClauseProp.append(" AND ");
-//        whereClauseProp.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
-//        whereClauseProp.append(" AND ");
-//        whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
-//        queryDefProp.setWhereClause(whereClauseProp.toString());
-//        LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
-
-        // evaluate the database query
-        ICursor cursorProp = queryDefProp.evaluate();
+        StringBuilder whereClause = new StringBuilder();
+    	// joins:
+    	whereClause.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE));
+    	whereClause.append(" AND ");
+    	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+    	whereClause.append(" AND ");
+    	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+    	whereClause.append(" AND ");
+    	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_OBSERVATION) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
+    	whereClause.append(" AND ");
+    	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT) + " = " + gdb.concatTableAndField(Table.UNIT, SubField.UNIT_PK_UNIT));
+    	whereClause.append(" AND ");
+    	whereClause.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
+	    whereClause.append(" AND ");
+    	whereClause.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
+	    whereClause.append(" AND ");
+	    whereClause.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));
+	    whereClause.append(" AND ");
+	    // query network:
+	    whereClause.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + networkID + "'");
+	    queryDef.setWhereClause(whereClause.toString());
+	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
         
-        List<String> proceduresList = new ArrayList<String>();
-        Fields fields = (Fields) cursorProp.getFields();
-
+        // evaluate the database query
+        ICursor cursor = queryDef.evaluate();
+        
+        Fields fields = (Fields) cursor.getFields();
+        
         IRow row;
-        while ((row = cursorProp.nextRow()) != null) {
-            String procedureID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
-            if (! proceduresList.contains(procedureID)) {
-            	proceduresList.add(procedureID);
+        List<Procedure> procedureList = new ArrayList<Procedure>();
+        while ((row = cursor.nextRow()) != null) {
+
+            String procedureID 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+            String resource 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
+        	String unit 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION))).toString();
+        	String property 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID))).toString();
+        	String feature 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID))).toString();
+        	
+            // case: procedure new
+            if (procedureList.contains(procedureID) == false) {
+            	Procedure procedure = new Procedure(procedureID, resource);
+            	
+            	procedure.addFeatureOfInterest(feature);
+            	procedure.addOutput(property, unit);
+            	
+            	procedureList.add(procedure);
+            }
+            // case: procedure is already present in procedureList
+            else {
+                int index = procedureList.indexOf(procedureID);
+                Procedure procedure = procedureList.get(index);
+                                
+                procedure.addFeatureOfInterest(feature);
+                procedure.addOutput(property, unit);
             }
         }
         
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // now query all procedures in the list:
-        
-        String[] procedureIdentifierArray = new String[]{};
-        procedureIdentifierArray = proceduresList.toArray(procedureIdentifierArray);
-        
-        procedures = this.getProcedures(procedureIdentifierArray); 
-        
-        return procedures;
+        return procedureList;
     }
-    
-    private String createFromClause() {
-    	
-//    	LEFT JOIN Airquality_E2a.DBO.STATION ON Airquality_E2a.DBO.STATION.FK_NETWORK_GID = Airquality_E2a.DBO.NETWORK.pk_network 
-//    	LEFT JOIN Airquality_E2a.DBO.SamplingPoint ON Airquality_E2a.DBO.SAMPLINGPOINT.FK_STATION = Airquality_E2a.DBO.STATION.PK_STATION 
-//    	LEFT JOIN Airquality_E2a.DBO.Observation ON Airquality_E2a.DBO.Observation.fk_samplingpoint = Airquality_E2a.DBO.SamplingPoint.PK_SAMPLINGPOINT 
-//    	LEFT JOIN Airquality_E2a.DBO.Procedures ON Airquality_E2a.DBO.Observation.fk_procedure = Airquality_E2a.DBO.Procedures.pk_procedure
-    	
-		String fromClause = 
-		Table.NETWORK +
-		" LEFT JOIN " + Table.STATION			+ " ON " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID				+ " = " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK +
-		
-		" LEFT JOIN " + Table.SAMPLINGPOINT		+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
-		
-		" LEFT JOIN " + Table.OBSERVATION	 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
-		
-		" LEFT JOIN " + Table.PROCEDURE 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROCEDURE 			+ " = " + Table.PROCEDURE + "." + SubField.PROCEDURE_PK_PROCEDURE;
-		
-		return fromClause;
-	}
 }
