@@ -26,22 +26,19 @@ package org.n52.sos.db.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import org.n52.oxf.valueDomains.time.ITimePosition;
-import org.n52.oxf.valueDomains.time.TimePeriod;
-import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGdbForProcedures;
 import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
+import com.esri.arcgis.geodatabase.IFeatureWorkspace;
 import com.esri.arcgis.geodatabase.IQueryDef;
+import com.esri.arcgis.geodatabase.IQueryDef2;
+import com.esri.arcgis.geodatabase.IQueryDef2Proxy;
 import com.esri.arcgis.geodatabase.IRow;
-import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -200,13 +197,17 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      */
     public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
     {   
-    	
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // request all procedures for network with ID 'networkID':
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
+        //IQueryDef2 queryDef = (IQueryDef2) queryDef1;
+        
+        //queryDef.setPrefixClause("DISTINCT");
+        
         // set sub fields
         List<String> subFields = new ArrayList<String>();
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
@@ -251,6 +252,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 	    whereClause.append(" AND ");
 	    // query network:
 	    whereClause.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + networkID + "'");
+	    
 	    queryDef.setWhereClause(whereClause.toString());
 	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
         
