@@ -70,7 +70,10 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      */
     public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws Exception
     {
-        return getObservations(gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID), observationIdentifiers));
+        return getObservations(
+        		gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID), observationIdentifiers),
+        		false
+        		);
     }
 
     /**
@@ -109,7 +112,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         // build query for feature of interest
         if (featuresOfInterest != null) {
         	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
-            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featuresOfInterest));
+            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE), featuresOfInterest));
         }
 
         // build query for observed property
@@ -121,7 +124,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         // build query for procedure
         if (procedures != null) {
         	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
-            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedures));
+            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedures));
         }
 
         // build query for spatial filter
@@ -134,7 +137,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             if (featureList.size() > 0) {
             	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);          
             	// append the list of feature IDs:
-                whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
+                whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE), featureArray));
             } else {
                 LOGGER.warn("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
             }
@@ -158,23 +161,25 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             whereClauseParameterAppend.append(where);
         }
 
-        return getObservations(whereClauseParameterAppend.toString());
+        return getObservations(whereClauseParameterAppend.toString(), true);
     }
 
     
     /**
      * This method serves as a skeleton for the other 2 methods above and
-     * expects a WHERE clause append that parameterizes the database query.
+     * expects a WHERE clause that parameterizes the database query.
      */
-    private Map<String, MultiValueObservation> getObservations(String whereClause) throws Exception
+    private Map<String, MultiValueObservation> getObservations(String whereClause, boolean checkForMaxRecords) throws Exception
     {
         String tables = createFromClause();
 
         List<String> subFields = createSubFieldsForQuery();
         
-        assertMaximumRecordCount(tables, whereClause);
+        if (checkForMaxRecords) {
+        	assertMaximumRecordCount(tables, whereClause);
+        }
         
-        ICursor cursor = evaluateQuery(tables, whereClause, gdb.createCommaSeparatedList(subFields));
+        ICursor cursor = evaluateQuery(tables, whereClause, " DISTINCT " + gdb.createCommaSeparatedList(subFields));
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
@@ -236,15 +241,14 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
 	private List<String> createSubFieldsForQuery() {
 		List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID));
+		
+		subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION)); //this field is only needed so that DISTINCT works
+		subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID));
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID));
@@ -260,6 +264,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
         subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
+        subFields.add(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
 		return subFields;
 	}
 

@@ -22,71 +22,39 @@
  */
 package org.n52.sos.it;
 
+import java.io.File;
+import java.util.Map;
+
 import org.junit.Test;
 import org.n52.sos.handler.GetObservationByIDOperationHandler;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.server.json.JSONObject;
 
 /**
  * @author Arne
- *
+ * 
  */
 public class GetObservationByIdOperationHandlerIT extends EsriTestBase {
-    
-    private GetObservationByIDOperationHandler getObsByIDOpHandler;
-    
-    /**
-     * @throws java.lang.Exception
-     */
-    public void setUp() throws Exception
-    {
-        super.setUp();
-        getObsByIDOpHandler = new GetObservationByIDOperationHandler();
-        getObsByIDOpHandler.initialize("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
-    }
 
-    @Test
-    public void testInvokeOGCOperation()
-    {
-        JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[1];
-        
-        inputObject = inputObject.put("version", "2.0.0");
-        inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservationByID");
-        inputObject = inputObject.put("observation", "1");
-        
-        try {
-            String result = new String(getObsByIDOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
-            
-            System.out.println(result);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
+	private GetObservationByIDOperationHandler getObsByIDOpHandler;
 
-    @Test
-    public void testInvokeOGCOperation_RDF()
-    {
-        JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[1];
-        
-        inputObject = inputObject.put("version", "2.0.0");
-        inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservationByID");
-        inputObject = inputObject.put("observation", "1");
-        inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
-        
-        try {
-            String result = new String(getObsByIDOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
-            
-            System.out.println(result);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
+	/**
+	 * @throws java.lang.Exception
+	 */
+	public void setUp() throws Exception {
+		super.setUp();
+		getObsByIDOpHandler = new GetObservationByIDOperationHandler();
+		getObsByIDOpHandler
+				.initialize(ITConstants.SOS_GETOBSERVATIONBYID_ENDPOINT_LOCAL);
+	}
+
+	@Test
+	public void testInvokeOGCOperation() {
+		this.executeOGCOperation(getObsByIDOpHandler,
+				ITConstants.SOS_GETOBSERVATIONBYID_LOCAL, new File(
+						"c:/temp/getObservationByID.xml"));
+
+	}
+
 }

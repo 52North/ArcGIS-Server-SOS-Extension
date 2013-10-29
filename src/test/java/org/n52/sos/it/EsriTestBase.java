@@ -22,15 +22,20 @@
  */
 package org.n52.sos.it;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.n52.sos.db.impl.AccessGDBImpl;
+import org.n52.sos.handler.OGCOperationRequestHandler;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.server.json.JSONObject;
 import com.esri.arcgis.system.AoInitialize;
 import com.esri.arcgis.system.EngineInitializer;
 import com.esri.arcgis.system.esriLicenseProductCode;
@@ -110,4 +115,32 @@ public class EsriTestBase {
     protected void fail() {
     	Assert.fail();
 	}
+    
+    /**
+     * Helper method used by the subclasses to execute an OGC operation.
+     */
+    public void executeOGCOperation(OGCOperationRequestHandler opHandler, Map<String, String> kvp, File outputFile)
+    {
+        JSONObject inputObject = new JSONObject();
+        String[] responseProperties = new String[1];
+        
+        // read key value pairs and put into JSONObject
+        for (String key : kvp.keySet()) {
+        	inputObject = inputObject.put(key, kvp.get(key));
+        }
+        
+        // now try executing:
+        try {
+            String result = new String(opHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
+            
+            LOGGER.info(result);
+            
+            CommonUtilities.saveFile(outputFile, result);
+            
+        } catch (Exception e) {
+        	LOGGER.severe(e.getLocalizedMessage());
+        	e.printStackTrace();
+            fail();
+        }
+    }
 }

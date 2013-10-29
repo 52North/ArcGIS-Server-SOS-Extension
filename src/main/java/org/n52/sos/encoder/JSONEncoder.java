@@ -25,6 +25,7 @@ package org.n52.sos.encoder;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.n52.om.sampling.Feature;
 import org.n52.sos.dataTypes.ContactDescription;
@@ -233,14 +234,14 @@ public class JSONEncoder {
      * @param procedures
      * @return
      */
-    public static JSONObject encodeProcedureIDs(Collection<Procedure> procedures)
+    public static JSONObject encodeProcedureIDs(List<String> procedureIDs)
     {
         JSONObject json = new JSONObject();
         
         JSONArray jsonProcedureIDArray = new JSONArray();
-        for (Procedure p : procedures) {
+        for (String procedureID : procedureIDs) {
             JSONObject proc = new JSONObject();
-            proc.put("id", p.getId());
+            proc.put("id", procedureID);
             jsonProcedureIDArray.put(proc);
         }
         json.put("procedures", jsonProcedureIDArray);

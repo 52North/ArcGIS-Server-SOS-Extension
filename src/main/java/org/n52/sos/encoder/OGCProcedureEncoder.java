@@ -25,8 +25,10 @@ package org.n52.sos.encoder;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.n52.sos.dataTypes.Procedure;
+import org.n52.sos.dataTypes.Procedure.Output;
 import org.n52.util.logging.Logger;
 
 /**
@@ -37,104 +39,112 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     /*
      * definition of anchor variables within template files:
      */
-    private static String PROCEDURES     = "@procedures@";
-    private static String PROCEDURE_ID   = "@procedure-id@";
-    private static String PROCEDURE_NAME = "@procedure-name@";
-    private static String PROCEDURE_DESC = "@procedure-desc@";
-    private static String PROCEDURE_TYPE = "@procedure-type@";
-    private static String PROCEDURE_APP  = "@procedure-app@";
-    private static String PROCEDURE_LOCATION_LOWER = "@procedure-location-lowerCorner@";
-    private static String PROCEDURE_LOCATION_UPPER = "@procedure-location-upperCorner@";
-    private static String PROCEDURE_OUTPUTS = "@procedure-outputs@";
+    private String COMPONENT_PROCEDURE_ID 			= "@procedure-id@";
+    private String COMPONENT_PROCEDURE_RESOURCE 	= "@procedure-resource@";
+    private String COMPONENT_PROCEDURE_OUTPUTS  	= "@procedure-outputs@";
+    private String COMPONENT_PROCEDURE_FEATURES 	= "@procedure-features@";
+    private String COMPONENT_PROCEDURE_AGGREGATIONTYPES = "@procedure-aggregationTypes@";
+    private String SYSTEM_COMPONENTS		 		= "@components@";
+    private String RESPONSE_PROCEDURES 				= "@procedures@";
     
-    private static String CONTACT_NAME    = "@contact-name@";
-    private static String CONTACT_POS     = "@contact-posistion@";
-    private static String CONTACT_STREET  = "@contact-street@";
-    private static String CONTACT_CITY    = "@contact-city@";
-    private static String CONTACT_COUNTRY = "@contact-country@";
-    private static String CONTACT_EMAIL   = "@contact-email@";
-	private static String responseTemplate;
-	private static String procedureTemplate;
-	private static String responseTemplate101;
-	private static String procedureTemplate101;
+    // templates for SensorML 2.0:
+	private String responseTemplate;
+	private String systemTemplate;
+	private String componentTemplate;
+	
+	// templates for SensorML 1.0.1:
+	private String responseTemplate101;
+	private String systemTemplate101;
+	private String componentTemplate101;
     
-    static {
-    	try {
-			responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
-			procedureTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
+	
+    public OGCProcedureEncoder() throws IOException {
+    	super();
 
-	        responseTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
-	        procedureTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
-		} catch (IOException e) {
-			Logger.getLogger(OGCProcedureEncoder.class.getName()).warn(e.getMessage(), e);
-		}
-        
+    	responseTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response.xml"));
+		systemTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor.xml"));
+		componentTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_component.xml"));
+
+        responseTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
+        systemTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor101.xml"));
+        componentTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_component101.xml"));
     }
     
     public String encodeProceduresAsSensorML20(Collection<Procedure> procedureCollection) throws IOException {
-        return encodeProcedures(procedureCollection, responseTemplate, procedureTemplate);
+        return encodeProcedures(procedureCollection, responseTemplate, systemTemplate, componentTemplate);
     }
     
     public String encodeProceduresAsSensorML101(Collection<Procedure> procedureCollection) throws IOException {
-        return encodeProcedures(procedureCollection, responseTemplate101, procedureTemplate101);
+        return encodeProcedures(procedureCollection, responseTemplate101, systemTemplate101, componentTemplate101);
     }
     
-    public String encodeProcedures(Collection<Procedure> procedureCollection, String responseTemplate, String procedureTemplate) throws IOException {
+    public String encodeProcedures(Collection<Procedure> procedureCollection, String responseTemplate, String systemTemplate, String componentTemplate) throws IOException {
         
-    	throw new UnsupportedOperationException();
-    	
-    	// TODO: adjust old encoding to new AQ e-Reporting schemas  
-    	
-//    	String allProcedures = "";
-//        
-//        for (Procedure procedure : procedureCollection) {
-//            
-//            String procedureString = procedureTemplate;
-//            
-//            procedureString = procedureString.replace(PROCEDURE_ID, procedure.getId());
-//            procedureString = procedureString.replace(PROCEDURE_NAME, procedure.getName());
-//            if (procedure.getDescription() != null) {
-//                procedureString = procedureString.replace(PROCEDURE_DESC, procedure.getDescription());
-//            } else {
-//                procedureString = procedureString.replace(PROCEDURE_DESC, "");
-//            }
-//            procedureString = procedureString.replace(PROCEDURE_APP, procedure.getIntendedApplication());
-//            procedureString = procedureString.replace(PROCEDURE_TYPE, procedure.getSensorType());
-//            
-//            IEnvelope e = procedure.getObservedArea().getEnvelope();
-//            procedureString = procedureString.replace(PROCEDURE_LOCATION_LOWER, e.getLowerLeft().getX() + " " + e.getLowerLeft().getY());
-//            procedureString = procedureString.replace(PROCEDURE_LOCATION_UPPER, e.getUpperRight().getX() + " " + e.getUpperRight().getY());
-//            
-//            ContactDescription c = procedure.getContact();
-//            procedureString = procedureString.replace(CONTACT_NAME, c.getIndividualName());
-//            procedureString = procedureString.replace(CONTACT_POS, c.getPositionName());
-//            procedureString = procedureString.replace(CONTACT_STREET, c.getDeliveryPoint());
-//            procedureString = procedureString.replace(CONTACT_CITY, c.getCity());
-//            procedureString = procedureString.replace(CONTACT_COUNTRY, c.getCountry());
-//            procedureString = procedureString.replace(CONTACT_EMAIL, c.getElectronicMailAddress());
-//            
-//            ObservedProperty[] obsProps = procedure.getOutputs();
-//            String outputsString = "";
-//            for (int i = 0; i < obsProps.length; i++) {
-//                if (obsProps[i].getDataType().equalsIgnoreCase("numeric")) {
-//                    outputsString += "<output name=\"output-" + i + "\">";
-//                    outputsString += "<swe:Quantity definition=\""+ obsProps[i].getDescription() +"\">";
-//                    outputsString += "<swe:uom code=\"" + obsProps[i].getUnitOfMeasurement() +"\"/>";
-//                    outputsString += "</swe:Quantity>";
-//                    outputsString += "</output>";
-//                }
-//                else {
-//                    throw new IllegalArgumentException("Output Data Type '" + obsProps[i].getDataType() + "' not yet supported.");
-//                }
-//            }
-//            procedureString = procedureString.replace(PROCEDURE_OUTPUTS, outputsString);
-//            
-//            // add procedure to the allProcedures String
-//            allProcedures += procedureString + "\n";
-//        }
-//        
-//        responseTemplate = responseTemplate.replace(PROCEDURES, allProcedures);
-//        
-//        return responseTemplate;
+    	StringBuilder allProcedures = new StringBuilder("");
+        
+        for (Procedure procedure : procedureCollection) {
+            
+        	StringBuilder componentString = new StringBuilder(componentTemplate);
+            
+            replace(componentString, COMPONENT_PROCEDURE_ID, procedure.getId());        
+            replace(componentString, COMPONENT_PROCEDURE_RESOURCE, procedure.getResource());
+        	
+            List<String> featureIDs = procedure.getFeaturesOfInterest();
+            String featuresString = "";
+            int count = 1;
+            for (String featureID : featureIDs) {
+            	featuresString += "<swe:field name=\"FeatureOfInterest-" + count++ + "\">\n";
+            	featuresString += "   <swe:Text definition=\"om:featureOfInterest\">\n";
+            	featuresString += "      <swe:value>" + featureID +"</swe:value>\n";
+            	featuresString += "   </swe:Text>\n";
+            	featuresString += "</swe:field>";
+            }
+            replace(componentString, COMPONENT_PROCEDURE_FEATURES, featuresString);
+            
+            List<String> aggregationTypes = procedure.getAggregationTypeIDs();
+            String aggrTypeString = "";
+            int count2 = 1;
+            for (String aggrTypeID : aggregationTypes) {
+            	aggrTypeString += "<swe:field name=\"AggregationType-" + count2++ + "\">\n";
+            	aggrTypeString += "   <swe:Text definition=\"http://dd.eionet.europa.eu/vocabularies/aq/averagingperiod\">\n";
+            	aggrTypeString += "      <swe:value>" + aggrTypeID +"</swe:value>\n";
+            	aggrTypeString += "   </swe:Text>\n";
+            	aggrTypeString += "</swe:field>";
+            }
+            replace(componentString, COMPONENT_PROCEDURE_AGGREGATIONTYPES, aggrTypeString);
+            
+            List<Output> outputs = procedure.getOutputs();
+            String outputsString = "";
+            for (Output output : outputs) {
+                outputsString += "<output name=\"" + output.getObservedPropertyLabel() + "\">\n";
+                outputsString += "   <swe:Quantity definition=\""+ output.getObservedPropertyID() +"\">\n";
+                outputsString += "      <swe:uom code=\"" + output.getUnit() +"\"/>\n";
+                outputsString += "   </swe:Quantity>\n";
+                outputsString += "</output>";
+            }
+            replace(componentString, COMPONENT_PROCEDURE_OUTPUTS, outputsString);       
+            
+            // add procedure to the allProcedures String
+            allProcedures.append(componentString + "\n");
+        }
+        
+        StringBuilder systemString = new StringBuilder(systemTemplate);
+        replace(systemString, SYSTEM_COMPONENTS, allProcedures.toString());  
+        
+        responseTemplate = responseTemplate.replace(RESPONSE_PROCEDURES, systemString);
+        
+        return responseTemplate;
+    }
+    
+    
+    public static StringBuilder replace(StringBuilder builder,
+            String replaceWhat,
+            String replaceWith)
+    {
+        int indexOfTarget = -1;
+        while ((indexOfTarget = builder.indexOf(replaceWhat)) > 0) {
+            builder.replace(indexOfTarget, indexOfTarget + replaceWhat.length(), replaceWith);
+        }
+        return builder;
     }
 }

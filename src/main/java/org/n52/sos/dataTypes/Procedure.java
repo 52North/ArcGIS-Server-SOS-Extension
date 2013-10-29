@@ -51,6 +51,11 @@ public class Procedure {
      */
     private List<Output> outputs;
     
+    /**
+     * the IDs of supported aggregationTypes of this procedure.
+     */
+    private List<String> aggregationTypeIDs;
+    
 
     /**
      * 
@@ -81,6 +86,11 @@ public class Procedure {
 		return outputs;
 	}
 
+	public List<String> getAggregationTypeIDs() 
+    {
+		return aggregationTypeIDs;
+	}
+	
 	public void setFeaturesOfInterest(List<String> featuresOfInterest) {
 		this.featuresOfInterest = featuresOfInterest;
 	}
@@ -89,11 +99,11 @@ public class Procedure {
 		this.outputs = outputs;
 	}
 
-	public void addOutput(String property, String unit) {
+	public void addOutput(String property, String propertyLabel, String unit) {
 		if (this.outputs == null) {
 			this.outputs = new ArrayList<Output>();
 		}
-		this.outputs.add(new Output(property, unit));
+		this.outputs.add(new Output(property, propertyLabel, unit));
 	}
 	
 	public void addFeatureOfInterest(String featureID) {
@@ -101,6 +111,13 @@ public class Procedure {
 			this.featuresOfInterest = new ArrayList<String>();
 		}
 		this.featuresOfInterest.add(featureID);
+	}
+	
+	public void addAggregationTypeID(String aggregationTypeID) {
+		if (this.aggregationTypeIDs == null) {
+			this.aggregationTypeIDs = new ArrayList<String>();
+		}
+		this.aggregationTypeIDs.add(aggregationTypeID);
 	}
 	
 	@Override
@@ -126,13 +143,15 @@ public class Procedure {
      * 
      * @author Arne
      */
-    class Output {
+    public class Output {
     	
     	private String unitNotation;
     	
     	private String observedPropertyID;
+    	
+    	private String observedPropertyLabel;
 
-    	public Output(String observedProperty, String unit) {
+    	public Output(String observedProperty, String propertyLabel,String unit) {
     		this.unitNotation = unit;
     		this.observedPropertyID = observedProperty;
     	}
@@ -141,13 +160,17 @@ public class Procedure {
     		return unitNotation;
     	}
 
-    	public String getObservedProperty() {
+    	public String getObservedPropertyID() {
     		return observedPropertyID;
+    	}
+    	
+    	public String getObservedPropertyLabel() {
+    		return observedPropertyLabel;
     	}
     	
     	@Override
         public String toString() {
-        	return "[Output: " + observedPropertyID + ", " + unitNotation + "]";
+        	return "[Output: " + observedPropertyLabel + ", " + observedPropertyID + ", " + unitNotation + "]";
         }
     }
 }

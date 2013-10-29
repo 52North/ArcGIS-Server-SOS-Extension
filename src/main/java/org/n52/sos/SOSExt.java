@@ -336,19 +336,18 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         // create a schema object for the GetCapabilities operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetCapabilities", "service, request", "json, xml", false));
         
-        // create a schema object for the DescribeSensor operation:
+        // create a schema object for the GetObservation operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, aggregationType, responseFormat", "json, xml", false));
         
-        // create a schema object for the DescribeSensor operation:
+        // create a schema object for the GetObservationByID operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
 
         // create a schema object for the GetFeatureOfInterest operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
-        
-/*    
+           
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
-*/      
+     
         
         // include all resource objects into 'resources' array:
         JSONArray resourceArray = new JSONArray();
@@ -624,16 +623,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             procedures = inputObject.getString("procedure").split(",");
         }
         Collection<Procedure> proceduresColl = this.geoDB.getProcedureAccess().getProcedures(procedures);
-        
-        /*
-        String returnIdsOnly = null;
-        if (inputObject.has("returnIdsOnly")) {
-            returnIdsOnly = inputObject.getString("returnIdsOnly");
-            if (returnIdsOnly != null && Boolean.valueOf(returnIdsOnly)) {
-                json = JSONEncoder.encodeProcedureIDs(proceduresColl);
-            }
-        }
-        */
 
         if (json == null) {
             json = JSONEncoder.encodeProcedures(proceduresColl);
@@ -684,8 +673,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         // handle queries for procedures:
         else if (resourceName.matches("procedures")) {
-            Collection<Procedure> procedureArray = geoDB.getProcedureAccess().getProcedures(null);
-            json = JSONEncoder.encodeProcedureIDs(procedureArray);
+            List<String> procedureIDArray = geoDB.getProcedureAccess().getProcedureIdList();
+            json = JSONEncoder.encodeProcedureIDs(procedureIDArray);
         }
         
         else if (resourceName.matches("procedures/.+")) {

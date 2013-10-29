@@ -32,8 +32,8 @@ public class SosGetIT extends EsriTestBase {
 
 		try {
 			String requestURL = CommonUtilities.concatRequestParameters(
-					ITConstants.getInstance().getSosGetObservationEndpointAgs(),
-					ITConstants.getInstance().getSosGetObservationAgs());
+					ITConstants.SOS_GETOBSERVATION_ENDPOINT_AGS,
+					ITConstants.SOS_GETOBSERVATION_AGS);
 			LOGGER.info("request: " + requestURL);
 
 			HttpGet request = new HttpGet(requestURL);

@@ -120,7 +120,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
             StringBuilder offeringString = new StringBuilder(templateOffering);
             
             replace(offeringString, OFFERING_IDENTIFIER, obsOff.getName());
-            replace(offeringString, OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure
+            replace(offeringString, OFFERING_PROCEDURE, obsOff.getProcedureIdentifier()); // TODO replace with URL to procedure; e.g. DescribeSensor request to this procedure
             
             String[] obsPropArray = obsOff.getObservedProperties();
             String obsPropElements = "";

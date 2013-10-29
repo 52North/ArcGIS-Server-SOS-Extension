@@ -58,7 +58,7 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
             String[] responseProperties) throws Exception
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
-
+        
         // check 'version' parameter:
         checkMandatoryParameter(inputObject, "version", VERSION);
         
@@ -74,7 +74,10 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
                 throw new InvalidParameterValueException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
             }
             else if (procedureDescriptionFormat[0].equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)) {
-                return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_20);
+
+                // TODO: implement 2.0 support:
+            	throw new UnsupportedOperationException("SensorML 2.0 not yet supported...");
+                //return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_20);
             }
             else if (procedureDescriptionFormat[0].equalsIgnoreCase(PROCEDURE_DESC_FORMAT_101)) {
                 return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_101);
@@ -94,14 +97,17 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
      * @throws AutomationException 
      */
     private byte[] encodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException {
-        String[] procedures = null;
-        if (inputObject.has("procedure")) {
+        
+    	String[] procedures = null;
+    	if (inputObject.has("procedure")) {
             procedures = inputObject.getString("procedure").split(",");
         }
         
-        Collection<Procedure> procedureCollection = geoDB.getProcedureAccess().getProcedures(procedures);
-        String result;
+        // TODO: enable handling of multiple procedures:
+        Collection<Procedure> procedureCollection = 
+        		geoDB.getProcedureAccess().getProceduresForNetwork(procedures[0]); // arrrg
         
+        String result;
         if (sensorMLVersion.equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)){
             result = new OGCProcedureEncoder().encodeProceduresAsSensorML20(procedureCollection);
         }

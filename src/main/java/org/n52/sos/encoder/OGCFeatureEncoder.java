@@ -69,19 +69,17 @@ public class OGCFeatureEncoder extends AbstractEncoder {
     
     public String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
                 
-        String allFeatures = "";
+        StringBuilder allFeatures = new StringBuilder("");
         
         for (Feature feature : featureCollection) {
             
-        	// TODO replace String with StringBuffer in the following
-        	
-            String featureString = featureTemplate;
+            StringBuilder featureString = new StringBuilder(featureTemplate);
             
             if (feature.getGmlId() != null) {
-            	featureString = featureString.replace(FEATURE_GML_ID, "gml:id=\"" + feature.getGmlId() + "\"");
+            	replace(featureString, FEATURE_GML_ID, "gml:id=\"" + feature.getGmlId() + "\"");
             }
             else {
-            	featureString = featureString.replace(FEATURE_GML_ID, "");
+            	replace(featureString, FEATURE_GML_ID, "");
             }
             
             if (feature.getShape() != null) {
@@ -93,7 +91,7 @@ public class OGCFeatureEncoder extends AbstractEncoder {
 	            
             	if (geometry instanceof Point) {
 		            Point p = (Point)geometry;
-		            featureString = featureString.replace(FEATURE_POINT, p.getX() + " " + p.getY());
+		            replace(featureString, FEATURE_POINT, p.getX() + " " + p.getY());
 		            
 		            String featureGeometry =
 		            "<sams:shape>"
@@ -102,47 +100,59 @@ public class OGCFeatureEncoder extends AbstractEncoder {
 					+	"</gml:Point>"
 					+"</sams:shape>";
 		            
-		            featureString = featureString.replace(FEATURE_GEOMETRY, featureGeometry);
+		            replace(featureString, FEATURE_GEOMETRY, featureGeometry);
             	}
             	else {
 					throw new UnsupportedDataTypeException("Cannot encode geometry of feature.");
 				}
             }
             else {
-            	featureString = featureString.replace(FEATURE_GEOMETRY, "");
+            	replace(featureString, FEATURE_GEOMETRY, "");
             }
             
             if (feature.getSampledFeature() != null) {
-                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature xlink:href=\""+ feature.getSampledFeature() + "\" />");
+            	replace(featureString, FEATURE_SAMPLED, "<sam:sampledFeature xlink:href=\""+ feature.getSampledFeature() + "\" />");
             } else {
-                featureString = featureString.replace(FEATURE_SAMPLED, "<sam:sampledFeature nilReason=\"inapplicable\" />");
+            	replace(featureString, FEATURE_SAMPLED, "<sam:sampledFeature nilReason=\"inapplicable\" />");
             }
             
             if (feature.getName() != null) {
-                featureString = featureString.replace(FEATURE_NAME, "<gml:name>" + feature.getName() + "</gml:name>");
+            	replace(featureString, FEATURE_NAME, "<gml:name>" + feature.getName() + "</gml:name>");
             } else {
-                featureString = featureString.replace(FEATURE_NAME, "");
+            	replace(featureString, FEATURE_NAME, "");
             }
             
             if (feature.getDescription() != null) {
-                featureString = featureString.replace(FEATURE_DESCRIPTION, "<gml:description>" + feature.getDescription() +"</gml:description>");
+            	replace(featureString, FEATURE_DESCRIPTION, "<gml:description>" + feature.getDescription() +"</gml:description>");
             } else {
-                featureString = featureString.replace(FEATURE_DESCRIPTION, "");
+            	replace(featureString, FEATURE_DESCRIPTION, "");
             }
             
             if (feature instanceof AQDSample) {
                 AQDSample aqdSample = (AQDSample) feature;
-                featureString = featureString.replace(FEATURE_INLET_HEIGHT, aqdSample.getInletHeight()+"");
-                featureString = featureString.replace(FEATURE_BUILDING_DISTANCE, aqdSample.getBuildingDistance()+"");
-                featureString = featureString.replace(FEATURE_KERB_DISTANCE, aqdSample.getKerbDistance()+"");
+                replace(featureString, FEATURE_INLET_HEIGHT, aqdSample.getInletHeight()+"");
+                replace(featureString, FEATURE_BUILDING_DISTANCE, aqdSample.getBuildingDistance()+"");
+                replace(featureString, FEATURE_KERB_DISTANCE, aqdSample.getKerbDistance()+"");
             }
             
             // add features to the allFeatures String
-            allFeatures += featureString + "\n";
+            allFeatures.append(featureString);
         }
         
         String response = responseTemplate.replace(FEATURES, allFeatures);
         
         return response;
+    }
+    
+
+    public static StringBuilder replace(StringBuilder builder,
+            String replaceWhat,
+            String replaceWith)
+    {
+        int indexOfTarget = -1;
+        while ((indexOfTarget = builder.indexOf(replaceWhat)) > 0) {
+            builder.replace(indexOfTarget, indexOfTarget + replaceWhat.length(), replaceWith);
+        }
+        return builder;
     }
 }

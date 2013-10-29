@@ -22,10 +22,12 @@
  */
 package org.n52.sos.it;
 
+import java.io.File;
 import java.util.Map;
 
 import org.junit.Test;
 import org.n52.sos.handler.GetObservationOperationHandler;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -44,7 +46,7 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     {
         super.setUp();
         getObsOpHandler = new GetObservationOperationHandler();
-        getObsOpHandler.initialize(ITConstants.getInstance().getSosGetObservationEndpointAgs());
+        getObsOpHandler.initialize(ITConstants.SOS_GETOBSERVATION_ENDPOINT_AGS);
     }
 
     /**
@@ -53,30 +55,9 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     @Test
     public void testInvokeOGCOperation()
     {
-        JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[1];
-        
-        // init the JSONObject to simulate a GetObservation request:
-        Map<String, String> kvp = ITConstants.getInstance().getSosGetObservationAgs();
-        
-        inputObject = inputObject.put("version", kvp.get("version"));
-        inputObject = inputObject.put("service", kvp.get("service"));
-        inputObject = inputObject.put("request", kvp.get("request"));
-        inputObject = inputObject.put("observedProperty", kvp.get("observedProperty"));
-        inputObject = inputObject.put("featureOfInterest", kvp.get("featureOfInterest"));
-        inputObject = inputObject.put("temporalFilter", kvp.get("temporalFilter"));
-        inputObject = inputObject.put("aggregationType", kvp.get("aggregationType"));
-      //inputObject = inputObject.put("responseFormat", kvp.get("responseFormat"));
-        
-        try {
-            String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
-            
-            System.out.println(result);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+        this.executeOGCOperation(getObsOpHandler,
+				ITConstants.SOS_GETOBSERVATION_LOCAL, new File(
+						"c:/temp/getObservation.xml"));
     }
 
 

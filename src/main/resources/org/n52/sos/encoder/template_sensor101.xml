@@ -2,62 +2,21 @@
 	<swes:SensorDescription>
 		<swes:data>
 			<System>
-			  <gml:description>@procedure-desc@</gml:description>
-			  <identification>
-			    <IdentifierList>
-			      <identifier name="URN">
-			        <Term definition="urn:ogc:def:identifier:OGC:1.0:uniqueID">
-			          <value>@procedure-id@</value>
-			        </Term>
-			      </identifier>
-			      <identifier name="longName">
-			        <Term definition="urn:ogc:def:identifier:OGC:1.0:longName">
-			          <value>@procedure-name@</value>
-			        </Term>
-			      </identifier>
-			      <identifier name="shortName">
-			        <Term definition="urn:ogc:def:identifier:OGC:1.0:shortName">
-			          <value>@procedure-id@</value>
-			        </Term>
-			      </identifier>
-			    </IdentifierList>
-			  </identification>
-			  <classification>
-			    <ClassifierList>
-			      <classifier name="intendedApplication">
-			        <Term definition="urn:ogc:def:classifier:OGC:1.0:application">
-			          <value>@procedure-app@</value>
-			        </Term>
-			      </classifier>
-			      <classifier name="sensorType">
-			        <Term definition="urn:ogc:def:classifier:OGC:1.0:sensorType">
-			          <value>@procedure-type@</value>
-			        </Term>
-			      </classifier>
-			    </ClassifierList>
-			  </classification>
-			  <contact>
-			    <ContactList>
-			      <member>
-			        <ResponsibleParty>
-			          <organizationName>@contact-name@</organizationName>
-			          <positionName>@contact-posistion@</positionName>
-			          <contactInfo>
-			            <address>
-			              <deliveryPoint>@contact-street@</deliveryPoint>
-			              <city>@contact-city@</city>
-			            </address>
-			          </contactInfo>
-			        </ResponsibleParty>
-			      </member>
-			    </ContactList>
-			  </contact>
-			  
-			  <outputs>
-			    <OutputList>
-			      @procedure-outputs@
-			    </OutputList>
-			  </outputs>
+				<identification>
+					<IdentifierList>
+						<identifier name="shortName">
+							<Term definition="urn:ogc:def:identifier:OGC:1.0:shortName">
+								<value>@network-id@</value>
+								<!-- Arne: brauchen wir das? -->
+							</Term>
+						</identifier>
+					</IdentifierList>
+				</identification>
+				<components>
+					<ComponentList>
+						@components@
+					</ComponentList>
+				</components>
 			</System>
 		</swes:data>
 	</swes:SensorDescription>

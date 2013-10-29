@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.junit.Test;
-import org.n52.sos.handler.GetFeatureOfInterestOperationHandler;
+import org.n52.sos.handler.DescribeSensorOperationHandler;
 import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -35,9 +35,9 @@ import com.esri.arcgis.server.json.JSONObject;
  * @author Arne
  *
  */
-public class GetFeatureOfInterestOperationHandlerIT extends EsriTestBase {
+public class DescribeSensorOperationHandlerIT extends EsriTestBase {
     
-    private GetFeatureOfInterestOperationHandler getFoiOpHandler;
+    private DescribeSensorOperationHandler describeSensorOpHandler;
     
     /**
      * @throws java.lang.Exception
@@ -45,24 +45,16 @@ public class GetFeatureOfInterestOperationHandlerIT extends EsriTestBase {
     public void setUp() throws Exception
     {
         super.setUp();
-        getFoiOpHandler = new GetFeatureOfInterestOperationHandler();
-        getFoiOpHandler.initialize(ITConstants.SOS_GETFOI_ENDPOINT_LOCAL);
+        describeSensorOpHandler = new DescribeSensorOperationHandler();
+        describeSensorOpHandler.initialize(ITConstants.SOS_DESCRIBESENSOR_ENDPOINT_LOCAL);
     }
 
-    /**
-     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
-     */
     @Test
     public void testInvokeOGCOperation()
     {
-    	// test different parameterizations:
-    	
-        this.executeOGCOperation(getFoiOpHandler,
-				ITConstants.SOS_GETFOI_LOCAL, new File(
-						"c:/temp/getFeatureOfInterest.xml"));
-        
-        this.executeOGCOperation(getFoiOpHandler,
-				ITConstants.SOS_GETFOI_LOCAL_2, new File(
-						"c:/temp/getFeatureOfInterest_2.xml"));
+        this.executeOGCOperation(describeSensorOpHandler,
+				ITConstants.SOS_DESCRIBESENSOR_LOCAL, new File(
+						"c:/temp/describeSensor.xml"));
     }
+
 }

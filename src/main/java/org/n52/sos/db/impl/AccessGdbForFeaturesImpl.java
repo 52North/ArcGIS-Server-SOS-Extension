@@ -90,21 +90,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     	
         List<Feature> features = new ArrayList<Feature>();
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-
-        // set tables
-        List<String> tables = new ArrayList<String>();
-        tables.add(Table.FEATUREOFINTEREST);
-        if (observedProperties != null || procedures != null){
-	        tables.add(Table.OBSERVATION);
-	        tables.add(Table.PROPERTY);
-	        tables.add(Table.PROCEDURE);
-	    }
-        
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
-        
-        // Log out the query clause
-        LOGGER.info("GetFeatureOfInterest DB query TABLES clause: '" + queryDef.getTables() + "'");
-        
+       
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
@@ -117,73 +103,74 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE));
         if (observedProperties != null || procedures != null){
-	        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
-	        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
-	        subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
-	        subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY));
-	        subFields.add(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE));
+	        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+	        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         }
         
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
         
 		// Log out the query clause
-        LOGGER.info("GetFeatureOfInterest DB query SUBFIELDS clause: '" + queryDef.getSubFields() + "'");
+        LOGGER.info("SELECT " + queryDef.getSubFields());
+
+
+        
+        // set tables
+        List<String> tables = new ArrayList<String>();
+        tables.add(Table.FEATUREOFINTEREST);
+        if (observedProperties != null || procedures != null){
+	        tables.add(Table.OBSERVATION);
+	        tables.add(Table.PROPERTY);
+	        tables.add(Table.PROCEDURE);
+	    }
+        
+        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        
+        // Log out the query clause
+        LOGGER.info("FROM " + queryDef.getTables());
+        
+        
         
         
         // create the where clause with joins and constraints
         StringBuilder whereClause = new StringBuilder();
 
+        boolean isFirst = true;
+        
         // joins
-        boolean firstWhere = true;
         if (observedProperties != null || procedures != null) {
 	        whereClause.append(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST) + " = " + 
 	        				   gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
-	        firstWhere = false;
+	        isFirst = false;
         }
         
         if (observedProperties != null) {
-        	if (firstWhere == false) {
-        		whereClause.append(" AND ");
-        	}
-        	firstWhere = false;
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
 	        whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + 
 	        				   gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
         }
 
         if (procedures != null) {
-        	if (firstWhere == false) {
-        		whereClause.append(" AND ");
-        	}
-        	firstWhere = false;
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
 	        whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + 
 	        				   gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
         }
         
         // build query for feature of interest
         if (featuresOfInterest != null) {
-            if (firstWhere == false) {
-        		whereClause.append(" AND ");
-        	}
-            firstWhere = false;
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featuresOfInterest));
+            isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE), featuresOfInterest));
         }
 
         // build query for observed properties
         if (observedProperties != null) {
-        	if (firstWhere == false) {
-        		whereClause.append(" AND ");
-        	}
-        	firstWhere = false;
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
             whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID), observedProperties));
         }
 
         // build query for procedures
         if (procedures != null) {
-        	if (firstWhere == false) {
-        		whereClause.append(" AND ");
-        	}
-        	firstWhere = false;
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedures));
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedures));
         }
 
         // build query for spatial filter
@@ -193,10 +180,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
             
             if (featureList.size() > 0) {
                 // append the list of feature IDs:
-            	if (firstWhere == false) {
-            		whereClause.append(" AND ");
-            	}
-            	firstWhere = false;
+            	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
             	whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
             } else {
                 LOGGER.warn("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
@@ -206,7 +190,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         queryDef.setWhereClause(whereClause.toString());
 
         // Log out the query clause
-        LOGGER.info("GetFeatureOfInterest DB query WHERE clause: '" + queryDef.getWhereClause() + "'");
+        LOGGER.info("WHERE " + queryDef.getWhereClause());
 
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
@@ -275,5 +259,19 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         }
 
         return new AQDSample(resourceUri, gmlId, localId, null, null, null, point, null, inletHeight, buildingDistance, kerbDistance);
+    }
+    
+    
+    /**
+     * helper method to reduce code length. Appends "AND" to WHERE clause if 'isFirst == false'.
+     */
+    private boolean ifIsFirstAppendAND (StringBuilder whereClauseParameterAppend, boolean isFirst) {
+    	if (isFirst == false) {
+    		whereClauseParameterAppend.append(" AND ");
+    	}
+    	else {
+    		isFirst = false;
+    	}
+    	return isFirst;
     }
 }
