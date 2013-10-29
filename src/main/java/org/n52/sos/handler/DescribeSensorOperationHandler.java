@@ -98,14 +98,16 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
      */
     private byte[] encodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException {
         
-    	String[] procedures = null;
+    	String[] networkProcedures = null;
     	if (inputObject.has("procedure")) {
-            procedures = inputObject.getString("procedure").split(",");
+            networkProcedures = inputObject.getString("procedure").split(",");
         }
         
-        // TODO: enable handling of multiple procedures:
+    	//
+    	// ! we assume, the 'procedure' parameter of DescribeSensor is always a NETWORK identifier:
+    	//
         Collection<Procedure> procedureCollection = 
-        		geoDB.getProcedureAccess().getProceduresForNetwork(procedures[0]); // arrrg
+        		geoDB.getProcedureAccess().getProceduresForNetwork(networkProcedures);
         
         String result;
         if (sensorMLVersion.equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)){

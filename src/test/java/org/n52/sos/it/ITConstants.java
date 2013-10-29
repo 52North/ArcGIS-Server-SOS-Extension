@@ -17,6 +17,7 @@ public class ITConstants {
 	// static access constants:
 	//
 	public static final String NETWORK_ID = "Network_GBXXXX";
+	public static final String PROCEDURE_RESOURCE = "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_StationProcess.xml#GB_StationProcess_3189";
 	
 	//
 	// parameter groups for GetObservation operation requests & according endpoints:
@@ -59,7 +60,7 @@ public class ITConstants {
 		SOS_DESCRIBESENSOR_LOCAL.put("service", "SOS");
 		SOS_DESCRIBESENSOR_LOCAL.put("version", "2.0.0");
 		SOS_DESCRIBESENSOR_LOCAL.put("request", "DescribeSensor");
-		SOS_DESCRIBESENSOR_LOCAL.put("procedure", "Network_GBXXXX");
+		SOS_DESCRIBESENSOR_LOCAL.put("procedure", "Network_GBXXXX,Network_BM0001");
 		SOS_DESCRIBESENSOR_LOCAL.put("procedureDescriptionFormat", "http://www.opengis.net/sensorML/1.0.1");
 		SOS_DESCRIBESENSOR_LOCAL.put("f", "xml");
 	}

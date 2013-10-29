@@ -32,9 +32,11 @@ import com.esri.arcgis.interop.AutomationException;
 
 public interface AccessGdbForProcedures {
 
-	Collection<Procedure> getProcedures(String[] procedures) throws AutomationException, IOException;
+	Collection<Procedure> getProceduresWithIdAndResource(String[] procedures) throws AutomationException, IOException;
+	
+	Collection<Procedure> getProceduresComplete(String[] procedures) throws AutomationException, IOException;
 
 	List<String> getProcedureIdList() throws AutomationException, IOException;
 
-	Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException;
+	Collection<Procedure> getProceduresForNetwork(String[] networkID) throws IOException;
 }

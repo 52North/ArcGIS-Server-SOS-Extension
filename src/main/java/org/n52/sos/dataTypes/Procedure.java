@@ -124,14 +124,18 @@ public class Procedure {
     public String toString() {
     	StringBuilder result = new StringBuilder("[Procedure: " + id + " [features: ");
     	
-    	for (String featureID : this.getFeaturesOfInterest()) {
-			result.append(featureID + " ");
-		}
+    	if (this.getFeaturesOfInterest() != null) {
+	    	for (String featureID : this.getFeaturesOfInterest()) {
+				result.append(featureID + " ");
+			}
+    	}
     	result.append("] [outputs: ");
     	
-    	for (Output output : this.getOutputs()) {
-			result.append(output.toString() + " ");
-		}
+    	if (this.getOutputs() != null) {
+	    	for (Output output : this.getOutputs()) {
+				result.append(output.toString() + " ");
+			}
+    	}
     	result.append("]");
     	result.append("]");
     	
@@ -151,9 +155,10 @@ public class Procedure {
     	
     	private String observedPropertyLabel;
 
-    	public Output(String observedProperty, String propertyLabel,String unit) {
+    	public Output(String observedProperty, String propertyLabel, String unit) {
     		this.unitNotation = unit;
     		this.observedPropertyID = observedProperty;
+    		this.observedPropertyLabel = propertyLabel;
     	}
     	
     	public String getUnit() {

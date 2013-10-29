@@ -165,7 +165,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         this.mapServerDataAccess = null;
 
-        // TODO: make sure all references are being cut.
+        // TODO make sure all references are being cut.
     }
 
     /*************************************************************************************
@@ -178,8 +178,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      * of construct().  
      */
     public void construct(IPropertySet propertySet) throws IOException {
-        
-        // TODO --> read in maxNumOfResults from Manager
         
         try {
             LOGGER.info("Reading properties...");
@@ -338,16 +336,16 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         
         // create a schema object for the GetObservation operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, aggregationType, responseFormat", "json, xml", false));
-        
+
+        // create a schema object for the DescribeSensor operation:
+        ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
+     
         // create a schema object for the GetObservationByID operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
 
         // create a schema object for the GetFeatureOfInterest operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
-           
-        // create a schema object for the DescribeSensor operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
-     
+
         
         // include all resource objects into 'resources' array:
         JSONArray resourceArray = new JSONArray();
@@ -622,7 +620,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         if (inputObject.has("procedure")) {
             procedures = inputObject.getString("procedure").split(",");
         }
-        Collection<Procedure> proceduresColl = this.geoDB.getProcedureAccess().getProcedures(procedures);
+        Collection<Procedure> proceduresColl = this.geoDB.getProcedureAccess().getProceduresWithIdAndResource(procedures);
 
         if (json == null) {
             json = JSONEncoder.encodeProcedures(proceduresColl);
@@ -681,7 +679,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String procedureID = resourceName.split("/")[1];
 //            LOGGER.info("Procedure requested: '" + procedureID + "'");
 
-            Collection<Procedure> proceduresFromDB = geoDB.getProcedureAccess().getProcedures(new String[] { procedureID });
+            Collection<Procedure> proceduresFromDB = geoDB.getProcedureAccess().getProceduresWithIdAndResource(new String[] { procedureID });
 //            LOGGER.info("Count of procedures returned from DB: " + proceduresFromDB.size());
 
             if (proceduresFromDB.size() == 1) {

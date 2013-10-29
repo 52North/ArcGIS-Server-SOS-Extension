@@ -93,22 +93,58 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     }
     
     /**
-     * This method can be used to retrieve all {@link Procedure}s associated
-     * with the SOS complying to the filter as specified by the parameters. The
-     * method basically reflects the SOS:DescribeSensor() operation on Java
-     * level.
-     * 
-     * If one of the method parameters is <b>null</b>, it shall not be
-     * considered in the query.
-     * 
-     * @param procedureIdentifierArray
-     *            an array of unique IDs.
-     * @return all procedures from the Geodatabase which comply to the specified
-     *         parameters.
-     * @throws IOException
-     * @throws AutomationException
+     * This method returns all {@link Procedure}s for the identifiers given in the procedureIdentifierArray.
+     * HOWEVER: this method only fills the ID and RESOURCE attributes of the Procedures.
+     * REASON:  much better performance AND more information in the end not needed.
      */
-    public Collection<Procedure> getProcedures(String[] procedureIdentifierArray) throws AutomationException, IOException 
+    public Collection<Procedure> getProceduresWithIdAndResource(String[] procedureIdentifierArray) throws AutomationException, IOException
+    {
+        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+
+        // set tables
+        List<String> tables = new ArrayList<String>();
+        tables.add(Table.PROCEDURE);
+        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+//        LOGGER.info("Table clause := " + queryDef.getTables());
+        
+        // set sub fields
+        List<String> subFields = new ArrayList<String>();
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+//        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
+
+        StringBuilder whereClause = new StringBuilder();
+        if (procedureIdentifierArray != null) {
+            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
+            
+            queryDef.setWhereClause(whereClause.toString());
+        }
+//        LOGGER.info(queryDef.getWhereClause());
+
+        // evaluate the database query
+        ICursor cursor = queryDef.evaluate();
+
+        Fields fields = (Fields) cursor.getFields();
+        IRow row;
+        List<Procedure> procedures = new ArrayList<Procedure>();
+        while ((row = cursor.nextRow()) != null) {
+
+            String id = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+
+            String resource = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
+
+            procedures.add(new Procedure(id, resource));
+        }
+
+        return procedures;
+    }
+    
+    /**
+     * This method returns all {@link Procedure}s for the identifiers given in the procedureIdentifierArray.
+     * ALL attributes of the {@link Procedure}s are set.
+     */
+    public Collection<Procedure> getProceduresComplete(String[] procedureIdentifierArray) throws AutomationException, IOException 
     {
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
@@ -152,9 +188,9 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     
 
     /**
-     * @return a {@link Collection} of all {@link Procedure}s for a given networkID.
+     * @return a {@link Collection} of all {@link Procedure}s for a given array of network IDs.
      */
-    public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
+    public Collection<Procedure> getProceduresForNetwork(String[] networkIDs) throws IOException
     {   
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // request all procedures for network with ID 'networkID':
@@ -193,7 +229,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 	    whereClause.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));
 	    whereClause.append(" AND ");
 	    // query network:
-	    whereClause.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + networkID + "'");
+	    whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID), networkIDs));
 
 	    /*// only for testing purposes, to make queries faster, the following lines can be included:
 	    whereClause.append(" AND ");

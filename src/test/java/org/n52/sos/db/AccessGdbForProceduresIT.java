@@ -30,15 +30,29 @@ public class AccessGdbForProceduresIT extends EsriTestBase {
     }
 
     @Test
-    public void testGetProcedures()
+    public void testGetProceduresWithIdAndResource()
     {
         String[] procedureIdentifiers1 = { "GB_StationProcess_1" };
         String[] procedureIdentifiers2 = { "GB_StationProcess_2", "GB_StationProcess_3" };
 
         try {
-        	System.out.println(gdb.getProcedureAccess().getProcedures(procedureIdentifiers2).toArray()[0]);
+        	System.out.println(gdb.getProcedureAccess().getProceduresWithIdAndResource(procedureIdentifiers2).toArray()[0]);
         	
-        	System.out.println(gdb.getProcedureAccess().getProcedures(procedureIdentifiers1).toArray()[0]);
+        	System.out.println(gdb.getProcedureAccess().getProceduresWithIdAndResource(procedureIdentifiers1).toArray()[0]);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+    
+    @Test
+    public void testGetProceduresComplete()
+    {
+        String[] procedureIdentifiers1 = { ITConstants.PROCEDURE_RESOURCE };
+     
+        try {
+        	System.out.println(gdb.getProcedureAccess().getProceduresComplete(procedureIdentifiers1).toArray()[0]);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,7 +66,7 @@ public class AccessGdbForProceduresIT extends EsriTestBase {
     	String networkID = ITConstants.NETWORK_ID;
     	
     	try {
-            Collection<Procedure> procedures = gdb.getProcedureAccess().getProceduresForNetwork(networkID);
+            Collection<Procedure> procedures = gdb.getProcedureAccess().getProceduresForNetwork(new String[]{networkID});
             
             int counter = 1;
             for (Procedure procedure : procedures) {
