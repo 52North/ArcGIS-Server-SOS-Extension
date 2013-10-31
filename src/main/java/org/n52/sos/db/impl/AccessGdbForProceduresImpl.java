@@ -147,17 +147,17 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     public Collection<Procedure> getProceduresComplete(String[] procedureIdentifierArray) throws AutomationException, IOException 
     {
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+
+        // set sub fields
+        List<String> subFields = createSubFields();
+        queryDef.setSubFields(" DISTINCT " + gdb.createCommaSeparatedList(subFields));
+        LOGGER.info("SELECT " + queryDef.getSubFields());
         
         // set tables
         List<String> tables = createTables();
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
-        LOGGER.info("Table clause := " + queryDef.getTables());
+        LOGGER.info("FROM " + queryDef.getTables());
         
-        // set sub fields
-        List<String> subFields = createSubFields();
-        queryDef.setSubFields(" DISTINCT " + gdb.createCommaSeparatedList(subFields));
-        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
-
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
         	// joins:
@@ -179,7 +179,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
             
             queryDef.setWhereClause(whereClause.toString());
         }
-        LOGGER.info(queryDef.getWhereClause());
+        LOGGER.info("WHERE " + queryDef.getWhereClause());
         
         List<Procedure> procedureList = evaluateQueryAndCreateProcedureList(queryDef);
 
@@ -190,7 +190,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     /**
      * @return a {@link Collection} of all {@link Procedure}s for a given array of network IDs.
      */
-    public Collection<Procedure> getProceduresForNetwork(String[] networkIDs) throws IOException
+    public Collection<Procedure> getProceduresForNetwork_old(String[] networkIDs) throws IOException
     {   
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // request all procedures for network with ID 'networkID':
@@ -244,6 +244,45 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         return procedureList;
     }
 
+    /**
+     * @return a {@link Collection} of all {@link Procedure}s for a given array of network IDs.
+     */
+    public Collection<Procedure> getProceduresForNetwork(String[] networkIDs) throws IOException
+    {   
+    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // request all procedures for network with ID 'networkID':
+        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+        
+        // set sub fields
+        List<String> subFields = new ArrayList<String>();
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE)); //this field is only needed so that DISTINCT works
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
+        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        LOGGER.info("SELECT " + queryDef.getSubFields());
+
+        String fromClause = 
+        		Table.OBSERVATION +
+        		" LEFT JOIN " + Table.FEATUREOFINTEREST	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_FEATUREOFINTEREST	+ " = " + Table.FEATUREOFINTEREST + "." + SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST +
+        		" LEFT JOIN " + Table.PROCEDURE 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROCEDURE 			+ " = " + Table.PROCEDURE + "." + SubField.PROCEDURE_PK_PROCEDURE +
+        		" LEFT JOIN " + Table.PROPERTY 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROPERTY 			+ " = " + Table.PROPERTY + "." + SubField.PROPERTY_PK_PROPERTY +
+        		" LEFT JOIN " + Table.SAMPLINGPOINT 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
+        		" LEFT JOIN " + Table.STATION 			+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
+        		" LEFT JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID;
+        queryDef.setTables(fromClause);
+        LOGGER.debug("FROM " + queryDef.getTables());
+        
+	    queryDef.setWhereClause(gdb.createOrClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID), networkIDs));
+	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
+        
+        List<Procedure> procedureList = evaluateQueryAndCreateProcedureList(queryDef);
+        
+        return procedureList;
+    }
+    
 
 	/**
      * Support method to create tables.
