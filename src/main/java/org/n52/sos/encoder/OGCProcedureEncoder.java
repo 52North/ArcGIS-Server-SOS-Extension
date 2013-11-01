@@ -27,9 +27,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.Procedure.Output;
-import org.n52.util.logging.Logger;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -91,34 +91,45 @@ public class OGCProcedureEncoder extends AbstractEncoder {
         	
             List<String> featureIDs = procedure.getFeaturesOfInterest();
             String featuresString = "";
-            int count = 1;
-            for (String featureID : featureIDs) {
-            	featuresString += "<swe:field name=\"FeatureOfInterest-" + count++ + "\">\n";
-            	featuresString += "   <swe:Text definition=\"om:featureOfInterest\">\n";
-            	featuresString += "      <swe:value>" + featureID +"</swe:value>\n";
-            	featuresString += "   </swe:Text>\n";
-            	featuresString += "</swe:field>";
+            if (featureIDs != null) {
+	            int count = 1;
+	            for (String featureID : featureIDs) {
+	            	featuresString += "<swe:field name=\"FeatureOfInterest-" + count++ + "\">\n";
+	            	featuresString += "   <swe:Text definition=\"om:featureOfInterest\">\n";
+	            	featuresString += "      <swe:value>" + featureID +"</swe:value>\n";
+	            	featuresString += "   </swe:Text>\n";
+	            	featuresString += "</swe:field>";
+	            }
             }
             replace(componentString, COMPONENT_PROCEDURE_FEATURES, featuresString);
             
             List<String> aggregationTypes = procedure.getAggregationTypeIDs();
             String aggrTypeString = "";
-            int count2 = 1;
-            for (String aggrTypeID : aggregationTypes) {
-            	aggrTypeString += "<swe:field name=\"AggregationType-" + count2++ + "\">\n";
-            	aggrTypeString += "   <swe:Text definition=\"http://dd.eionet.europa.eu/vocabularies/aq/averagingperiod\">\n";
-            	aggrTypeString += "      <swe:value>" + aggrTypeID +"</swe:value>\n";
-            	aggrTypeString += "   </swe:Text>\n";
-            	aggrTypeString += "</swe:field>";
+            if (aggregationTypes != null) {
+	            int count2 = 1;
+	            for (String aggrTypeID : aggregationTypes) {
+	            	aggrTypeString += "<swe:field name=\"AggregationType-" + count2++ + "\">\n";
+	            	aggrTypeString += "   <swe:Text definition=\"http://dd.eionet.europa.eu/vocabularies/aq/averagingperiod\">\n";
+	            	aggrTypeString += "      <swe:value>" + aggrTypeID +"</swe:value>\n";
+	            	aggrTypeString += "   </swe:Text>\n";
+	            	aggrTypeString += "</swe:field>";
+	            }
             }
-            replace(componentString, COMPONENT_PROCEDURE_AGGREGATIONTYPES, aggrTypeString);
+	        replace(componentString, COMPONENT_PROCEDURE_AGGREGATIONTYPES, aggrTypeString);
             
             List<Output> outputs = procedure.getOutputs();
             String outputsString = "";
             for (Output output : outputs) {
-                outputsString += "<output name=\"" + output.getObservedPropertyLabel() + "\">\n";
+            	
+            	String propertyLabel = StringEscapeUtils.escapeXml(output.getObservedPropertyLabel());
+
+                outputsString += "<output name=\"" + propertyLabel + "\">\n";
                 outputsString += "   <swe:Quantity definition=\""+ output.getObservedPropertyID() +"\">\n";
-                outputsString += "      <swe:uom code=\"" + output.getUnit() +"\"/>\n";
+                
+                if (output.getUnit() != null) {
+                	outputsString += "      <swe:uom code=\"" + output.getUnit() +"\"/>\n";
+                }
+                
                 outputsString += "   </swe:Quantity>\n";
                 outputsString += "</output>";
             }
@@ -135,9 +146,8 @@ public class OGCProcedureEncoder extends AbstractEncoder {
         
         return responseTemplate;
     }
-    
-    
-    public static StringBuilder replace(StringBuilder builder,
+
+	public static StringBuilder replace(StringBuilder builder,
             String replaceWhat,
             String replaceWith)
     {

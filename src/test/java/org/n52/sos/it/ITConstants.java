@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * This class defines constants for integration testing of the SOS SOE.
  * 
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class ITConstants {
 	
@@ -94,5 +94,15 @@ public class ITConstants {
 		SOS_GETOBSERVATIONBYID_LOCAL.put("request", "GetObservationByID");
 		SOS_GETOBSERVATIONBYID_LOCAL.put("observation", "GB_Observation_333,GB_Observation_25");
 		SOS_GETOBSERVATIONBYID_LOCAL.put("f", "xml");
+	}
+	
+	
+	public static String SOS_GETCAPABILITIES_ENDPOINT_LOCAL = "http://localhost:6080/arcgis/rest/services/AirQualitySOS/MapServer/exts/52nArcGisSos/GetCapabilities";
+	public static Map<String, String> SOS_GETCAPABILITIES_LOCAL = new HashMap<String, String>();
+	static {
+		SOS_GETCAPABILITIES_LOCAL.put("service", "SOS");
+		SOS_GETCAPABILITIES_LOCAL.put("version", "2.0.0");
+		SOS_GETCAPABILITIES_LOCAL.put("request", "GetCapabilities");
+		SOS_GETCAPABILITIES_LOCAL.put("f", "xml");
 	}
 }

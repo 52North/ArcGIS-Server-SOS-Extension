@@ -19,7 +19,7 @@ import org.n52.util.CommonUtilities;
 
 /**
  * 
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class SosGetIT extends EsriTestBase {
 

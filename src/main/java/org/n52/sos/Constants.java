@@ -37,4 +37,6 @@ public class Constants {
     public static final String RESPONSE_FORMAT_OM   = "http://www.opengis.net/om/2.0";
     public static final String RESPONSE_FORMAT_RDF  = "http://www.w3.org/1999/02/22-rdf-syntax-ns";
     
+    public static final String RESPONSE_FORMAT_SENSORML_101  = "http://www.opengis.net/sensorML/1.0.1";
+    public static final String RESPONSE_FORMAT_SENSORML_20   = "http://www.opengis.net/sensorML/2.0";
 }

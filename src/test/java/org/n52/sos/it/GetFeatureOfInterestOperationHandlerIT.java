@@ -32,7 +32,7 @@ import org.n52.util.CommonUtilities;
 import com.esri.arcgis.server.json.JSONObject;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
 public class GetFeatureOfInterestOperationHandlerIT extends EsriTestBase {

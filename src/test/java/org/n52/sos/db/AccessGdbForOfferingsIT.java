@@ -36,6 +36,8 @@ import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.encoder.JSONEncoder;
 import org.n52.sos.encoder.OGCCapabilitiesEncoder;
+import org.n52.sos.handler.GetCapabilitiesOperationHandler;
+import org.n52.sos.handler.capabilities.OperationsMetadataProvider;
 import org.n52.sos.it.EsriTestBase;
 
 /**
@@ -56,11 +58,17 @@ public class AccessGdbForOfferingsIT extends EsriTestBase {
             
             LOGGER.info("Offerings in JSON: " + JSONEncoder.encodeObservationOfferings(offerings).toString());
             
+            // create ServiceDescription:
             List<String> procedureIDs = new ArrayList<String>();
             procedureIDs.add("procedureID");
             ContactDescription serviceContact = new ContactDescription("", "", "", "", "", "", "", "", "", "");
             ServiceDescription serviceDescription = new ServiceDescription("title", "description", new String[]{"keyword"}, "providerName", "providerSite", new ContactDescription[]{serviceContact}, procedureIDs); 
-            String caps = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDescription, offerings, null);
+            
+            // create operations:
+            List<OperationsMetadataProvider> operationsMetadataProvider = new GetCapabilitiesOperationHandler().loadOperationsMetadataProviders("http://testSosUrl");
+            
+            // now encode the Caps:
+            String caps = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDescription, offerings, operationsMetadataProvider);
             
             OutputStream out = new FileOutputStream("c:/temp/capabilities.xml");
             out.write(caps.getBytes());
@@ -68,6 +76,7 @@ public class AccessGdbForOfferingsIT extends EsriTestBase {
             out.close();
             
         } catch (Exception e) {
+        	LOGGER.severe(e.getLocalizedMessage());
             e.printStackTrace();
             fail();
         }

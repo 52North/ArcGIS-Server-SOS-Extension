@@ -31,7 +31,7 @@ import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.it.EsriTestBase;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
 public class InsertGdbForObservationsIT extends EsriTestBase {

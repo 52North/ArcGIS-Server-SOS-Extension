@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

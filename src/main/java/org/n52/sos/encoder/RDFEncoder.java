@@ -23,7 +23,7 @@
 package org.n52.sos.encoder;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class RDFEncoder {
     

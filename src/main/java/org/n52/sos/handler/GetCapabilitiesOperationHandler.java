@@ -24,6 +24,7 @@ package org.n52.sos.handler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -40,7 +41,7 @@ import com.esri.arcgis.server.json.JSONObject;
 public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler {
 	
 	private static final String GET_CAPABILITIES_OPERATION_NAME = "GetCapabilities";
-	private static ArrayList<OperationsMetadataProvider> operationsMetadataProviders;
+	private static List<OperationsMetadataProvider> operationsMetadataProviders;
 
 	
     public GetCapabilitiesOperationHandler() {
@@ -51,17 +52,22 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
     public void initialize(String urlSosExtension) {
     	super.initialize(urlSosExtension);
     	
-        synchronized (GetCapabilitiesOperationHandler.class) {
-        	if (operationsMetadataProviders == null) {
-            	ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
-        		
-        		operationsMetadataProviders = new ArrayList<OperationsMetadataProvider>();
-        		for (OperationsMetadataProvider omp : loader) {
-        			omp.setServiceURL(sosUrlExtension);
-        			operationsMetadataProviders.add(omp);
-        		}
-            }	
+    	if (operationsMetadataProviders == null) {
+    		operationsMetadataProviders = loadOperationsMetadataProviders(urlSosExtension);
+    	}
+    }
+    
+    public synchronized List<OperationsMetadataProvider> loadOperationsMetadataProviders(String urlSosExtension) {
+
+		List<OperationsMetadataProvider> providers = new ArrayList<OperationsMetadataProvider>();
+    	
+		ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
+		
+		for (OperationsMetadataProvider omp : loader) {
+			omp.setServiceURL(urlSosExtension);
+			providers.add(omp);
 		}
+		return providers;
     }
     
     /**

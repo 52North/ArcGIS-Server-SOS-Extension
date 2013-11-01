@@ -2,7 +2,7 @@
 	<sos:ObservationOffering>
 		<swes:identifier>@offering-identifier@</swes:identifier>
 		<swes:procedure>@offering-procedure@</swes:procedure>
-		<swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/2.0</swes:procedureDescriptionFormat>
+		<!-- currently not supported: <swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/2.0</swes:procedureDescriptionFormat>-->
 		<swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/1.0.1</swes:procedureDescriptionFormat>
 		@offering-observable-properties@
 		@offering-observed-area@

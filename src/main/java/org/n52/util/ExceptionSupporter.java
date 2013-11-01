@@ -23,7 +23,7 @@
 package org.n52.util;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
 public class ExceptionSupporter {

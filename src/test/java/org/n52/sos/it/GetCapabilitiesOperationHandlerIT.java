@@ -23,42 +23,44 @@
 package org.n52.sos.it;
 
 import java.io.File;
-import java.util.Map;
 
 import org.junit.Test;
-import org.n52.sos.handler.GetObservationOperationHandler;
-import org.n52.util.CommonUtilities;
-
-import com.esri.arcgis.server.json.JSONObject;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations; 
+import org.n52.sos.db.impl.AccessGDBImpl;
+import org.n52.sos.handler.GetCapabilitiesOperationHandler;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
-public class GetObservationOperationHandlerIT extends EsriTestBase {
+public class GetCapabilitiesOperationHandlerIT extends EsriTestBase {
     
-    private GetObservationOperationHandler getObsOpHandler;
+    @Mock
+    private GetCapabilitiesOperationHandler getCapabilitiesOpHandler;
     
-    /**
-     * @throws java.lang.Exception
-     */
+    private AccessGDBImpl accessGDB;
+    
+    
+    @Override
     public void setUp() throws Exception
     {
         super.setUp();
-        getObsOpHandler = new GetObservationOperationHandler();
-        getObsOpHandler.initialize(ITConstants.SOS_GETOBSERVATION_ENDPOINT_AGS);
+        
+        MockitoAnnotations.initMocks(this);
+        
+        accessGDB.getServiceDescription();
+        
+        getCapabilitiesOpHandler.initialize(ITConstants.SOS_GETCAPABILITIES_ENDPOINT_LOCAL);
+        
     }
 
-    /**
-     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
-     */
     @Test
     public void testInvokeOGCOperation()
     {
-        this.executeOGCOperation(getObsOpHandler,
-				ITConstants.SOS_GETOBSERVATION_LOCAL, new File(
-						"c:/temp/getObservation.xml"));
+        this.executeOGCOperation(getCapabilitiesOpHandler,
+				ITConstants.SOS_GETCAPABILITIES_LOCAL, new File(
+						"c:/temp/getCapabilities.xml"));
     }
-
 
 }

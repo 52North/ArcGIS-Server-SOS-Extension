@@ -26,7 +26,7 @@ import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
 public class DbBaseIT extends EsriTestBase {

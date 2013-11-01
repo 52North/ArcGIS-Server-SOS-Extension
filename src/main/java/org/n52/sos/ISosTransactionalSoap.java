@@ -25,7 +25,7 @@ package org.n52.sos;
 
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  * 
  */
 public interface ISosTransactionalSoap {

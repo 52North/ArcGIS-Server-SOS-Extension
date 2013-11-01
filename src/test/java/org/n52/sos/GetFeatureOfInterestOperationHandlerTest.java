@@ -27,7 +27,7 @@ import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.server.json.JSONObject;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
 public class GetFeatureOfInterestOperationHandlerTest {
