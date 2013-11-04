@@ -66,7 +66,7 @@ public class AccessGdbForProceduresIT extends EsriTestBase {
     	String networkID = ITConstants.NETWORK_ID;
     	
     	try {
-            Collection<Procedure> procedures = gdb.getProcedureAccess().getProceduresForNetwork(new String[]{networkID});
+            Collection<Procedure> procedures = gdb.getProcedureAccess().getProceduresForNetwork(networkID);
             
             int counter = 1;
             for (Procedure procedure : procedures) {

@@ -216,34 +216,32 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         	String aggrTypeID   = row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID))).toString();
         	
             // case: procedure new
-            if (procedureList.contains(procedureID) == false) {
-            	Procedure procedure = new Procedure(procedureID, resource);
+        	Procedure newProcedure = new Procedure(procedureID, resource);
+            if (procedureList.contains(newProcedure) == false) {
+            	newProcedure.addFeatureOfInterest(feature);
+            	newProcedure.addAggregationTypeID(aggrTypeID);
+            	newProcedure.addOutput(property, propertyLabel, unit);
             	
-            	procedure.addFeatureOfInterest(feature);
-            	procedure.addOutput(property, propertyLabel, unit);
-            	procedure.addAggregationTypeID(aggrTypeID);
-            	
-            	procedureList.add(procedure);
+            	procedureList.add(newProcedure);
             }
             // case: procedure is already present in procedureList
             else {
-                int index = procedureList.indexOf(procedureID);
-                Procedure procedure = procedureList.get(index);
+                int index = procedureList.indexOf(newProcedure);
+                Procedure existingProcedure = procedureList.get(index);
                                 
-                procedure.addFeatureOfInterest(feature);
-                procedure.addOutput(property, propertyLabel, unit);
-                procedure.addAggregationTypeID(aggrTypeID);
+                existingProcedure.addFeatureOfInterest(feature);
+                existingProcedure.addAggregationTypeID(aggrTypeID);
+                existingProcedure.addOutput(property, propertyLabel, unit);
             }
         }
         
-
         return procedureList;
     }
     
     /**
-     * @return a {@link Collection} of all {@link Procedure}s for a given array of network IDs.
+     * @return a {@link Collection} of all {@link Procedure}s for a given network.
      */
-    public Collection<Procedure> getProceduresForNetwork(String[] networkIDs) throws IOException
+    public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
     {   
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // request all procedures for network with ID 'networkID':
@@ -262,16 +260,16 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
         String fromClause = 
         		Table.OBSERVATION +
-        		" INNER JOIN " + Table.FEATUREOFINTEREST	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_FEATUREOFINTEREST	+ " = " + Table.FEATUREOFINTEREST + "." + SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST +
+        		" INNER JOIN " + Table.FEATUREOFINTEREST+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_FEATUREOFINTEREST	+ " = " + Table.FEATUREOFINTEREST + "." + SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST +
         		" INNER JOIN " + Table.PROCEDURE 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROCEDURE 			+ " = " + Table.PROCEDURE + "." + SubField.PROCEDURE_PK_PROCEDURE +
-        		" INNER JOIN " + Table.PROPERTY 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROPERTY 			+ " = " + Table.PROPERTY + "." + SubField.PROPERTY_PK_PROPERTY +
+        		" INNER JOIN " + Table.PROPERTY 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROPERTY 			+ " = " + Table.PROPERTY + "." + SubField.PROPERTY_PK_PROPERTY +
         		" INNER JOIN " + Table.SAMPLINGPOINT 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
         		" INNER JOIN " + Table.STATION 			+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
         		" INNER JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID;
         queryDef.setTables(fromClause);
         LOGGER.debug("FROM " + queryDef.getTables());
         
-	    queryDef.setWhereClause(gdb.createOrClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID), networkIDs));
+	    queryDef.setWhereClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID + " = '" + networkID + "'"));
 	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
         
 		List<Procedure> procedureList = new ArrayList<Procedure>();
@@ -309,5 +307,61 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         
         return procedureList;
 	}
+
+	@Override
+	public boolean isNetwork(String procedureID) throws AutomationException, IOException {
+		
+		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+        
+        queryDef.setSubFields(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
+        LOGGER.info("SELECT " + queryDef.getSubFields());
+
+        queryDef.setTables(Table.NETWORK);
+        LOGGER.debug("FROM " + queryDef.getTables());
+        
+	    queryDef.setWhereClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + procedureID + "'");
+	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
+
+        ICursor cursor = queryDef.evaluate();
+        Fields fields = (Fields) cursor.getFields();
+        IRow row;
+        while ((row = cursor.nextRow()) != null) {
+            String networkID = row.getValue(fields.findField(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID))).toString();
+            
+            if (networkID != null && networkID.equalsIgnoreCase(procedureID)) {
+            	return true;
+            }
+        }
+        
+		return false;
+	}
+
+	@Override
+	public boolean isProcedure(String procedureResourceID) throws AutomationException, IOException {
+			
+		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+        
+        queryDef.setSubFields(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        LOGGER.info("SELECT " + queryDef.getSubFields());
+
+        queryDef.setTables(Table.PROCEDURE);
+        LOGGER.debug("FROM " + queryDef.getTables());
+        
+	    queryDef.setWhereClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE) + " = '" + procedureResourceID + "'");
+	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
+
+        ICursor cursor = queryDef.evaluate();
+        Fields fields = (Fields) cursor.getFields();
+        IRow row;
+        while ((row = cursor.nextRow()) != null) {
+            String procedureIdFromDB = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
+            
+            if (procedureIdFromDB != null && procedureIdFromDB.equalsIgnoreCase(procedureResourceID)) {
+            	return true;
+            }
+        }
+        
+		return false;
+		}
 
 }

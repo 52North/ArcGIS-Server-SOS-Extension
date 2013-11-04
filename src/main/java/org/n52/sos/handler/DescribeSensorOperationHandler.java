@@ -23,10 +23,15 @@
 package org.n52.sos.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.n52.ows.InvalidParameterValueException;
 import org.n52.ows.MissingParameterValueException;
+import org.n52.sos.Constants;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.encoder.OGCProcedureEncoder;
@@ -40,19 +45,18 @@ import com.esri.arcgis.server.json.JSONObject;
 public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
 	
 	private static final String DESCRIBE_SENSOR_OPERATION_NAME = "DescribeSensor";
-
-    protected String PROCEDURE_DESC_FORMAT_20  = "http://www.opengis.net/sensorML/2.0";
-    protected String PROCEDURE_DESC_FORMAT_101 = "http://www.opengis.net/sensorML/1.0.1";
     
+	private static final String invalidOrMissingProcedureDescriptionFormat = "Error, operation requires 'procedureDescriptionFormat' parameter with value: '" + Constants.RESPONSE_FORMAT_SENSORML_20 + "' or '"+ Constants.RESPONSE_FORMAT_SENSORML_101 + "'.";
+	private static final InvalidParameterValueException invalidParamExc = new InvalidParameterValueException(invalidOrMissingProcedureDescriptionFormat);
+	private static final MissingParameterValueException missingParamExc = new MissingParameterValueException(invalidOrMissingProcedureDescriptionFormat);
+	
     public DescribeSensorOperationHandler() {
         super();
     }
 
     /**
-     * service, version, request, procedure, procedureDescriptionFormat
-     * @param inputObject
-     * @return
-     * @throws Exception
+     * realizes the DescribeSensor operation. Expects the following parameters in the inputObject:
+     * <code>service, version, request, procedure, procedureDescriptionFormat</code>
      */
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
             String[] responseProperties) throws Exception
@@ -65,25 +69,25 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
         // check 'procedureDescriptionFormat' parameter:
         String[] procedureDescriptionFormat = null;
         if (! inputObject.has("procedureDescriptionFormat")) {
-            throw new MissingParameterValueException("Error, operation requires 'procedureDescriptionFormat' parameter with value: '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
+            throw missingParamExc;
         }
         else {
             procedureDescriptionFormat = inputObject.getString("procedureDescriptionFormat").split(",");
 
             if (procedureDescriptionFormat.length != 1) {
-                throw new InvalidParameterValueException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
+                throw invalidParamExc;
             }
-            else if (procedureDescriptionFormat[0].equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)) {
+            else if (procedureDescriptionFormat[0].equalsIgnoreCase(Constants.RESPONSE_FORMAT_SENSORML_20)) {
 
                 // TODO: implement 2.0 support:
             	throw new UnsupportedOperationException("SensorML 2.0 not yet supported...");
                 //return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_20);
             }
-            else if (procedureDescriptionFormat[0].equalsIgnoreCase(PROCEDURE_DESC_FORMAT_101)) {
-                return encodeProcedures(geoDB, inputObject, PROCEDURE_DESC_FORMAT_101);
+            else if (procedureDescriptionFormat[0].equalsIgnoreCase(Constants.RESPONSE_FORMAT_SENSORML_101)) {
+                return queryAndEncodeProcedures(geoDB, inputObject, Constants.RESPONSE_FORMAT_SENSORML_101);
             }
             else {
-                throw new InvalidParameterValueException("Error, parameter 'procedureDescriptionFormat' != '" + PROCEDURE_DESC_FORMAT_20 + "' or '"+ PROCEDURE_DESC_FORMAT_101 + "'.");
+                throw invalidParamExc;
             }
         }
     }
@@ -95,31 +99,77 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
      * @return
      * @throws IOException 
      * @throws AutomationException 
+     * @throws InvalidParameterValueException 
      */
-    private byte[] encodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException {
+    private byte[] queryAndEncodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException, InvalidParameterValueException {
         
-    	String[] networkProcedures = null;
+    	String[] procedures = null;
     	if (inputObject.has("procedure")) {
-            networkProcedures = inputObject.getString("procedure").split(",");
+            procedures = inputObject.getString("procedure").split(",");
         }
-        
-    	//
-    	// ! we assume, the 'procedure' parameter of DescribeSensor is always a NETWORK identifier:
-    	//
-        Collection<Procedure> procedureCollection = 
-        		geoDB.getProcedureAccess().getProceduresForNetwork(networkProcedures);
-        
-        String result;
-        if (sensorMLVersion.equalsIgnoreCase(PROCEDURE_DESC_FORMAT_20)){
-            result = new OGCProcedureEncoder().encodeProceduresAsSensorML20(procedureCollection);
-        }
-        else {
-            result = new OGCProcedureEncoder().encodeProceduresAsSensorML101(procedureCollection);
-        }
-        
+    	        
+		/*
+		 * The 'procedure' parameter of DescribeSensor can either be a
+		 * NETWORK identifier or a PROCEDURE resource.
+		 * 
+		 * Hence, we have to check what they are first:
+		 */
+    	List<String> proceduresWhichAreNetworks   = new ArrayList<String>();
+    	List<String> proceduresWhichAreProcedures = new ArrayList<String>();
+    	for (String procedure : procedures) {
+    		if (geoDB.getProcedureAccess().isNetwork(procedure)) {
+    			proceduresWhichAreNetworks.add(procedure);
+    		}
+    		else if (geoDB.getProcedureAccess().isProcedure(procedure)) {
+    			proceduresWhichAreProcedures.add(procedure);
+    		}
+    	}
+    	
+    	/*
+    	 * We only support the request of one kind of procedure per request:
+    	 */
+    	if (proceduresWhichAreNetworks.size() > 0 && proceduresWhichAreProcedures.size() > 0) {
+    		throw new InvalidParameterValueException("The parameter 'PROCEDURE' can either contain NETWORK identifiers or PROCEDURE resource identifiers. A mix is unsupported.");
+    	}
+    	
+    	/*
+    	 * Depending on type of procedure: query & encode accordingly:
+    	 */
+    	String result = "";
+    	if (proceduresWhichAreNetworks.size() > 0) {
+    		
+    		Map<String, Collection<Procedure>> mapOfProceduresPerNetwork = new HashMap<String, Collection<Procedure>>();
+    		
+    		for (String networkID : procedures) {
+    			Collection<Procedure> procedureCollection = geoDB.getProcedureAccess().getProceduresForNetwork(networkID);
+    			mapOfProceduresPerNetwork.put(networkID, procedureCollection);
+    		}
+    		
+    		if (sensorMLVersion.equalsIgnoreCase(Constants.RESPONSE_FORMAT_SENSORML_20)){
+                result = new OGCProcedureEncoder().encodeNetwork_SensorML20(mapOfProceduresPerNetwork);
+            }
+            else {
+                result = new OGCProcedureEncoder().encodeNetwork_SensorML101(mapOfProceduresPerNetwork);
+            }
+    	}
+    	else if (proceduresWhichAreProcedures.size() > 0) {
+    		Collection<Procedure> procedureCollection = geoDB.getProcedureAccess().getProceduresComplete(procedures);
+    		
+    		if (sensorMLVersion.equalsIgnoreCase(Constants.RESPONSE_FORMAT_SENSORML_20)){
+                result = new OGCProcedureEncoder().encodeComponents_SensorML20(procedureCollection);
+            }
+            else {
+                result = new OGCProcedureEncoder().encodeComponents_SensorML101(procedureCollection);
+            }
+    	}
+    	else { // case: no valid procedure was given in the request
+    		throw new InvalidParameterValueException("The passed procedure parameter did not specify existing procedure IDs.");
+    	}
+    	
         return result.getBytes("utf-8");
     }
 
+    
 	protected String getOperationName() {
 		return DESCRIBE_SENSOR_OPERATION_NAME;
 	}

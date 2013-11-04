@@ -44,17 +44,17 @@ public class Procedure {
     /**
      * the features of interest observed by this procedure.
      */
-    private List<String> featuresOfInterest;
+    private List<String> featuresOfInterestList;
     
     /**
      * the outputs of this procedure.
      */
-    private List<Output> outputs;
+    private List<Output> outputsList;
     
     /**
      * the IDs of supported aggregationTypes of this procedure.
      */
-    private List<String> aggregationTypeIDs;
+    private List<String> aggregationTypeIdList;
     
 
     /**
@@ -78,46 +78,82 @@ public class Procedure {
     
     public List<String> getFeaturesOfInterest() 
     {
-		return featuresOfInterest;
+		return featuresOfInterestList;
 	}
 
 	public List<Output> getOutputs() 
 	{
-		return outputs;
+		return outputsList;
 	}
 
 	public List<String> getAggregationTypeIDs() 
     {
-		return aggregationTypeIDs;
+		return aggregationTypeIdList;
 	}
 	
 	public void setFeaturesOfInterest(List<String> featuresOfInterest) {
-		this.featuresOfInterest = featuresOfInterest;
+		this.featuresOfInterestList = featuresOfInterest;
 	}
 
 	public void setOutputs(List<Output> outputs) {
-		this.outputs = outputs;
+		this.outputsList = outputs;
 	}
 
-	public void addOutput(String property, String propertyLabel, String unit) {
-		if (this.outputs == null) {
-			this.outputs = new ArrayList<Output>();
+	public void addOutput(String property, String propertyLabel, String unitNotation) {
+		if (this.outputsList == null) {
+			this.outputsList = new ArrayList<Output>();
 		}
-		this.outputs.add(new Output(property, propertyLabel, unit));
+		Output output = new Output(property, propertyLabel, unitNotation);
+		if (! this.outputsList.contains(output)) {
+			this.outputsList.add(output);
+		}
+	}
+	
+	/**
+	 * @return the Output of this Procedure with the given propertyID and propertyLabel.
+	 * It returns <code>null</code> if no Output with that propertyID and propertyLabel 
+	 * is associated with this Procedure.
+	 */
+	public Output getOutput(String propertyID, String propertyLabel, String unitNotation) {
+		int index = this.outputsList.indexOf(new Output(propertyID, propertyLabel, unitNotation));
+		if (index != -1) {
+			return this.outputsList.get(index);
+		}
+		else {
+			return null;
+		}
 	}
 	
 	public void addFeatureOfInterest(String featureID) {
-		if (this.featuresOfInterest == null) {
-			this.featuresOfInterest = new ArrayList<String>();
+		if (this.featuresOfInterestList == null) {
+			this.featuresOfInterestList = new ArrayList<String>();
 		}
-		this.featuresOfInterest.add(featureID);
+		if (! this.featuresOfInterestList.contains(featureID)) {
+			this.featuresOfInterestList.add(featureID);
+		}
 	}
 	
 	public void addAggregationTypeID(String aggregationTypeID) {
-		if (this.aggregationTypeIDs == null) {
-			this.aggregationTypeIDs = new ArrayList<String>();
+		if (this.aggregationTypeIdList == null) {
+			this.aggregationTypeIdList = new ArrayList<String>();
 		}
-		this.aggregationTypeIDs.add(aggregationTypeID);
+		if (! aggregationTypeIdList.contains(aggregationTypeID)) {
+			aggregationTypeIdList.add(aggregationTypeID);
+		}
+	}
+	
+	@Override
+	public boolean equals(Object otherProcedure) {
+		if (otherProcedure != null) {
+			if (otherProcedure instanceof Procedure) {
+				Procedure p = (Procedure) otherProcedure;
+				if (this.getId().equalsIgnoreCase(p.getId())
+						&& this.getResource().equalsIgnoreCase(p.getResource()) ) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -149,28 +185,44 @@ public class Procedure {
      */
     public class Output {
     	
-    	private String unitNotation;
-    	
     	private String observedPropertyID;
     	
     	private String observedPropertyLabel;
 
-    	public Output(String observedProperty, String propertyLabel, String unit) {
-    		this.unitNotation = unit;
+    	private String unitNotation;
+    	
+    	public Output(String observedProperty, String propertyLabel, String unitNotation) {
     		this.observedPropertyID = observedProperty;
     		this.observedPropertyLabel = propertyLabel;
+    		this.unitNotation = unitNotation;
     	}
     	
     	public String getUnit() {
-    		return unitNotation;
+    		return this.unitNotation;
     	}
-
+    	
     	public String getObservedPropertyID() {
-    		return observedPropertyID;
+    		return this.observedPropertyID;
     	}
     	
     	public String getObservedPropertyLabel() {
-    		return observedPropertyLabel;
+    		return this.observedPropertyLabel;
+    	}
+    	
+    	@Override
+    	public boolean equals(Object otherOutput) {
+    		if (otherOutput != null) {
+    			if (otherOutput instanceof Output) {
+    				Output p = (Output) otherOutput;
+    				if (this.getObservedPropertyID().equalsIgnoreCase(p.getObservedPropertyID())
+    						&& this.getObservedPropertyLabel().equalsIgnoreCase(p.getObservedPropertyLabel())
+    						&& this.getUnit().equalsIgnoreCase(p.getUnit()))
+    				{
+    					return true;
+    				}
+    			}
+    		}
+    		return false;
     	}
     	
     	@Override

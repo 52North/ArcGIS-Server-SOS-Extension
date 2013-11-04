@@ -38,5 +38,9 @@ public interface AccessGdbForProcedures {
 
 	List<String> getProcedureIdList() throws AutomationException, IOException;
 
-	Collection<Procedure> getProceduresForNetwork(String[] networkID) throws IOException;
+	Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException;
+
+	boolean isNetwork(String procedure) throws AutomationException, IOException;
+
+	boolean isProcedure(String procedure) throws AutomationException, IOException;
 }

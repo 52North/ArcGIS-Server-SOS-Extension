@@ -1,0 +1,18 @@
+
+<System>
+	<identification>
+		<IdentifierList>
+			<identifier name="shortName">
+				<Term definition="urn:ogc:def:identifier:OGC:1.0:shortName">
+					<value>@network-id@</value>
+					<!-- Arne: brauchen wir das? -->
+				</Term>
+			</identifier>
+		</IdentifierList>
+	</identification>
+	<components>
+		<ComponentList>
+			@components@
+		</ComponentList>
+	</components>
+</System>

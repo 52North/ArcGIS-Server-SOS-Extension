@@ -55,14 +55,23 @@ public class ITConstants {
 	
 	
 	public static String SOS_DESCRIBESENSOR_ENDPOINT_LOCAL = "http://localhost:6080/arcgis/rest/services/AirQualitySOS/MapServer/exts/52nArcGisSos/DescribeSensor";
-	public static Map<String, String> SOS_DESCRIBESENSOR_LOCAL = new HashMap<String, String>();
+	public static Map<String, String> SOS_DESCRIBESENSOR_LOCAL_NETWORK = new HashMap<String, String>();
 	static {
-		SOS_DESCRIBESENSOR_LOCAL.put("service", "SOS");
-		SOS_DESCRIBESENSOR_LOCAL.put("version", "2.0.0");
-		SOS_DESCRIBESENSOR_LOCAL.put("request", "DescribeSensor");
-		SOS_DESCRIBESENSOR_LOCAL.put("procedure", "Network_GBXXXX,Network_BM0001");
-		SOS_DESCRIBESENSOR_LOCAL.put("procedureDescriptionFormat", "http://www.opengis.net/sensorML/1.0.1");
-		SOS_DESCRIBESENSOR_LOCAL.put("f", "xml");
+		SOS_DESCRIBESENSOR_LOCAL_NETWORK.put("service", "SOS");
+		SOS_DESCRIBESENSOR_LOCAL_NETWORK.put("version", "2.0.0");
+		SOS_DESCRIBESENSOR_LOCAL_NETWORK.put("request", "DescribeSensor");
+		SOS_DESCRIBESENSOR_LOCAL_NETWORK.put("procedure", "Network_GBXXXX,Network_BM0001");
+		SOS_DESCRIBESENSOR_LOCAL_NETWORK.put("procedureDescriptionFormat", "http://www.opengis.net/sensorML/1.0.1");
+		SOS_DESCRIBESENSOR_LOCAL_NETWORK.put("f", "xml");
+	}
+	public static Map<String, String> SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT = new HashMap<String, String>();
+	static {
+		SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT.put("service", "SOS");
+		SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT.put("version", "2.0.0");
+		SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT.put("request", "DescribeSensor");
+		SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT.put("procedure", "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_StationProcess.xml#GB_StationProcess_5,http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_StationProcess.xml#GB_StationProcess_278");
+		SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT.put("procedureDescriptionFormat", "http://www.opengis.net/sensorML/1.0.1");
+		SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT.put("f", "xml");
 	}
 	
 	

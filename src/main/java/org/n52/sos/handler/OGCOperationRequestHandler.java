@@ -219,13 +219,4 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
 		return this.getExecutionPriority() - o.getExecutionPriority();
 	}
 
-	public static void main(String[] args)
-    {
-        String timeOGC1 = "2011-10-18T10:00/2011-10-19T10:00";
-        System.out.println(convertTemporalFilterFromOGCtoESRI(timeOGC1));
-        
-        String timeOGC2 = "2011-10-18T00:00";
-        System.out.println(convertTemporalFilterFromOGCtoESRI(timeOGC2));
-        System.out.println(DEFAULT_RESPONSE_PROPERTIES);
-    }
 }
