@@ -1,4 +1,4 @@
 org.n52.sos.handler.capabilities.GetCapabilitiesProvider
 org.n52.sos.handler.capabilities.GetObservationByIDProvider
 org.n52.sos.handler.capabilities.GetObservationProvider
-org.n52.sos.handler.capabilities.DescribeSensor
+org.n52.sos.handler.capabilities.DescribeSensorProvider

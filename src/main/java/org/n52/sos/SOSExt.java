@@ -138,20 +138,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         LOGGER.info(this.getClass().getName() + " initialized.");
     }
 
-    private void initializeOperationHandlers() {
-    	ServiceLoader<OperationRequestHandler> loader = ServiceLoader.load(OperationRequestHandler.class);
-
-    	this.operationHandlers = new ArrayList<OperationRequestHandler>();
-    	
-    	for (OperationRequestHandler h : loader) {
-			h.initialize(this.urlSosExtension);
-			this.operationHandlers.add(h);
-		}
-    	
-    	Collections.sort(this.operationHandlers);
-    	LOGGER.info("Registered Operation Handlers: " + this.operationHandlers.toString());
-	}
-
 	/**
      * shutdown() is called once when the Server Object's context is being shut
      * down and is about to go away.
@@ -244,6 +230,20 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
 	}
 
+    private void initializeOperationHandlers() {
+    	ServiceLoader<OperationRequestHandler> loader = ServiceLoader.load(OperationRequestHandler.class);
+
+    	this.operationHandlers = new ArrayList<OperationRequestHandler>();
+    	
+    	for (OperationRequestHandler h : loader) {
+			h.initialize(this.urlSosExtension);
+			this.operationHandlers.add(h);
+			LOGGER.info("init op handler " + h.getExecutionPriority() + " added");
+		}
+    	Collections.sort(this.operationHandlers);
+    	LOGGER.info("Registered Operation Handlers: " + this.operationHandlers.toString());
+	}
+    
 	/*************************************************************************************
      * SOAP methods:
      *************************************************************************************/

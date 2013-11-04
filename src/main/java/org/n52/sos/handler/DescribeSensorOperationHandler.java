@@ -159,6 +159,7 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
                 result = new OGCProcedureEncoder().encodeComponents_SensorML20(procedureCollection);
             }
             else {
+            	LOGGER.info("start encoding components as SensorML 1.0.1");
                 result = new OGCProcedureEncoder().encodeComponents_SensorML101(procedureCollection);
             }
     	}

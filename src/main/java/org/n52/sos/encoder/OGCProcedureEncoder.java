@@ -31,11 +31,15 @@ import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.Procedure.Output;
+import org.n52.sos.handler.OGCOperationRequestHandler;
+import org.n52.util.logging.Logger;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class OGCProcedureEncoder extends AbstractEncoder {
+	
+	protected static Logger LOGGER = Logger.getLogger(OGCProcedureEncoder.class.getName());
 
     /*
      * definition of anchor variables within template files:
@@ -135,6 +139,7 @@ public class OGCProcedureEncoder extends AbstractEncoder {
         	String singleProcedure = encodeSingleProcedure(procedure);
         	
         	StringBuilder envelopedSingleProcedure = new StringBuilder(componentEnvelopeTemplate);
+        	
         	replace(envelopedSingleProcedure, COMPONENT_ENVELOPE_COMPONENT, singleProcedure);
         	
             allProcedures.append(envelopedSingleProcedure);
@@ -159,7 +164,7 @@ public class OGCProcedureEncoder extends AbstractEncoder {
             int count = 1;
             for (String featureID : featureIDs) {
             	featuresString += "<swe:field name=\"FeatureOfInterest-" + count++ + "\">\n";
-            	featuresString += "   <swe:Text definition=\"om:featureOfInterest\">\n";
+            	featuresString += "   <swe:Text definition=\"FeatureOfInterestID\">\n";
             	featuresString += "      <swe:value>" + featureID +"</swe:value>\n";
             	featuresString += "   </swe:Text>\n";
             	featuresString += "</swe:field>";

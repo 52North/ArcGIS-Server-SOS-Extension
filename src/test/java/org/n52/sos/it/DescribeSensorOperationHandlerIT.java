@@ -49,15 +49,19 @@ public class DescribeSensorOperationHandlerIT extends EsriTestBase {
     }
 
     @Test
-    public void testInvokeOGCOperation()
+    public void testInvokeDescribeSensorForSubComponent()
     {
-        this.executeOGCOperation(describeSensorOpHandler,
-				ITConstants.SOS_DESCRIBESENSOR_LOCAL_NETWORK, new File(
-						"c:/temp/describeSensor_network.xml"));
-        
         this.executeOGCOperation(describeSensorOpHandler,
 				ITConstants.SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT, new File(
 						"c:/temp/describeSensor_subcomponent.xml"));
     }
 
+    @Test
+    public void testInvokeDescribeSensorForNetwork() {
+
+        this.executeOGCOperation(describeSensorOpHandler,
+				ITConstants.SOS_DESCRIBESENSOR_LOCAL_NETWORK, new File(
+						"c:/temp/describeSensor_network.xml"));
+        
+    }
 }

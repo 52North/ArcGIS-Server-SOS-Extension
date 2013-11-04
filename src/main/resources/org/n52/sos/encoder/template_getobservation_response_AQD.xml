@@ -17,8 +17,7 @@
 	xmlns:am="http://inspire.ec.europa.eu/schemas/am/3.0rc3" 
 	xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" 
 	xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" 
-	xsi:schemaLocation="
-http://aqd.ec.europa.eu/aqd/0.3.7c http://dd.eionet.europa.eu/schemas/id2011850eu/AirQualityReporting_0.3.7c.xsd 
+	xsi:schemaLocation="http://aqd.ec.europa.eu/aqd/0.3.7c http://dd.eionet.europa.eu/schemas/id2011850eu/AirQualityReporting_0.3.7c.xsd 
 http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd" 
 	gml:id="observation">
 

@@ -57,17 +57,19 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
     	}
     }
     
-    public synchronized List<OperationsMetadataProvider> loadOperationsMetadataProviders(String urlSosExtension) {
+    public List<OperationsMetadataProvider> loadOperationsMetadataProviders(String urlSosExtension) {
 
-		List<OperationsMetadataProvider> providers = new ArrayList<OperationsMetadataProvider>();
-    	
-		ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
-		
-		for (OperationsMetadataProvider omp : loader) {
-			omp.setServiceURL(urlSosExtension);
-			providers.add(omp);
-		}
-		return providers;
+    	synchronized (this) {
+			List<OperationsMetadataProvider> providers = new ArrayList<OperationsMetadataProvider>();
+	    	
+			ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
+			
+			for (OperationsMetadataProvider omp : loader) {
+				omp.setServiceURL(urlSosExtension);
+				providers.add(omp);
+			}
+			return providers;
+    	}
     }
     
     /**
