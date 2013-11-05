@@ -169,9 +169,9 @@
 				<soe.name>52nArcGisSos</soe.name>
 				<soe.config.xml>Config.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
-				<extension.class>org.n52.sos.SOSExt</extension.class>
+				<extension.class>org.n52.sos.SOSExtension</extension.class>
 				<extension.id>${extension.class}</extension.id>
-				<extension.displayName>SOS</extension.displayName>
+				<extension.displayName>SOS-SOE</extension.displayName>
 				<extension.description>${project.description}</extension.description>
 				<maven.build.timestamp.format>yyyy-MM-dd_HH:mm</maven.build.timestamp.format>
 				<TIME>${maven.build.timestamp}</TIME>
@@ -215,7 +215,7 @@
 				<soe.name>52nArcGisSos</soe.name>
 				<soe.config.xml>Config_EEA.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
-				<extension.class>org.n52.sos.SOSExt</extension.class>
+				<extension.class>org.n52.sos.SOSExtension</extension.class>
 				<extension.id>${extension.class}</extension.id>
 				<extension.displayName>SOS</extension.displayName>
 				<extension.description>${project.description}</extension.description>

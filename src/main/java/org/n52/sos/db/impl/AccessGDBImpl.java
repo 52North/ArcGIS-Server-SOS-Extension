@@ -32,7 +32,7 @@ import java.util.Properties;
 
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
-import org.n52.sos.SOSExt;
+import org.n52.sos.SOSExtension;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
@@ -87,7 +87,7 @@ public class AccessGDBImpl implements AccessGDB {
 
     static Logger LOGGER = Logger.getLogger(AccessGDBImpl.class.getName());
 
-    private SOSExt sos;
+    private SOSExtension sos;
 
     private Workspace workspace;
     
@@ -136,7 +136,7 @@ public class AccessGDBImpl implements AccessGDB {
      * @throws AutomationException
      * @throws IOException
      */
-    public AccessGDBImpl(SOSExt sos) throws AutomationException, IOException {
+    public AccessGDBImpl(SOSExtension sos) throws AutomationException, IOException {
         
         LOGGER.info("Creating AccessGDBImpl.");
         

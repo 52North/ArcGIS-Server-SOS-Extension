@@ -22,7 +22,7 @@
  */
 package org.n52.sos.handler;
 
-import org.n52.sos.SOSExt;
+import org.n52.sos.SOSExtension;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -69,7 +69,7 @@ public interface OperationRequestHandler extends Comparable<OperationRequestHand
 	/**
 	 * A handler with a higher execution priority (= lower number) will be
 	 * invoked earlier in the resolution phase of operation handlers.
-	 * @see SOSExt#handleRESTRequest(String, String, String, String, String, String, String[])
+	 * @see SOSExtension#handleRESTRequest(String, String, String, String, String, String, String[])
 	 * 
 	 * @return the execution priority of this handler
 	 */
