@@ -45,7 +45,7 @@ public class AQDObservationEncoder extends OGCObservationSWECommonEncoder {
 		aqdObservationTemplate = AbstractEncoder.readText(
 			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_aqd_observation.xml"));
 		aqdObservationEnvelopeTemplate = AbstractEncoder.readText(
-    			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
+    		OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
     }
     
     

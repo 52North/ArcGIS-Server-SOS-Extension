@@ -70,5 +70,16 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
 				ITConstants.SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES, new File(
 						"c:/temp/getObservation_MultipleProperties.xml"));
     }
+    
+    /**
+     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
+     */
+    @Test
+    public void testInvokeGetObservation_GetLatest()
+    {
+        this.executeOGCOperation(getObsOpHandler,
+				ITConstants.SOS_GETOBSERVATION_LOCAL_GET_LATEST, new File(
+						"c:/temp/getObservation_GetLatest.xml"));
+    }
 
 }

@@ -49,6 +49,18 @@ public class ITConstants {
 		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("responseFormat", "http://aqd.ec.europa.eu/aqd/0.3.7c");
 		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("f", "xml");
 	}
+	public static Map<String, String> SOS_GETOBSERVATION_LOCAL_GET_LATEST = new HashMap<String, String>();
+	static {
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("service", "SOS");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("version", "2.0.0");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("request", "GetObservation");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("offering", "Network_GBXXXX");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1,http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("temporalFilter", "om:phenomenonTime,latest");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("responseFormat", "http://aqd.ec.europa.eu/aqd/0.3.7c");
+		SOS_GETOBSERVATION_LOCAL_GET_LATEST.put("f", "xml");
+	}
 	
 	
 	public static String SOS_GETOBSERVATION_ENDPOINT_AGS = "http://ags.dev.52north.org:6080/arcgis/rest/services/EEA/AirQualitySos/MapServer/exts/52nArcGisSos/GetObservation";
