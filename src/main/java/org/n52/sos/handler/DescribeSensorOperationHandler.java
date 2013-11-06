@@ -146,7 +146,7 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
     		}
     		
     		if (sensorMLVersion.equalsIgnoreCase(Constants.RESPONSE_FORMAT_SENSORML_20)){
-                result = new OGCProcedureEncoder().encodeNetwork_SensorML20(mapOfProceduresPerNetwork);
+    			throw new UnsupportedOperationException();
             }
             else {
                 result = new OGCProcedureEncoder().encodeNetwork_SensorML101(mapOfProceduresPerNetwork);
@@ -156,7 +156,7 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
     		Collection<Procedure> procedureCollection = geoDB.getProcedureAccess().getProceduresComplete(procedures);
     		
     		if (sensorMLVersion.equalsIgnoreCase(Constants.RESPONSE_FORMAT_SENSORML_20)){
-                result = new OGCProcedureEncoder().encodeComponents_SensorML20(procedureCollection);
+    			throw new UnsupportedOperationException();
             }
             else {
             	LOGGER.info("start encoding components as SensorML 1.0.1");

@@ -31,7 +31,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.Procedure.Output;
-import org.n52.sos.handler.OGCOperationRequestHandler;
 import org.n52.util.logging.Logger;
 
 /**
@@ -52,12 +51,6 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     private String SYSTEM_COMPONENTS		 		= "@components@";
     private String COMPONENT_ENVELOPE_COMPONENT		= "@component@";
     private String RESPONSE_PROCEDURES 				= "@procedures@";
-    
-    // templates for SensorML 2.0:
-	private final String responseTemplate;
-	private final String systemTemplate;
-	private final String componentTemplate;
-	private final String componentEnvelopeTemplate;
 	
 	// templates for SensorML 1.0.1:
 	private final String responseTemplate101;
@@ -68,11 +61,6 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     public OGCProcedureEncoder() throws IOException {
     	super();
 
-    	responseTemplate 	= readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response20.xml"));
-		systemTemplate 		= readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor_network20.xml"));
-		componentTemplate 	= readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor_component20.xml"));
-		componentEnvelopeTemplate = readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor_component_envelope20.xml"));
-		
         responseTemplate101 = readText(OGCProcedureEncoder.class.getResourceAsStream("template_describesensor_response101.xml"));
         systemTemplate101 	= readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor_network101.xml"));
         componentTemplate101= readText(OGCProcedureEncoder.class.getResourceAsStream("template_sensor_component101.xml"));
@@ -80,10 +68,10 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     	
     }
     
-    public String encodeNetwork_SensorML20(Map<String, Collection<Procedure>> mapOfProceduresPerNetwork) throws IOException {
-        throw new UnsupportedOperationException();
-    }
     
+    /**
+     * encodes a Map of Networks containing Procedures as a SensorML 1.0.1 System with contained Components. 
+     */
     public String encodeNetwork_SensorML101(Map<String, Collection<Procedure>> mapOfProceduresPerNetwork) throws IOException {
         
     	StringBuilder sensorML = new StringBuilder("");
@@ -101,9 +89,15 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     		sensorML.append(networkSensorML);
     	}
     	
-        return responseTemplate.replace(RESPONSE_PROCEDURES, sensorML);
+    	StringBuilder response = new StringBuilder(responseTemplate101);
+        replace(response, RESPONSE_PROCEDURES, sensorML.toString());
+    	
+        return response.toString();
     }
     
+    /**
+     * Helper method to encode network
+     */
     private StringBuilder encodeNetwork(
     		Collection<Procedure> procedureCollection,  
     		String systemTemplate) throws IOException {
@@ -122,36 +116,33 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     }
 
     
-
-    public String encodeComponents_SensorML20(Collection<Procedure> procedureCollection) throws IOException {
-    	return encodeComponents(procedureCollection, responseTemplate, componentEnvelopeTemplate);
-    }
-    
+    /**
+     * encodes a Collection of Procedures as SensorML 1.0.1 components.
+     */
     public String encodeComponents_SensorML101(Collection<Procedure> procedureCollection) throws IOException {
-    	return encodeComponents(procedureCollection, responseTemplate101, componentEnvelopeTemplate101);
-    }
-    
-    private String encodeComponents(Collection<Procedure> procedureCollection, String responseTemplate, String componentEnvelopeTemplate) throws IOException {
     	
     	StringBuilder allProcedures = new StringBuilder("");
         for (Procedure procedure : procedureCollection) {
         	
         	String singleProcedure = encodeSingleProcedure(procedure);
         	
-        	StringBuilder envelopedSingleProcedure = new StringBuilder(componentEnvelopeTemplate);
+        	StringBuilder envelopedSingleProcedure = new StringBuilder(componentEnvelopeTemplate101);
         	
         	replace(envelopedSingleProcedure, COMPONENT_ENVELOPE_COMPONENT, singleProcedure);
         	
             allProcedures.append(envelopedSingleProcedure);
         }
         
-        responseTemplate = responseTemplate.replace(RESPONSE_PROCEDURES, allProcedures.toString());
+        StringBuilder response = new StringBuilder(responseTemplate101);
         
-        return responseTemplate;
+        replace(response, RESPONSE_PROCEDURES, allProcedures.toString());
+        
+        return response.toString();
     }
     
-    
-    
+    /**
+     * Helper method to encode a Procedure as a SensorML 1.0.1 Component.
+     */
     private String encodeSingleProcedure(Procedure procedure) {
     	StringBuilder componentString = new StringBuilder(componentTemplate101);
         
