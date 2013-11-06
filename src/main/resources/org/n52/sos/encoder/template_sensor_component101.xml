@@ -1,41 +1,34 @@
-<SensorML>
-	<member>
-		<component name="@procedure-id@">
-			<Component>
-				<identification>
-					<IdentifierList>
-						<identifier name="URN">
-							<Term definition="urn:ogc:def:identifier:OGC:1.0:uniqueID">
-								<value>@procedure-resource@</value>
-							</Term>
-						</identifier>
-						<identifier name="shortName">
-							<Term definition="urn:ogc:def:identifier:OGC:1.0:shortName">
-								<value>@procedure-id@</value>
-							</Term>
-						</identifier>
-					</IdentifierList>
-				</identification>
-				<capabilities>
-					<swe:DataRecord>
-						@procedure-aggregationTypes@
-						@procedure-features@
-					</swe:DataRecord>
-				</capabilities>
-				<inputs>
-					<InputList>
-						<input name="ambient-air">
-							<swe:ObservableProperty definition="ambient-air" />
-						</input>
-					</InputList>
-				</inputs>
-
-				<outputs>
-					<OutputList>
-						@procedure-outputs@
-					</OutputList>
-				</outputs>
-			</Component>
-		</component>
-	</member>
-</SensorML>
+<Component>
+	<identification>
+		<IdentifierList>
+			<identifier name="URN">
+				<Term definition="urn:ogc:def:identifier:OGC:1.0:uniqueID">
+					<value>@procedure-resource@</value>
+				</Term>
+			</identifier>
+			<identifier name="shortName">
+				<Term definition="urn:ogc:def:identifier:OGC:1.0:shortName">
+					<value>@procedure-id@</value>
+				</Term>
+			</identifier>
+		</IdentifierList>
+	</identification>
+	<capabilities>
+		<swe:DataRecord>
+			@procedure-aggregationTypes@
+			@procedure-features@
+		</swe:DataRecord>
+	</capabilities>
+	<inputs>
+		<InputList>
+			<input name="ambient-air">
+				<swe:ObservableProperty definition="ambient-air" />
+			</input>
+		</InputList>
+	</inputs>
+	<outputs>
+		<OutputList>
+			@procedure-outputs@
+		</OutputList>
+	</outputs>
+</Component>

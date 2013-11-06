@@ -29,13 +29,25 @@ public class ITConstants {
 	    SOS_GETOBSERVATION_LOCAL.put("version", "2.0.0");
 	    SOS_GETOBSERVATION_LOCAL.put("request", "GetObservation");
 	    SOS_GETOBSERVATION_LOCAL.put("offering", "Network_GBXXXX");
-	    SOS_GETOBSERVATION_LOCAL.put("procedure", "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_StationProcess.xml#GB_StationProcess_3189");//"GB_StationProcess_3189");
-	    SOS_GETOBSERVATION_LOCAL.put("featureOfInterest", "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_Sample.xml#GB_SamplingFeature_300"); //"GB_SamplingFeature_300");
+	    SOS_GETOBSERVATION_LOCAL.put("procedure", "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_StationProcess.xml#GB_StationProcess_3189");
+	    SOS_GETOBSERVATION_LOCAL.put("featureOfInterest", "http://cdr.eionet.europa.eu/gb/eu/aqd/e2a/colutn32a/envuvlxkq/D_GB_Sample.xml#GB_SamplingFeature_300");
 	    SOS_GETOBSERVATION_LOCAL.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1");
 	    SOS_GETOBSERVATION_LOCAL.put("temporalFilter", "om:phenomenonTime,2013-03-01T01:00:00/2013-04-15T01:00:00");
 	    SOS_GETOBSERVATION_LOCAL.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
 	    SOS_GETOBSERVATION_LOCAL.put("responseFormat", "http://aqd.ec.europa.eu/aqd/0.3.7c");
 	    SOS_GETOBSERVATION_LOCAL.put("f", "xml");
+	}
+	public static Map<String, String> SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES = new HashMap<String, String>();
+	static {
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("service", "SOS");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("version", "2.0.0");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("request", "GetObservation");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("offering", "Network_GBXXXX");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("observedProperty", "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1,http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("temporalFilter", "om:phenomenonTime,2013-03-20T01:00:00/2013-04-10T01:00:00");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("aggregationType", "http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("responseFormat", "http://aqd.ec.europa.eu/aqd/0.3.7c");
+		SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES.put("f", "xml");
 	}
 	
 	

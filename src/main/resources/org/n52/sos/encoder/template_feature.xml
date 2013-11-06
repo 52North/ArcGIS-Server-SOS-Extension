@@ -2,6 +2,12 @@
 	<aqd:AQD_Sample @feature-gml-id@>
 		@feature-sampled-href@
 		@feature-geometry@
+		<aqd:inspireId>
+			<base:Identifier>
+				<base:localId>@feature-local-id@</base:localId>
+				<base:namespace>@feature-namespace@</base:namespace>
+			</base:Identifier>
+		</aqd:inspireId>
 		<aqd:inletHeight uom="m">@feature-inlet-height@</aqd:inletHeight>
 		<aqd:buildingDistance uom="m">@feature-building-distance@</aqd:buildingDistance>
 		<aqd:kerbDistance uom="m">@feature-kerb-distance@</aqd:kerbDistance>

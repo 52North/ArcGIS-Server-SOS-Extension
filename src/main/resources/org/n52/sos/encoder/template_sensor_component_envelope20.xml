@@ -1,7 +1,0 @@
-<swes:description>
-	<swes:SensorDescription>
-		<swes:data>
-			@component@
-		</swes:data>
-	</swes:SensorDescription>
-</swes:description>

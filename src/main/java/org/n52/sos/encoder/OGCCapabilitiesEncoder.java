@@ -70,14 +70,11 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
     private static String template;
     private static String offeringTemplate;
     
-    static {
-    	try {
-			template = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
-			offeringTemplate = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
-		} catch (IOException e) {
-			Logger.getLogger(OGCCapabilitiesEncoder.class.getName()).warn(e.getMessage(), e);
-		}
+    public OGCCapabilitiesEncoder() throws IOException {
+    	super();
     	
+		template = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities.xml"));
+		offeringTemplate = readText(OGCCapabilitiesEncoder.class.getResourceAsStream("template_capabilities_offering.xml"));
     }
     
     public String encodeCapabilities(ServiceDescription sd,
@@ -214,17 +211,6 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
 		}
     	
     	return sb.toString();
-    }
-
-	public static StringBuilder replace(StringBuilder builder,
-            String replaceWhat,
-            String replaceWith)
-    {
-        int indexOfTarget = -1;
-        while ((indexOfTarget = builder.indexOf(replaceWhat)) > 0) {
-            builder.replace(indexOfTarget, indexOfTarget + replaceWhat.length(), replaceWith);
-        }
-        return builder;
     }
     
 }

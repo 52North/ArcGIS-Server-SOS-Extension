@@ -53,12 +53,22 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
      * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
      */
     @Test
-    public void testInvokeOGCOperation()
+    public void testInvokeGetObservation()
     {
         this.executeOGCOperation(getObsOpHandler,
 				ITConstants.SOS_GETOBSERVATION_LOCAL, new File(
 						"c:/temp/getObservation.xml"));
     }
 
+    /**
+     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
+     */
+    @Test
+    public void testInvokeGetObservation_MultipleProperties()
+    {
+        this.executeOGCOperation(getObsOpHandler,
+				ITConstants.SOS_GETOBSERVATION_LOCAL_MULTIPLE_PROPERTIES, new File(
+						"c:/temp/getObservation_MultipleProperties.xml"));
+    }
 
 }

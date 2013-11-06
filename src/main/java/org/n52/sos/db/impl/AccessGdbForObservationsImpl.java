@@ -225,14 +225,15 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 			throws IOException, AutomationException
 	{
 		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-        queryDef.setTables(tables);
-       	LOGGER.debug("Table clause := " + queryDef.getTables());
 
         queryDef.setSubFields(subFields);
-       	LOGGER.debug("Subfields clause := " + queryDef.getSubFields());
+       	LOGGER.debug("SELECT " + queryDef.getSubFields());
+       	
+        queryDef.setTables(tables);
+       	LOGGER.debug("FROM " + queryDef.getTables());
 
         queryDef.setWhereClause(whereClause);
-       	LOGGER.debug("Where clause := " + queryDef.getWhereClause());
+       	LOGGER.debug("WHERE " + queryDef.getWhereClause());
 
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
@@ -247,12 +248,10 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID));
-        subFields.add(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
         subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_ID));
-        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_DEFINITION));
         subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_LABEL));
         subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_BEGIN));
         subFields.add(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END));
@@ -262,9 +261,6 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         subFields.add(gdb.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION));
         subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION));
-        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
-        subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
-        subFields.add(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
 		return subFields;
 	}
 
@@ -282,7 +278,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 		" LEFT JOIN " + Table.AGGREGATIONTYPE 	+ " ON " + Table.VALUE + "." + SubField.VALUE_FK_AGGREGATIONTYPE 				+ " = " + Table.AGGREGATIONTYPE + "." + SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE +
 		
 		" LEFT JOIN " + Table.STATION 			+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
-		" LEFT JOIN " + Table.UNIT 				+ " ON " + Table.UNIT + "." + SubField.UNIT_PK_UNIT 							+ " = " + Table.VALUE + "." + SubField.VALUE_PK_VALUE + 
+		" LEFT JOIN " + Table.UNIT 				+ " ON " + Table.UNIT + "." + SubField.UNIT_PK_UNIT 							+ " = " + Table.VALUE + "." + SubField.VALUE_FK_UNIT + 
 		" LEFT JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID;
 		
 		return fromClause;

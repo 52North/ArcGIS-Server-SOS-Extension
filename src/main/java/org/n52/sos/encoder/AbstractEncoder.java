@@ -36,5 +36,17 @@ public abstract class AbstractEncoder {
         return CommonUtilities.readResource(in);
     }
     
-    
+    /**
+     * Helper method.
+     */
+	protected static StringBuilder replace(StringBuilder builder,
+            String replaceWhat,
+            String replaceWith)
+    {
+        int indexOfTarget = -1;
+        while ((indexOfTarget = builder.indexOf(replaceWhat)) > 0) {
+            builder.replace(indexOfTarget, indexOfTarget + replaceWhat.length(), replaceWith);
+        }
+        return builder;
+    }
 }

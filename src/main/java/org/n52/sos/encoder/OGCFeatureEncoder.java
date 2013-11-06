@@ -24,6 +24,7 @@
 package org.n52.sos.encoder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 
 import javax.activation.UnsupportedDataTypeException;
@@ -51,20 +52,19 @@ public class OGCFeatureEncoder extends AbstractEncoder {
     private static String FEATURE_DESCRIPTION = "@feature-description@";
     private static String FEATURE_GEOMETRY = "@feature-geometry@";
     private static String FEATURE_NAMESPACE = "@feature-namespace@";
+    private static String FEATURE_LOCALID = "@feature-local-id@";
     private static String FEATURE_INLET_HEIGHT = "@feature-inlet-height@";
     private static String FEATURE_BUILDING_DISTANCE = "@feature-building-distance@";
     private static String FEATURE_KERB_DISTANCE = "@feature-kerb-distance@";
-	private static String responseTemplate;
-	private static String featureTemplate;
+    
+	private String responseTemplate;
+	private String featureTemplate;
 
-    static {
-    	try {
-			responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
-			featureTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
-		} catch (IOException e) {
-			Logger.getLogger(OGCFeatureEncoder.class.getName()).warn(e.getMessage(), e);
-		}
+    public OGCFeatureEncoder () throws IOException {
+    	super();
     	
+		responseTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_getfeatureofinterest_response.xml"));
+		featureTemplate = readText(OGCFeatureEncoder.class.getResourceAsStream("template_feature.xml"));
     }
     
     public String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
@@ -80,6 +80,26 @@ public class OGCFeatureEncoder extends AbstractEncoder {
             }
             else {
             	replace(featureString, FEATURE_GML_ID, "");
+            }
+            
+            if (feature.getGmlId() != null) {
+            	replace(featureString, FEATURE_LOCALID, feature.getGmlId());
+            }
+            else {
+            	replace(featureString, FEATURE_LOCALID, "");
+            }
+            
+            if (feature.getUri() != null) {
+	            // take the feature URI without everything after '#' as the namespace:
+	            String featureNamespace = feature.getUri().toASCIIString();
+	            int indexOfDash = featureNamespace.indexOf("#");
+	            if (indexOfDash != -1) {
+	            	featureNamespace = featureNamespace.substring(0, indexOfDash + 1);
+	            }
+	            replace(featureString, FEATURE_NAMESPACE, featureNamespace);
+            }
+            else {
+            	replace(featureString, FEATURE_NAMESPACE, "");
             }
             
             if (feature.getShape() != null) {
@@ -144,15 +164,4 @@ public class OGCFeatureEncoder extends AbstractEncoder {
         return response;
     }
     
-
-    public static StringBuilder replace(StringBuilder builder,
-            String replaceWhat,
-            String replaceWith)
-    {
-        int indexOfTarget = -1;
-        while ((indexOfTarget = builder.indexOf(replaceWhat)) > 0) {
-            builder.replace(indexOfTarget, indexOfTarget + replaceWhat.length(), replaceWith);
-        }
-        return builder;
-    }
 }

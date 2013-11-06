@@ -35,18 +35,17 @@ import org.n52.util.logging.Logger;
 public class AQDObservationEncoder extends OGCObservationSWECommonEncoder {
 
     protected static Logger LOGGER = Logger.getLogger(AQDObservationEncoder.class.getName());
-	private static String aqdObservationTemplate;
-	private static String aqdObservationEnvelopeTemplate;
+	
+    private String aqdObservationTemplate;
+	private String aqdObservationEnvelopeTemplate;
     
-    static {
-    	try {
-    		aqdObservationTemplate = AbstractEncoder.readText(
-    			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_aqd_observation.xml"));
-    		aqdObservationEnvelopeTemplate = AbstractEncoder.readText(
-        			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
-    	} catch (IOException e) {
-    		LOGGER.warn(e.getMessage());
-    	}
+    public AQDObservationEncoder() throws IOException {
+    	super();
+    	
+		aqdObservationTemplate = AbstractEncoder.readText(
+			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_aqd_observation.xml"));
+		aqdObservationEnvelopeTemplate = AbstractEncoder.readText(
+    			OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_AQD.xml"));
     }
     
     

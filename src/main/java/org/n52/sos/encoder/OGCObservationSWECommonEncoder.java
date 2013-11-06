@@ -55,28 +55,17 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
     protected static String OBSERVATION_SAMPLING_POINT = "@observation-sampling-point@";
     protected static String OBSERVATION_UNIT_ID = "@observation-unit-id@";
     protected static String OBSERVATION_UNIT_NOTATION = "@observation-unit-notation@";
-    protected static String OBSERVATION_UNIT_LABEL = "@observation-unit-label@";
     protected static String OBSERVATION_AGGREGATION_TYPE = "@observation-aggregation-type@";
     protected static String ELEMENT_COUNT = "@element-count@";
     protected static String VALUES = "@values@";
 
-    protected static String observationTemplateFile = "template_om_observation_swe_common.xml";
-    protected static String observationEnvelopeTemplateFile = "template_getobservation_response_OM.xml";
-	private static String observationTemplate;
+    private static String observationTemplate;
 	private static String observationEnvelopeTemplate;
     
-    static {
-    	try {
-    		observationTemplate = AbstractEncoder.readText(
-    			OGCObservationSWECommonEncoder.class.getResourceAsStream(observationTemplateFile));
-    		observationEnvelopeTemplate = AbstractEncoder.readText(
-        			OGCObservationSWECommonEncoder.class.getResourceAsStream(observationEnvelopeTemplateFile));
-    	} catch (IOException e) {
-    		LOGGER.warn(e.getMessage(), e);
-    	}
-    }
     
-    public OGCObservationSWECommonEncoder() {
+    public OGCObservationSWECommonEncoder() throws IOException {
+		observationTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_om_observation_swe_common.xml"));
+		observationEnvelopeTemplate = readText(OGCObservationSWECommonEncoder.class.getResourceAsStream("template_getobservation_response_OM.xml"));
     }
     
     /**
@@ -99,26 +88,25 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
 
             MultiValueObservation multiValObs = idObsList.get(obsId);
         	
-            String observation = getObservationTemplate();
+            StringBuilder observation = new StringBuilder(getObservationTemplate());
             
             StringBuilder allValues = new StringBuilder();
             for (MeasureResult resultValue : multiValObs.getResult().getValue()) {
                 allValues.append(encodeMeasureResult(resultValue));
             }
             
-            observation = observation.replace(OBSERVATION_ID, multiValObs.getIdentifier().getIdentifierValue());
-            observation = observation.replace(OBSERVATION_UNIT_ID, multiValObs.getUnit());
-            observation = observation.replace(OBSERVATION_UNIT_NOTATION, multiValObs.getUnitNotation());
-            observation = observation.replace(OBSERVATION_UNIT_LABEL, multiValObs.getUnitLabel());
-            observation = observation.replace(OBSERVATION_PHENTIME_START, multiValObs.getResult().getDateTimeBegin().toISO8601Format());
-            observation = observation.replace(OBSERVATION_PHENTIME_END, multiValObs.getResult().getDateTimeEnd().toISO8601Format());
-            observation = observation.replace(OBSERVATION_PROCEDURE, multiValObs.getProcedure());
-            observation = observation.replace(OBSERVATION_PROPERTY, multiValObs.getObservedProperty());
-            observation = observation.replace(OBSERVATION_FEATURE, multiValObs.getFeatureOfInterest());
-            observation = observation.replace(OBSERVATION_SAMPLING_POINT, multiValObs.getSamplingPoint());
-            observation = observation.replace(OBSERVATION_AGGREGATION_TYPE, multiValObs.getAggregationType());
-            observation = observation.replace(ELEMENT_COUNT, Integer.toString(multiValObs.getResult().getValue().size()));
-            observation = observation.replace(VALUES, allValues);
+            replace(observation, OBSERVATION_ID, multiValObs.getIdentifier().getIdentifierValue());
+            replace(observation, OBSERVATION_UNIT_ID, multiValObs.getUnit());
+            replace(observation, OBSERVATION_UNIT_NOTATION, multiValObs.getUnitNotation());
+            replace(observation, OBSERVATION_PHENTIME_START, multiValObs.getResult().getDateTimeBegin().toISO8601Format());
+            replace(observation, OBSERVATION_PHENTIME_END, multiValObs.getResult().getDateTimeEnd().toISO8601Format());
+            replace(observation, OBSERVATION_PROCEDURE, multiValObs.getProcedure());
+            replace(observation, OBSERVATION_PROPERTY, multiValObs.getObservedProperty());
+            replace(observation, OBSERVATION_FEATURE, multiValObs.getFeatureOfInterest());
+            replace(observation, OBSERVATION_SAMPLING_POINT, multiValObs.getSamplingPoint());
+            replace(observation, OBSERVATION_AGGREGATION_TYPE, multiValObs.getAggregationType());
+            replace(observation, ELEMENT_COUNT, Integer.toString(multiValObs.getResult().getValue().size()));
+            replace(observation, VALUES, allValues.toString());
             
             encodedObservations.append(observation);
             
