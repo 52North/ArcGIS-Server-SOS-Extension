@@ -133,7 +133,7 @@ public class EsriTestBase {
         try {
             String result = new String(opHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
             
-            LOGGER.info(result);
+            //LOGGER.info(result);
             
             CommonUtilities.saveFile(outputFile, result);
             

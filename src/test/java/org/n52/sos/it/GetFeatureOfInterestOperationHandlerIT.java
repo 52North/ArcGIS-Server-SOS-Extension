@@ -58,11 +58,11 @@ public class GetFeatureOfInterestOperationHandlerIT extends EsriTestBase {
     	// test different parameterizations:
     	
         this.executeOGCOperation(getFoiOpHandler,
-				ITConstants.SOS_GETFOI_LOCAL, new File(
+				ITConstants.SOS_GETFOI, new File(
 						"c:/temp/getFeatureOfInterest.xml"));
         
         this.executeOGCOperation(getFoiOpHandler,
-				ITConstants.SOS_GETFOI_LOCAL_2, new File(
+				ITConstants.SOS_GETFOI_2, new File(
 						"c:/temp/getFeatureOfInterest_2.xml"));
     }
 }

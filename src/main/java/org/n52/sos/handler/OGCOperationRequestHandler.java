@@ -135,9 +135,9 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
      * <code>spatialFilter={xmin:0.0,ymin:40.0,xmax:2.0,ymax:43.0,spatialReference:{wkid:4326}}</code>
      * 
      * @param spatialFilterOGC
-     * @return a spatial filter that conforms to ESRI's GeoServices REST API
+     * @return a spatial filter that conforms to ESRI's GeoServices REST API (ArcGIS REST API)
      */
-    protected String convertSpatialFilterFromOGCtoESRI(String spatialFilterOGC)
+    protected String convertSpatialFilterFromOGCtoArcGisREST(String spatialFilterOGC)
     {
         String[] spatialFilterOGCSubComponentArray = spatialFilterOGC.split(",");
         
@@ -170,23 +170,23 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     }
     
     /**
-     * This method converts from OGC (ISO 8601) to ESRI-style time filters.
+     * This method converts from OGC (ISO 8601) to ArcGIS REST API-style time filters.
      * 
      * 1)
      * OGC: 2011-10-18T10:00/2011-10-19T10:00
      * to
-     * ESRI: during:2011-10-18T10:00:00+00:00,2011-10-19T10:00:00+00:00
+     * ArcGIS REST API: during:2011-10-18T10:00:00+00:00,2011-10-19T10:00:00+00:00
      * 
      * 2)
      * OGC: 2011-10-18T00:00
      * to
-     * ESRI: equals:2011-10-18T00:00:00+00:00
+     * ArcGIS REST API: equals:2011-10-18T00:00:00+00:00
      * 
      * @param temporalFilterOGC
      * @return
      * @throws InvalidParameterValueException 
      */
-    protected static String convertTemporalFilterFromOGCtoESRI(String temporalFilterOGC)
+    protected static String convertTemporalFilterFromOGCtoArcGisREST(String temporalFilterOGC)
     {
         String result = "";
         
@@ -206,6 +206,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
         
         return result;
     }
+    
     
 	@Override
 	public boolean canHandle(String operationName) {

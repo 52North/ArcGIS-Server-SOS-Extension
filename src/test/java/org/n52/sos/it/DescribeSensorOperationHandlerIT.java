@@ -52,7 +52,7 @@ public class DescribeSensorOperationHandlerIT extends EsriTestBase {
     public void testInvokeDescribeSensorForSubComponent()
     {
         this.executeOGCOperation(describeSensorOpHandler,
-				ITConstants.SOS_DESCRIBESENSOR_LOCAL_SUBCOMPONENT, new File(
+				ITConstants.SOS_DESCRIBESENSOR_SUBCOMPONENT, new File(
 						"c:/temp/describeSensor_subcomponent.xml"));
     }
 
@@ -60,7 +60,7 @@ public class DescribeSensorOperationHandlerIT extends EsriTestBase {
     public void testInvokeDescribeSensorForNetwork() {
 
         this.executeOGCOperation(describeSensorOpHandler,
-				ITConstants.SOS_DESCRIBESENSOR_LOCAL_NETWORK, new File(
+				ITConstants.SOS_DESCRIBESENSOR_NETWORK, new File(
 						"c:/temp/describeSensor_network.xml"));
         
     }

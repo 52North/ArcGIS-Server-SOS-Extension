@@ -69,7 +69,7 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
         String spatialFilter = null;
         if (inputObject.has("spatialFilter")) {
             String spatialFilterOGC = inputObject.getString("spatialFilter");
-            spatialFilter = convertSpatialFilterFromOGCtoESRI(spatialFilterOGC);
+            spatialFilter = convertSpatialFilterFromOGCtoArcGisREST(spatialFilterOGC);
         }
 
         Collection<Feature> featureCollection = geoDB.getFeatureAccess().getFeaturesOfInterest(featuresOfInterest, observedProperties, procedures, spatialFilter);

@@ -59,7 +59,7 @@ public class GetCapabilitiesOperationHandlerIT extends EsriTestBase {
     public void testInvokeOGCOperation()
     {
         this.executeOGCOperation(getCapabilitiesOpHandler,
-				ITConstants.SOS_GETCAPABILITIES_LOCAL, new File(
+				ITConstants.SOS_GETCAPABILITIES, new File(
 						"c:/temp/getCapabilities.xml"));
     }
 

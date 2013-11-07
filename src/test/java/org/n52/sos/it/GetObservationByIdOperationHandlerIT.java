@@ -52,7 +52,7 @@ public class GetObservationByIdOperationHandlerIT extends EsriTestBase {
 	@Test
 	public void testInvokeOGCOperation() {
 		this.executeOGCOperation(getObsByIDOpHandler,
-				ITConstants.SOS_GETOBSERVATIONBYID_LOCAL, new File(
+				ITConstants.SOS_GETOBSERVATIONBYID, new File(
 						"c:/temp/getObservationByID.xml"));
 
 	}
