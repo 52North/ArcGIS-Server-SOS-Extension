@@ -166,10 +166,10 @@
 			</activation>
 			<properties>
 				<soe.tmp.target>${project.build.directory}/soe-temp</soe.tmp.target>
-				<soe.name>52nArcGisSos</soe.name>
+				<soe.name>52nArcGisSosSoe2</soe.name>
 				<soe.config.xml>Config.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
-				<extension.class>org.n52.sos.SOSExtension</extension.class>
+				<extension.class>org.n52.sos.SosSoe</extension.class>
 				<extension.id>${extension.class}</extension.id>
 				<extension.displayName>SOS-SOE</extension.displayName>
 				<extension.description>${project.description}</extension.description>

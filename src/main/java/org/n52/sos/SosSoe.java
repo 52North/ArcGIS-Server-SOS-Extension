@@ -79,14 +79,14 @@ import com.esri.arcgis.system.ServerUtilities;
         displayName = "An_SOS_extension_for_ArcGIS_Server",
         description = "An_SOS_extension_for_ArcGIS_Server"
         )
-public class SOSExtension extends SOAPRequestHandler 
+public class SosSoe extends SOAPRequestHandler 
 implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRESTRequestHandler {
 
     private static final long serialVersionUID = 1L;
 
     private IMapServerDataAccess mapServerDataAccess;
 
-    public Logger LOGGER = Logger.getLogger(SOSExtension.class.getName());
+    public Logger LOGGER = Logger.getLogger(SosSoe.class.getName());
     
     protected AccessGDB geoDB;
     
@@ -117,7 +117,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      * 
      * @throws Exception
      */
-    public SOSExtension() throws Exception {
+    public SosSoe() throws Exception {
         super();
     }
 

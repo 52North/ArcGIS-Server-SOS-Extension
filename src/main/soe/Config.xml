@@ -8,7 +8,7 @@
 	<Company>52North GmbH</Company>
 	<Version>1.0</Version>
 	<Targets>
-		<Target name="server" version="10.2" />
+		<Target name="server" version="10.1" />
 	</Targets>
 	<AddInID>{${soe.uuid}}</AddInID>
 	<AddIn language="Java">

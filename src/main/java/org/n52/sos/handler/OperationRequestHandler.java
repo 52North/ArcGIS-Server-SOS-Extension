@@ -22,7 +22,6 @@
  */
 package org.n52.sos.handler;
 
-import org.n52.sos.SOSExtension;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;

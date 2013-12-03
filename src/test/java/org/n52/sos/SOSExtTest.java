@@ -9,7 +9,7 @@ public class SOSExtTest {
     @Test
     public void testGetSchema() {
         try {
-            System.out.println(SOSExtension.createSchema());
+            System.out.println(SosSoe.createSchema());
         } catch (Exception e) {
             fail(e.getMessage());
         }
