@@ -161,36 +161,46 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         queryDef.setSubFields(" DISTINCT " + gdb.createCommaSeparatedList(subFields));
         LOGGER.info("SELECT " + queryDef.getSubFields());
         
-        // set tables
-        List<String> tables = new ArrayList<String>();
-        tables.add(Table.PROCEDURE);
-        tables.add(Table.OBSERVATION);
-        tables.add(Table.SAMPLINGPOINT);
-        tables.add(Table.STATION);     
-        tables.add(Table.NETWORK);
-        tables.add(Table.UNIT);
-        tables.add(Table.AGGREGATIONTYPE);
-        tables.add(Table.VALUE);
-        tables.add(Table.PROPERTY);
-        tables.add(Table.FEATUREOFINTEREST);
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+//        // set tables
+//        List<String> tables = new ArrayList<String>();
+//        tables.add(Table.PROCEDURE);
+//        tables.add(Table.OBSERVATION);
+//        tables.add(Table.SAMPLINGPOINT);
+//        tables.add(Table.STATION);     
+//        tables.add(Table.NETWORK);
+//        tables.add(Table.UNIT);
+//        tables.add(Table.AGGREGATIONTYPE);
+//        tables.add(Table.VALUE);
+//        tables.add(Table.PROPERTY);
+//        tables.add(Table.FEATUREOFINTEREST);
+//        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        
+        // create FROM clause
+        String fromClause = "" + Table.PROCEDURE + 
+    	" LEFT JOIN " + Table.OBSERVATION + " ON " + SubField.OBSERVATION_FK_PROCEDURE + " = " + SubField.PROCEDURE_PK_PROCEDURE +
+    	" LEFT JOIN " + Table.PROPERTY + " ON " + SubField.OBSERVATION_FK_PROPERTY + " = " + SubField.PROPERTY_PK_PROPERTY + 
+    	" LEFT JOIN " + Table.FEATUREOFINTEREST + " ON " + SubField.OBSERVATION_FK_FEATUREOFINTEREST + " = " + SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST + 
+    	" LEFT JOIN " + Table.VALUE + " ON " + SubField.VALUE_FK_OBSERVATION + " = " + SubField.OBSERVATION_PK_OBSERVATION + 
+    	" LEFT JOIN " + Table.UNIT + " ON " + SubField.VALUE_FK_UNIT + " = " + SubField.UNIT_PK_UNIT + 
+    	" LEFT JOIN " + Table.AGGREGATIONTYPE + " ON " + SubField.VALUE_FK_AGGREGATIONTYPE + " = " + SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE;
+        queryDef.setTables(fromClause);
         LOGGER.info("FROM " + queryDef.getTables());
         
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
-        	// joins:
-        	whereClause.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE));
-        	whereClause.append(" AND ");
-        	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
-        	whereClause.append(" AND ");
-        	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
-        	whereClause.append(" AND ");
-        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_OBSERVATION) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
-        	whereClause.append(" AND ");
-        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT) + " = " + gdb.concatTableAndField(Table.UNIT, SubField.UNIT_PK_UNIT));
-        	whereClause.append(" AND ");
-        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_AGGREGATIONTYPE) + " = " + gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE));
-        	whereClause.append(" AND ");
+//        	// joins:
+//        	whereClause.append(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE));
+//        	whereClause.append(" AND ");
+//        	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+//        	whereClause.append(" AND ");
+//        	whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+//        	whereClause.append(" AND ");
+//        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_OBSERVATION) + " = " + gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
+//        	whereClause.append(" AND ");
+//        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT) + " = " + gdb.concatTableAndField(Table.UNIT, SubField.UNIT_PK_UNIT));
+//        	whereClause.append(" AND ");
+//        	whereClause.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_FK_AGGREGATIONTYPE) + " = " + gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE));
+//        	whereClause.append(" AND ");
         	
         	// identifiers:
         	whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedureIdentifierArray));
@@ -209,18 +219,52 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
             String procedureID 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
             String resource 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
-        	String unit 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION))).toString();
-        	String property 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID))).toString();
-        	String propertyLabel= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL))).toString();
-        	String feature 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE))).toString();
-        	String aggrTypeID   = row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID))).toString();
+        	
+            String unit = null;
+            Object unitField = row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
+            if (unitField != null) {
+            	unit = unitField.toString();
+            }
+        	
+            String property = null;
+            Object propertyField = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+            if (propertyField != null) {
+            	property = propertyField.toString();
+            }
+        	
+            String propertyLabel = null;
+            Object propertyLabelField = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL)));
+            if (propertyLabelField != null) {
+            	propertyLabel = propertyField.toString();
+            }
+        	
+            String feature = null;
+            Object featureField = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
+            if (featureField != null) {
+            	feature = featureField.toString();
+            }
+        	
+            String aggrTypeID = null;
+            Object aggrTypeIDField = row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID)));
+            if (aggrTypeIDField != null) {
+            	aggrTypeID = aggrTypeIDField.toString();
+            }
         	
             // case: procedure new
         	Procedure newProcedure = new Procedure(procedureID, resource);
             if (procedureList.contains(newProcedure) == false) {
-            	newProcedure.addFeatureOfInterest(feature);
-            	newProcedure.addAggregationTypeID(aggrTypeID);
-            	newProcedure.addOutput(property, propertyLabel, unit);
+            	
+            	if (feature != null) {
+            		newProcedure.addFeatureOfInterest(feature);
+            	}
+            	
+            	if (aggrTypeID != null) {
+            		newProcedure.addAggregationTypeID(aggrTypeID);
+            	}
+            	
+            	if (property != null && propertyLabel != null) {
+            		newProcedure.addOutput(property, propertyLabel, unit);
+            	}
             	
             	procedureList.add(newProcedure);
             }
@@ -362,6 +406,6 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         }
         
 		return false;
-		}
-
+	}
+	
 }

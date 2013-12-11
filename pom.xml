@@ -13,6 +13,71 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<description>Sensor Observation Service (SOS) extension for ArcGIS Server</description>
 	<inceptionYear>2012</inceptionYear>
+	<url>http://52north.org/communities/sensorweb/sosSOE</url>
+
+	<organization>
+		<name>52°North Initiative for Geospatial Open Source Software GmbH</name>
+		<url>http://52north.org</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>Arne Broering</name>
+			<email>broering@52north.org</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>arne-broering</id>
+		</developer>
+		<developer>
+			<name>Jan Schulte</name>
+			<email>j.schulte@52north.org</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>janschulte</id>
+		</developer>
+		<developer>
+			<name>Matthes Rieke</name>
+			<email>m.rieke@52north.org</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>matthesrieke</id>
+		</developer>
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<name>Sensor Web Community Mailing List</name>
+			<subscribe>http://list.52north.org/mailman/listinfo/swe</subscribe>
+			<unsubscribe>http://list.52north.org/mailman/listinfo/swe</unsubscribe>
+			<post>swe@52north.org</post>
+			<archive>http://list.52north.org/pipermail/swe</archive>
+			<otherArchives>
+				<otherArchive>http://sensorweb.forum.52north.org</otherArchive>
+			</otherArchives>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>git@github.com:52North/ArcGIS-Server-SOS-Extension.git</connection>
+		<url>https://github.com/52North/ArcGIS-Server-SOS-Extension</url>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/52North/ArcGIS-Server-SOS-Extension/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,6 +123,35 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<!-- http://code.google.com/p/maven-license-plugin/wiki/HowTo -->
+				<!-- run "mvn license:check" to check -->
+				<!-- run "mvn license:format" to add to the files -->
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>src/main/resources/license_header.txt</header>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+					<strictCheck>true</strictCheck>
+					<properties>
+						<year>${project.inceptionYear}</year>
+					</properties>
+					<mapping>
+						<sch>XML_STYLE</sch>
+					</mapping>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -166,7 +260,7 @@
 			</activation>
 			<properties>
 				<soe.tmp.target>${project.build.directory}/soe-temp</soe.tmp.target>
-				<soe.name>52nArcGisSosSoe2</soe.name>
+				<soe.name>52nArcGisSos</soe.name>
 				<soe.config.xml>Config.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
 				<extension.class>org.n52.sos.SosSoe</extension.class>
@@ -179,7 +273,7 @@
 				<soe.final.name>${soe.name}.soe</soe.final.name>
 			</properties>
 		</profile>
- 		<profile>
+		<profile>
 			<id>create-sos-soe-EEA</id>
 			<activation>
 				<property>
@@ -196,9 +290,7 @@
 								<phase>prepare-package</phase>
 								<configuration>
 									<target>
-										<move
-											file="${soe.tmp.target}/${soe.config.xml}"
-											tofile="${soe.tmp.target}/Config.xml" />
+										<move file="${soe.tmp.target}/${soe.config.xml}" tofile="${soe.tmp.target}/Config.xml" />
 									</target>
 								</configuration>
 								<goals>
@@ -242,9 +334,7 @@
 								<phase>prepare-package</phase>
 								<configuration>
 									<target>
-										<move
-											file="${soe.tmp.target}/${soe.config.xml}"
-											tofile="${soe.tmp.target}/Config.xml" />
+										<move file="${soe.tmp.target}/${soe.config.xml}" tofile="${soe.tmp.target}/Config.xml" />
 									</target>
 								</configuration>
 								<goals>
@@ -372,6 +462,34 @@
 								<phase>process-sources</phase>
 								<goals>
 									<goal>javadoc</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>generate-documentation</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jasig.maven</groupId>
+						<artifactId>maven-notice-plugin</artifactId>
+						<version>1.0.5</version>
+						<configuration>
+							<noticeTemplate>src/main/resources/NOTICE.template</noticeTemplate>
+							<licenseMapping>src/main/resources/license-mappings.xml</licenseMapping>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>com.github.danielflower.mavenplugins</groupId>
+						<artifactId>maven-gitlog-plugin</artifactId>
+						<version>1.5.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>generate</goal>
 								</goals>
 							</execution>
 						</executions>
