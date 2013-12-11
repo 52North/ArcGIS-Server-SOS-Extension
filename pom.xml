@@ -125,7 +125,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- http://code.google.com/p/maven-license-plugin/wiki/HowTo -->
 				<!-- run "mvn license:check" to check -->
 				<!-- run "mvn license:format" to add to the files -->
 				<groupId>com.mycila.maven-license-plugin</groupId>
