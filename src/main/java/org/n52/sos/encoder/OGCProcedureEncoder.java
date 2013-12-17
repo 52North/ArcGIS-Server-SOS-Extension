@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.n52.sos.dataTypes.Output;
 import org.n52.sos.dataTypes.Procedure;
-import org.n52.sos.dataTypes.Procedure.Output;
 import org.n52.util.logging.Logger;
 
 /**

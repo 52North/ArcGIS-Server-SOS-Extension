@@ -135,7 +135,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             
         	String[] params = temporalFilterOGC.split(",");
         	if (params.length != 2) {
-        		throw new InvalidParameterValueException("The temporalFilter must consist of two comma separated values: valueReference,iso8601Time   OR   valueReference,<latest | first>");
+        		throw new InvalidParameterValueException("The temporalFilter must consist of two comma separated values: valueReference,iso8601Time   OR   valueReference,<latest or first>");
         	}
         	
         	/*
