@@ -131,9 +131,8 @@
 	<sos:contents>
 		<sos:Contents>
 @contents-offerings@
-			<sos:responseFormat>http://www.opengis.net/om/2.0</sos:responseFormat>
-			<sos:responseFormat>http://www.w3.org/1999/02/22-rdf-syntax-ns</sos:responseFormat>
-			<sos:observationType>http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement</sos:observationType>
+@contents-response-formats@
+			<sos:observationType>http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation</sos:observationType>
 		</sos:Contents>
 	</sos:contents>
 </sos:Capabilities>

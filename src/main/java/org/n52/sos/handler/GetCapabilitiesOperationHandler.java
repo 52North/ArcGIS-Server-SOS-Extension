@@ -1,19 +1,12 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +17,7 @@ package org.n52.sos.handler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import org.n52.sos.dataTypes.ObservationOffering;
@@ -40,7 +34,7 @@ import com.esri.arcgis.server.json.JSONObject;
 public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler {
 	
 	private static final String GET_CAPABILITIES_OPERATION_NAME = "GetCapabilities";
-	private static ArrayList<OperationsMetadataProvider> operationsMetadataProviders;
+	private static List<OperationsMetadataProvider> operationsMetadataProviders;
 
 	
     public GetCapabilitiesOperationHandler() {
@@ -51,17 +45,24 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
     public void initialize(String urlSosExtension) {
     	super.initialize(urlSosExtension);
     	
-        synchronized (GetCapabilitiesOperationHandler.class) {
-        	if (operationsMetadataProviders == null) {
-            	ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
-        		
-        		operationsMetadataProviders = new ArrayList<OperationsMetadataProvider>();
-        		for (OperationsMetadataProvider omp : loader) {
-        			omp.setServiceURL(sosUrlExtension);
-        			operationsMetadataProviders.add(omp);
-        		}
-            }	
-		}
+    	if (operationsMetadataProviders == null) {
+    		operationsMetadataProviders = loadOperationsMetadataProviders(urlSosExtension);
+    	}
+    }
+    
+    public List<OperationsMetadataProvider> loadOperationsMetadataProviders(String urlSosExtension) {
+
+    	synchronized (this) {
+			List<OperationsMetadataProvider> providers = new ArrayList<OperationsMetadataProvider>();
+	    	
+			ServiceLoader<OperationsMetadataProvider> loader = ServiceLoader.load(OperationsMetadataProvider.class);
+			
+			for (OperationsMetadataProvider omp : loader) {
+				omp.setServiceURL(urlSosExtension);
+				providers.add(omp);
+			}
+			return providers;
+    	}
     }
     
     /**

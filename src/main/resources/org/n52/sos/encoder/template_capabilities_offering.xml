@@ -2,15 +2,10 @@
 	<sos:ObservationOffering>
 		<swes:identifier>@offering-identifier@</swes:identifier>
 		<swes:procedure>@offering-procedure@</swes:procedure>
-		<swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/2.0</swes:procedureDescriptionFormat>
+		<!-- currently not supported: <swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/2.0</swes:procedureDescriptionFormat>-->
 		<swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/1.0.1</swes:procedureDescriptionFormat>
 		@offering-observable-properties@
-		<sos:observedArea>
-			<gml:Envelope srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
-				<gml:lowerCorner>@offering-lower-corner@</gml:lowerCorner>
-				<gml:upperCorner>@offering-upper-corner@</gml:upperCorner>
-			</gml:Envelope>
-		</sos:observedArea>
+		@offering-observed-area@
 		<sos:phenomenonTime>
 			<gml:TimePeriod gml:id="phenomenonTime">
 				<gml:beginPosition>@offering-begin-position@</gml:beginPosition>

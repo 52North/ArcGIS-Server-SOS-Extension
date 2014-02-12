@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gml:FeatureCollection 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:aqd="http://aqd.ec.europa.eu/aqd/0.3.6b" 
+	xmlns:aqd="http://aqd.ec.europa.eu/aqd/0.3.7c" 
 	xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3rc3/" 
 	xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0rc3" 
 	xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/3.0rc3" 
@@ -17,8 +17,7 @@
 	xmlns:am="http://inspire.ec.europa.eu/schemas/am/3.0rc3" 
 	xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" 
 	xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" 
-	xsi:schemaLocation="
-http://aqd.ec.europa.eu/aqd/0.3.6b http://dd.eionet.europa.eu/schemas/id2011850eu/AirQualityReporting_0.3.6b.xsd 
+	xsi:schemaLocation="http://aqd.ec.europa.eu/aqd/0.3.7c http://dd.eionet.europa.eu/schemas/id2011850eu/AirQualityReporting_0.3.7c.xsd 
 http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd" 
 	gml:id="observation">
 

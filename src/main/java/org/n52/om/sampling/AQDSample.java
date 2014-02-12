@@ -1,29 +1,21 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.om.sampling;
 
-import org.n52.gml.Identifier;
+import java.net.URI;
 
 import com.esri.arcgis.geometry.IGeometry;
 
@@ -32,9 +24,7 @@ import com.esri.arcgis.geometry.IGeometry;
  * 
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class AQDSample extends Feature{
-
-    private String localId;
+public class AQDSample extends Feature {
     
     private String namespace;
     
@@ -44,18 +34,19 @@ public class AQDSample extends Feature{
     
     private double kerbDistance;
 
-    public AQDSample(Identifier identifier, 
+    public AQDSample(
+    		URI uri, 
+            String gmlId, 
+            int localId,
             String name, 
             String description, 
             String sampledFeatureURI, 
             IGeometry shape, 
-            String localId, 
             String namespace,
             double inletHeight,
             double buildingDistance,
             double kerbDistance) throws IllegalArgumentException {
-        super(identifier, namespace, description, sampledFeatureURI, shape);
-        this.localId = localId;
+        super(uri, gmlId, localId, namespace, description, sampledFeatureURI, shape);
         this.namespace = namespace;
         this.inletHeight = inletHeight;
         this.buildingDistance = buildingDistance;
@@ -63,11 +54,6 @@ public class AQDSample extends Feature{
     }
 
     // getters and setters
-
-    public String getLocalId()
-    {
-        return localId;
-    }
 
     public String getNamespace()
     {

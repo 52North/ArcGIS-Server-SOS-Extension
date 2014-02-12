@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <swes:DescribeSensorResponse
-	xsi:schemaLocation="http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd"
+	xsi:schemaLocation="http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd"
 	xmlns="http://www.opengis.net/sensorML/1.0.1" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
 	xmlns:swe="http://www.opengis.net/swe/1.0.1" 

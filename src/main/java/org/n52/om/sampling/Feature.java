@@ -1,26 +1,18 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.om.sampling;
 
 import java.io.IOException;
@@ -38,21 +30,22 @@ import com.esri.arcgis.interop.AutomationException;
  * variable is set) or provided with complete content (href isn't set, but rest
  * of attributes are set (boundedBy is optional)
  * 
- * @author Kiesow, staschc
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
 public class Feature {
 
-    /** reference to sampling feature */
-    private URI href;
+    /** identifier of feature */
+    private URI uri;
+    
+    /** local identifier of feature */
+    private String gmlId;
 
-    /** identifier of feature (optional) */
-    private Identifier identifer;
-
-    /** description of feature (optional) */
+    private int localId;
+    
+    /** description of feature  */
     private String description;
 
-    /** name of feature (optional) */
+    /** name of feature  */
     private String name;
 
     /** reference to the sampled feature (might be a lake for example) */
@@ -61,32 +54,37 @@ public class Feature {
     /** geometry of the sampling feature */
     private IGeometry shape;
 
-    public Feature(Identifier identifier, String name, String description, String sampledFeatureURI, IGeometry shape) throws IllegalArgumentException {
-        this.identifer = identifier;
+    public Feature(URI uri, String gmlId, int localId, String name, String description, String sampledFeatureURI, IGeometry shape) throws IllegalArgumentException {
+        this.uri = uri;
+        this.gmlId = gmlId;
+        this.localId = localId;
         this.name = name;
         this.description = description;
         this.sampledFeature = sampledFeatureURI;
         this.shape = shape;
     }
 
+    //
+    // getters and setters
+    //
+    
     /**
-     * constructor for sampling features which are referenced
      * 
-     * @param href
-     *            reference to the SamplingFeature
+     * @return Returns URI of the feature
      */
-    public Feature(URI href) {
-        this.href = href;
+    public URI getUri()
+    {
+        return uri;
     }
 
-    // getters and setters
-    /**
-     * 
-     * @return Returns identifier of the feature
-     */
-    public Identifier getIdentifier()
+    public String getGmlId()
     {
-        return identifer;
+        return gmlId;
+    }
+    
+    public int getLocalId()
+    {
+        return localId;
     }
 
     public String getDescription()
@@ -112,11 +110,6 @@ public class Feature {
     public IGeometry getShape()
     {
         return shape;
-    }
-
-    public URI getHref()
-    {
-        return href;
     }
 
     /**

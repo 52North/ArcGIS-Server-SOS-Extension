@@ -1,26 +1,18 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.sos;
 
 import java.io.IOException;
@@ -46,10 +38,10 @@ import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.db.impl.AccessGDBImpl;
+import org.n52.sos.encoder.JSONEncoder;
 import org.n52.sos.encoder.JSONObservationEncoder;
 import org.n52.sos.handler.OGCOperationRequestHandler;
 import org.n52.sos.handler.OperationRequestHandler;
-import org.n52.sos.json.JSONEncoder;
 import org.n52.util.ExceptionSupporter;
 import org.n52.util.logging.Logger;
 
@@ -79,14 +71,14 @@ import com.esri.arcgis.system.ServerUtilities;
         displayName = "An_SOS_extension_for_ArcGIS_Server",
         description = "An_SOS_extension_for_ArcGIS_Server"
         )
-public class SOSExt extends SOAPRequestHandler 
+public class SosSoe extends SOAPRequestHandler 
 implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRESTRequestHandler {
 
     private static final long serialVersionUID = 1L;
 
     private IMapServerDataAccess mapServerDataAccess;
 
-    public Logger LOGGER = Logger.getLogger(SOSExt.class.getName());
+    public Logger LOGGER = Logger.getLogger(SosSoe.class.getName());
     
     protected AccessGDB geoDB;
     
@@ -117,7 +109,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      * 
      * @throws Exception
      */
-    public SOSExt() throws Exception {
+    public SosSoe() throws Exception {
         super();
     }
 
@@ -138,20 +130,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         LOGGER.info(this.getClass().getName() + " initialized.");
     }
 
-    private void initializeOperationHandlers() {
-    	ServiceLoader<OperationRequestHandler> loader = ServiceLoader.load(OperationRequestHandler.class);
-
-    	this.operationHandlers = new ArrayList<OperationRequestHandler>();
-    	
-    	for (OperationRequestHandler h : loader) {
-			h.initialize(this.urlSosExtension);
-			this.operationHandlers.add(h);
-		}
-    	
-    	Collections.sort(this.operationHandlers);
-    	LOGGER.info("Registered Operation Handlers: " + this.operationHandlers.toString());
-	}
-
 	/**
      * shutdown() is called once when the Server Object's context is being shut
      * down and is about to go away.
@@ -165,7 +143,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         this.mapServerDataAccess = null;
 
-        // TODO: make sure all references are being cut.
+        // TODO make sure all references are being cut.
     }
 
     /*************************************************************************************
@@ -178,8 +156,6 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      * of construct().  
      */
     public void construct(IPropertySet propertySet) throws IOException {
-        
-        // TODO --> read in maxNumOfResults from Manager
         
         try {
             LOGGER.info("Reading properties...");
@@ -246,6 +222,20 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
 	}
 
+    private void initializeOperationHandlers() {
+    	ServiceLoader<OperationRequestHandler> loader = ServiceLoader.load(OperationRequestHandler.class);
+
+    	this.operationHandlers = new ArrayList<OperationRequestHandler>();
+    	
+    	for (OperationRequestHandler h : loader) {
+			h.initialize(this.urlSosExtension);
+			this.operationHandlers.add(h);
+			LOGGER.info("init op handler " + h.getExecutionPriority() + " added");
+		}
+    	Collections.sort(this.operationHandlers);
+    	LOGGER.info("Registered Operation Handlers: " + this.operationHandlers.toString());
+	}
+    
 	/*************************************************************************************
      * SOAP methods:
      *************************************************************************************/
@@ -314,7 +304,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         // create a schema object for the 'observations' resource:
         JSONObject observationsObject = ServerUtilities.createResource("observations", "description of observations resource", false, false);
         JSONArray observationsQueryOp = new JSONArray();
-        observationsQueryOp.put(ServerUtilities.createOperation("query", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, where", "json", false));
+        observationsQueryOp.put(ServerUtilities.createOperation("query", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, aggregationType, where", "json", false));
         observationsObject.put("operations", observationsQueryOp);
         
 //        observationsQueryOp.put(ServerUtilities.createOperation("diagram", "offering, observedProperty, procedure, featureOfInterest, spatialFilter, temporalFilter, where", "jpeg", false));
@@ -336,19 +326,18 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         // create a schema object for the GetCapabilities operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetCapabilities", "service, request", "json, xml", false));
         
-        // create a schema object for the DescribeSensor operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, responseFormat", "json, xml", false));
-        
-        // create a schema object for the DescribeSensor operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
+        // create a schema object for the GetObservation operation:
+        ogcOperationArray.put(ServerUtilities.createOperation("GetObservation", "service, version, request, offering, observedProperty, procedure, featureOfInterest, namespaces, spatialFilter, temporalFilter, aggregationType, responseFormat", "json, xml", false));
 
-/*
-        // create a schema object for the GetFeatureOfInterest operation:
-        ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
-               
         // create a schema object for the DescribeSensor operation:
         ogcOperationArray.put(ServerUtilities.createOperation("DescribeSensor", "service, version, request, procedure, procedureDescriptionFormat", "json, xml", false));
-*/      
+     
+        // create a schema object for the GetObservationByID operation:
+        ogcOperationArray.put(ServerUtilities.createOperation("GetObservationByID", "service, version, request, observation, responseFormat", "json, xml", false));
+
+        // create a schema object for the GetFeatureOfInterest operation:
+        ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
+
         
         // include all resource objects into 'resources' array:
         JSONArray resourceArray = new JSONArray();
@@ -570,12 +559,16 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         if (inputObject.has("temporalFilter")) {
             temporalFilter = inputObject.getString("temporalFilter");
         }
+        String[] aggregationTypes = null;
+        if (inputObject.has("aggregationType")) {
+        	aggregationTypes = inputObject.getString("aggregationType").split(",");
+        }
         String where = null;
         if (inputObject.has("where")) {
             where = inputObject.getString("where");
         }
 
-        Map<String, MultiValueObservation> observations = this.geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, where);
+        Map<String, MultiValueObservation> observations = this.geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, aggregationTypes, where);
 
         JSONObject json = JSONObservationEncoder.encodeObservations(observations);
         return json.toString().getBytes("utf-8");
@@ -619,17 +612,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         if (inputObject.has("procedure")) {
             procedures = inputObject.getString("procedure").split(",");
         }
-        Collection<Procedure> proceduresColl = this.geoDB.getProcedureAccess().getProcedures(procedures);
-        
-        /*
-        String returnIdsOnly = null;
-        if (inputObject.has("returnIdsOnly")) {
-            returnIdsOnly = inputObject.getString("returnIdsOnly");
-            if (returnIdsOnly != null && Boolean.valueOf(returnIdsOnly)) {
-                json = JSONEncoder.encodeProcedureIDs(proceduresColl);
-            }
-        }
-        */
+        Collection<Procedure> proceduresColl = this.geoDB.getProcedureAccess().getProceduresWithIdAndResource(procedures);
 
         if (json == null) {
             json = JSONEncoder.encodeProcedures(proceduresColl);
@@ -680,15 +663,15 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         // handle queries for procedures:
         else if (resourceName.matches("procedures")) {
-            Collection<Procedure> procedureArray = geoDB.getProcedureAccess().getProcedures(null);
-            json = JSONEncoder.encodeProcedureIDs(procedureArray);
+            List<String> procedureIDArray = geoDB.getProcedureAccess().getProcedureIdList();
+            json = JSONEncoder.encodeProcedureIDs(procedureIDArray);
         }
         
         else if (resourceName.matches("procedures/.+")) {
             String procedureID = resourceName.split("/")[1];
 //            LOGGER.info("Procedure requested: '" + procedureID + "'");
 
-            Collection<Procedure> proceduresFromDB = geoDB.getProcedureAccess().getProcedures(new String[] { procedureID });
+            Collection<Procedure> proceduresFromDB = geoDB.getProcedureAccess().getProceduresWithIdAndResource(new String[] { procedureID });
 //            LOGGER.info("Count of procedures returned from DB: " + proceduresFromDB.size());
 
             if (proceduresFromDB.size() == 1) {

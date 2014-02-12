@@ -1,30 +1,23 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.n52.sos.json;
+package org.n52.sos.encoder;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.n52.om.sampling.Feature;
 import org.n52.sos.dataTypes.ContactDescription;
@@ -233,14 +226,14 @@ public class JSONEncoder {
      * @param procedures
      * @return
      */
-    public static JSONObject encodeProcedureIDs(Collection<Procedure> procedures)
+    public static JSONObject encodeProcedureIDs(List<String> procedureIDs)
     {
         JSONObject json = new JSONObject();
         
         JSONArray jsonProcedureIDArray = new JSONArray();
-        for (Procedure p : procedures) {
+        for (String procedureID : procedureIDs) {
             JSONObject proc = new JSONObject();
-            proc.put("id", p.getId());
+            proc.put("id", procedureID);
             jsonProcedureIDArray.put(proc);
         }
         json.put("procedures", jsonProcedureIDArray);
@@ -258,11 +251,12 @@ public class JSONEncoder {
     {
         JSONObject json = new JSONObject();
 
-        if (foi.getIdentifier() != null) {
-            json.put("id", foi.getIdentifier().getIdentifierValue());
-            if (foi.getIdentifier().getCodeSpace() != null) {
-                json.put("codeSpace", foi.getIdentifier().getCodeSpace().toString());
-            }
+        if (foi.getUri() != null) {
+            json.put("uri", foi.getUri());
+        }
+        
+        if (foi.getGmlId() != null) {
+            json.put("gml-id", foi.getGmlId());
         }
         
         json.put("name", foi.getName());
@@ -312,7 +306,7 @@ public class JSONEncoder {
         JSONArray jsonFeatureIDArray = new JSONArray();
         for (Feature f : fois) {
             JSONObject feature = new JSONObject();
-            feature.put("id", f.getIdentifier().getIdentifierValue());
+            feature.put("gml-id", f.getGmlId());
             jsonFeatureIDArray.put(feature);
         }
         json.put("features", jsonFeatureIDArray);
