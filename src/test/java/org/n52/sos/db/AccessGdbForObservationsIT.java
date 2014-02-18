@@ -1,4 +1,21 @@
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.n52.sos.db;
+
+import static org.hamcrest.CoreMatchers.is;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -14,6 +31,7 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.db.impl.SubField;
 import org.n52.sos.encoder.AQDObservationEncoder;
+import org.n52.sos.encoder.JSONObservationEncoder;
 import org.n52.sos.it.EsriTestBase;
 
 public class AccessGdbForObservationsIT extends EsriTestBase {
@@ -23,31 +41,37 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
     @Test
     public void testGetObservationsStringArray()
     {
-        String[] observationIdentifiers = { "GB_Observation_59" };
+        String observationID = "GB_Observation_59";
 
         try {
-            gdb.getObservationAccess().getObservations(observationIdentifiers);
+        	Map<String, MultiValueObservation> result = gdb.getObservationAccess().getObservations(new String[]{observationID});
+        	
+        	for (String key : result.keySet()) {
+        		Assert.assertEquals(key, observationID);
+        	}
+        	
         } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
     }
     
-
+    
 	@Test
     public void testGetObservations()
     {
         try {
-            String[] offerings = null;
-            String spatialFilter = "{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}";
-            String temporalFilter = "after:2013-02-01T01:00:00+0007";
-            String where = "value_numeric > 9";
-            String[] observedProperties = new String[]{"http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1", "http://dd.eionet.europa.eu/vocabularies/aq/pollutant/7"};
+            String[] offerings = new String[]{"Network_GBXXXX"};
+            String spatialFilter = null; //"{\"xmin\":-180.0,\"ymin\":-90.0,\"xmax\":180.0,\"ymax\":90.0,\"spatialReference\":{\"wkid\":4326}}";
+            String temporalFilter = "before:2013-04-15T01:00:00";
+            String where = null;//"value_numeric > 9";
+            String[] observedProperties = new String[]{"http://dd.eionet.europa.eu/vocabulary/aq/pollutant/1"};
             String[] procedures = null;
             String[] featuresOfInterest = null;
+            String[] aggregationTypes = new String[]{"http://dd.eionet.europa.eu/vocabulary/aq/averagingperiod/1d"};
             
-            Map<String, MultiValueObservation> idObsList = gdb.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, where);
-        
+            Map<String, MultiValueObservation> idObsList = gdb.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, aggregationTypes, where);
+            
             AQDObservationEncoder encoder = new AQDObservationEncoder();
             String result = encoder.encodeObservations(idObsList);
             
@@ -114,5 +138,109 @@ public class AccessGdbForObservationsIT extends EsriTestBase {
     	Assert.assertEquals("2011-12-04T15:45:30+04:00", TimeConverter.extractTemporalOperandAfterKeyWord("equals:2011-12-04T15:45:30+04:00"));
     	Assert.assertEquals("2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00", TimeConverter.extractTemporalOperandAfterKeyWord("during:2011-12-04T15:45:30+04:00,2011-12-04T15:50:30+04:00"));
     	Assert.assertEquals("100,+02:00", TimeConverter.extractTemporalOperandAfterKeyWord("last:100,+02:00"));
+    }
+    
+    /**
+     * Test method for {@link
+     * org.n52.sos.db.AccessObservationGDB#getObservation(...)} .
+     */
+    public void testVariousGetObservations()
+    {
+        try {
+
+            Map<String, MultiValueObservation> observations = null;
+
+            long millis;
+
+            LOGGER.info("###################################### no parameter geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, null, null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("without Entries ", observations);
+
+            LOGGER.info("###################################### offering geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(new String[] { "Observations of my thermometer" }, null, null, null, null, null, null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("with Offerings", observations);
+
+            LOGGER.info("###################################### featuresOfInterest geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, new String[] { "WXT500" }, null, null, null, null, null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("with feature of interest '' ", observations);
+
+            LOGGER.info("###################################### spatial filter 1 geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, "{xmin:0.0,ymin:40.0,xmax:2.0,ymax:43.0,spatialReference:{wkid:4326}}", null, null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("with feature of interest '' ", observations);
+
+            LOGGER.info("###################################### spatial filter 2 geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, "{x:1.121389,y:41.152222,spatialReference:{wkid:4326}}", null, null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("with feature of interest '' ", observations);
+
+            LOGGER.info("###################################### temporal filter 'equals' geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "equals:2011-07-28T10:00:00+12:00", null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("equals:<time instant>", observations);
+
+            LOGGER.info("###################################### temporal filter 'during' geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "during:2011-08-13T10:00:00,2011-08-13T11:00:00", null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("during:<time start>,<time end>", observations);
+
+            LOGGER.info("###################################### temporal filter 'after' geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "after:2011-08-13T10:00:00", null,  null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("after:<time instant>", observations);
+
+            LOGGER.info("###################################### temporal filter 'before' geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "before:2011-08-13T10:00:00", null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("before:<time instant>", observations);
+
+            LOGGER.info("###################################### temporal filter 'last' geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, "last:3600000000,+02:00", null, null);
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("last:<time duration>", observations);
+
+            LOGGER.info("###################################### where geoDBQuerier");
+            millis = System.currentTimeMillis();
+            observations = gdb.getObservationAccess().getObservations(null, null, null, null, null, null, null, "NUMERIC_VALUE > 2500");
+            LOGGER.info("Duration: " + (System.currentTimeMillis() - millis));
+            LOGGER.info("Count: " + observations.size());
+            Assert.assertNotNull("last:<time duration>", observations);
+
+            LOGGER.info(JSONObservationEncoder.encodeObservations(observations).toString(2));
+
+            // // TODO Problem with ' in the entry, check later
+            // observations = geoDBQuerier.getObservations(new String[] {
+            // "Observations of Paul's thermometer" }, null, null, null, null,
+            // null,
+            // null);
+            // assertEquals("mit Offerings '' ", 3, observations.length);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 }

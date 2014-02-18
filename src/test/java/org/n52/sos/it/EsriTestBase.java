@@ -1,19 +1,12 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +15,20 @@
  */
 package org.n52.sos.it;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.n52.sos.db.impl.AccessGDBImpl;
+import org.n52.sos.handler.OGCOperationRequestHandler;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.server.json.JSONObject;
 import com.esri.arcgis.system.AoInitialize;
 import com.esri.arcgis.system.EngineInitializer;
 import com.esri.arcgis.system.esriLicenseProductCode;
@@ -39,7 +39,7 @@ import com.esri.arcgis.system.esriLicenseStatus;
  */
 public class EsriTestBase {
 
-    static Logger LOGGER = Logger.getLogger(EsriTestBase.class.getName());
+    private static Logger LOGGER = Logger.getLogger(EsriTestBase.class.getName());
     
     protected AoInitialize aoInit;
     
@@ -48,7 +48,8 @@ public class EsriTestBase {
     /**
      * @throws java.lang.Exception
      */
-    protected void setUp() throws Exception
+    @Before
+    public void setUp() throws Exception
     {
         // Initialize engine console application
         EngineInitializer.initializeEngine();
@@ -60,7 +61,8 @@ public class EsriTestBase {
         gdb = new AccessGDBImpl();
     }
     
-    protected void tearDown() throws Exception
+    @After
+    public void tearDown() throws Exception
     {
         // Ensure any ESRI libraries are unloaded in the correct order
         aoInit.shutdown();
@@ -106,4 +108,32 @@ public class EsriTestBase {
     protected void fail() {
     	Assert.fail();
 	}
+    
+    /**
+     * Helper method used by the subclasses to execute an OGC operation.
+     */
+    public void executeOGCOperation(OGCOperationRequestHandler opHandler, Map<String, String> kvp, File outputFile)
+    {
+        JSONObject inputObject = new JSONObject();
+        String[] responseProperties = new String[1];
+        
+        // read key value pairs and put into JSONObject
+        for (String key : kvp.keySet()) {
+        	inputObject = inputObject.put(key, kvp.get(key));
+        }
+        
+        // now try executing:
+        try {
+            String result = new String(opHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
+            
+            //LOGGER.info(result);
+            
+            CommonUtilities.saveFile(outputFile, result);
+            
+        } catch (Exception e) {
+        	LOGGER.severe(e.getLocalizedMessage());
+        	e.printStackTrace();
+            fail();
+        }
+    }
 }

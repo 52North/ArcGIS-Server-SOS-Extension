@@ -1,26 +1,18 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.sos.db.impl;
 
 import java.io.IOException;
@@ -57,24 +49,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         this.gdb = accessGDB;
     }
     
-//  /**
-//  * DUMMY
-//  */
-// public Collection<ObservationOffering> getObservationOfferings() 
-// {
-//     LOGGER.info("Creating DUMMY ObservationOfferings.");
-//     
-//     List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
-//     
-//     try {
-//         Envelope envelope = new Envelope();
-//         ObservationOffering offering = new ObservationOffering("id", "name", new String[] { "observedProperties" }, "procedureIdentifier", envelope, new TimePeriod("2013-01-01/2013-03-31"));
-//         offerings.add(offering);
-//     } catch (Exception e) {
-//         e.printStackTrace();
-//     }
-//     return offerings;
-// }
     
     /**
      * This method can be used to retrieve all {@link ObservationOffering}s
@@ -89,7 +63,8 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         
         List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
         
-        // create request to get all networks as offerings:
+        // ~~~~~~~~~~~~~~~~~~~~
+        // request all networks:
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
 
         // set tables
@@ -319,8 +294,10 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
     }
     
     /**
-     * This method can be used to retrieve all {@link ObservationOffering}s
-     * associated with the SOS.
+     * META: Currently this method is not used. Instead {@link getNetworksAsObservationOfferings()} is used.
+     * 
+     * This method can be used to retrieve all {@link ObservationOffering}s associated with the SOS.
+     * Thereby, there is 1 ObservationOffering per 1 Procedure.
      * 
      * @return all offerings from the Geodatabase
      * @throws IOException

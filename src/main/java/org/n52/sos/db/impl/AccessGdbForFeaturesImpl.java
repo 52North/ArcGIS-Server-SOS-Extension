@@ -1,38 +1,41 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.sos.db.impl;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import javax.activation.UnsupportedDataTypeException;
+
+import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
+import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGdbForFeatures;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
+import com.esri.arcgis.geodatabase.ICursor;
+import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
+import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -42,10 +45,11 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     
     static Logger LOGGER = Logger.getLogger(AccessGdbForFeaturesImpl.class.getName());
 
+    private AccessGDBImpl gdb;
 
     public AccessGdbForFeaturesImpl(AccessGDBImpl accessGDB) {
-    	//TODO: never used?
-//        this.gdb = accessGDB;
+
+        this.gdb = accessGDB;
     }
     
     /**
@@ -69,198 +73,197 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
      *         specified parameters.
      * @throws Exception
      */
-    public Collection<Feature> getFeaturesOfInterest(String[] featuresOfInterest,
+    public Collection<Feature> getFeaturesOfInterest(
+    		String[] featuresOfInterest,
             String[] observedProperties,
             String[] procedures,
             String spatialFilter) throws Exception
     {
-    	// TODO: feature encoding needs to be adjusted to new AQ e-Reporting data model
     	
-    	throw new UnsupportedOperationException();
-    	
-//        List<Feature> features = new ArrayList<Feature>();
-//        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-//
-//        // set tables
-//        List<String> tables = new ArrayList<String>();
-//        tables.add(Table.FEATURE);
-//        tables.add(Table.PROCEDURE);
-//        tables.add(Table.PROPERTY);
-//        tables.add(Table.OFFERING);
-//        tables.add(Table.FOI_OFF);
-//        tables.add(Table.PROP_OFF);
-//        queryDef.setTables(gdb.createCommaSeparatedList(tables));
-//
-//        // set sub fields
-//        List<String> subFields = new ArrayList<String>();
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_NAME));
-//        subFields.add(concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_UNIQUE_ID));
-//        subFields.add(concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PROPERTY_DESCRIPTION));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_NAME));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_DESCRIPTION));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_SHAPE));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_ID_VALUE));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_CODE_SPACE));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_SAMPLED_FEATURE_URL));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_LOCAL_ID));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_NAMESPACE));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_INLET_HEIGHT));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_BUILDING_DISTANCE));
-//        subFields.add(concatTableAndField(Table.FEATURE, SubField.FEATURE_KERB_DISTANCE));
-//        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
-//
-//        // create the where clause with joins and constraints
-//        StringBuilder whereClause = new StringBuilder();
-//
-//        // joins
-//        whereClause.append(concatTableAndField(Table.OFFERING, SubField.OFFERING_OBJECTID) + " = " + concatTableAndField(Table.FOI_OFF, SubField.FOI_OFF_OFFERING_ID));
-//        whereClause.append(" AND ");
-//        whereClause.append(concatTableAndField(Table.FOI_OFF, SubField.FOI_OFF_FOI_ID) + " = " + concatTableAndField(Table.FEATURE, SubField.FEATURE_OBJECTID));
-//        whereClause.append(" AND ");
-//        whereClause.append(concatTableAndField(Table.OFFERING, SubField.OFFERING_PROCEDURE) + " = " + concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_OBJECTID));
-//        whereClause.append(" AND ");
-//        whereClause.append(concatTableAndField(Table.OFFERING, SubField.OFFERING_OBJECTID) + " = " + concatTableAndField(Table.PROP_OFF, SubField.PROP_OFF_OFFERING_ID));
-//        whereClause.append(" AND ");
-//        whereClause.append(concatTableAndField(Table.PROP_OFF, SubField.PROP_OFF_PROPERTY_ID) + " = " + concatTableAndField(Table.PROPERTY, SubField.PROPERTY_OBJECTID));
-//
-//        // build query for feature of interest
-//        if (featuresOfInterest != null) {
-//            whereClause.append(" AND ");
-//            whereClause.append(createOrClause(concatTableAndField(Table.FEATURE, SubField.FEATURE_ID_VALUE), featuresOfInterest));
-//        }
-//
-//        // build query for observed properties
-//        if (observedProperties != null) {
-//            whereClause.append(" AND ");
-//            whereClause.append(createOrClause(concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PROPERTY_DESCRIPTION), observedProperties));
-//        }
-//
-//        // build query for procedures
-//        if (procedures != null) {
-//            whereClause.append(" AND ");
-//            whereClause.append(createOrClause(concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_UNIQUE_ID), procedures));
-//        }
-//
-//        // build query for spatial filter
-//        if (spatialFilter != null) {
-//            // get the IDs of all features which are within the specified
-//            // spatialFilter:
-//            Collection<Integer> featureList = gdb.queryFeatureIDsForSpatialFilter(spatialFilter);
-//
-//            if (featureList.size() > 0) {
-//                // append the list of feature IDs:
-//                whereClause.append(" AND ");
-//                whereClause.append(createOrClause(concatTableAndField(Table.FEATURE, SubField.FEATURE_OBJECTID), featureList));
-//            } else {
-//                LOGGER.warning("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
-//            }
-//        }
-//
-//        queryDef.setWhereClause(whereClause.toString());
-//
-//        // Log out the query clause
-//        LOGGER.info("GetFeatureOfInterest DB query WHERE clause: '" + queryDef.getWhereClause() + "'");
-//
-//        // evaluate the database query
-//        ICursor cursor = queryDef.evaluate();
-//
-//        // convert cursor entries to abstract observations
-//        Fields fields = (Fields) cursor.getFields();
-//
-//        IRow row;
-//        int count = 0;
-//        while ((row = cursor.nextRow()) != null && count < gdb.getMaxNumberOfResults()) {
-//            count++;
-//            Feature feature = createFeature(row, fields);
-//            features.add(feature);
-//        }
-//
-//        return features;
+        List<Feature> features = new ArrayList<Feature>();
+        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+       
+        
+        // set sub fields
+        List<String> subFields = new ArrayList<String>();
+        
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE));
+        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE));
+        if (observedProperties != null || procedures != null){
+	        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+	        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        }
+        
+        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        
+		// Log out the query clause
+        LOGGER.info("SELECT " + queryDef.getSubFields());
+
+
+        
+        // set tables
+        List<String> tables = new ArrayList<String>();
+        tables.add(Table.FEATUREOFINTEREST);
+        if (observedProperties != null || procedures != null){
+	        tables.add(Table.OBSERVATION);
+	        tables.add(Table.PROPERTY);
+	        tables.add(Table.PROCEDURE);
+	    }
+        
+        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        
+        // Log out the query clause
+        LOGGER.info("FROM " + queryDef.getTables());
+        
+        
+        
+        
+        // create the where clause with joins and constraints
+        StringBuilder whereClause = new StringBuilder();
+
+        boolean isFirst = true;
+        
+        // joins
+        if (observedProperties != null || procedures != null) {
+	        whereClause.append(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST) + " = " + 
+	        				   gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
+	        isFirst = false;
+        }
+        
+        if (observedProperties != null) {
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+	        whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + 
+	        				   gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+        }
+
+        if (procedures != null) {
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+	        whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + 
+	        				   gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
+        }
+        
+        // build query for feature of interest
+        if (featuresOfInterest != null) {
+            isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE), featuresOfInterest));
+        }
+
+        // build query for observed properties
+        if (observedProperties != null) {
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID), observedProperties));
+        }
+
+        // build query for procedures
+        if (procedures != null) {
+        	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedures));
+        }
+
+        // build query for spatial filter
+        if (spatialFilter != null) {
+        	Collection<String> featureList = gdb.queryFeatureIDsForSpatialFilter(spatialFilter);
+            String[] featureArray = CommonUtilities.toArray(featureList);
+            
+            if (featureList.size() > 0) {
+                // append the list of feature IDs:
+            	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
+            	whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
+            } else {
+                LOGGER.warn("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
+            }
+        }
+
+        queryDef.setWhereClause(whereClause.toString());
+
+        // Log out the query clause
+        LOGGER.info("WHERE " + queryDef.getWhereClause());
+
+        // evaluate the database query
+        ICursor cursor = queryDef.evaluate();
+
+        // convert cursor entries to abstract observations
+        Fields fields = (Fields) cursor.getFields();
+
+        IRow row;
+        int count = 0;
+        while ((row = cursor.nextRow()) != null && count < gdb.getMaxNumberOfResults()) {
+            count++;
+            Feature feature = createFeature(row, fields);
+            features.add(feature);
+        }
+
+        return features;
     }
     
     ///////////////////////////////
-    // //////////////////////////// Helper Methods:
+    /////////////////////////////// Helper Methods:
     ///////////////////////////////     
     
     /**
-     * This method creates a SpatialSamplingFeature of a given row and it's
-     * fields
-     * 
-     * @param row
-     *            The row
-     * @param fields
-     *            The fields
-     * @return A SpatialSamplingFeature
-     * @throws AutomationException
-     * @throws IOException
-     * @throws URISyntaxException
+     * This method creates a {@link AQDSample} of a given {@link IRow} and it's {@link Fields}
      */
-    protected Feature createFeature(IRow row,
-            Fields fields) throws AutomationException, IOException, URISyntaxException
-    {
-    	// TODO: feature encoding needs to be adjusted to new AQ e-Reporting data model
-    	
-    	throw new UnsupportedOperationException();
-    	
-//        // identifier (codeSpace URI and idValue)
-//        String idValue = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_ID_VALUE)));
-//        String uri = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_CODE_SPACE)));
-//        URI codeSpace;
-//        if (uri != null) {
-//            codeSpace = new URI(uri);
-//        } else {
-//            codeSpace = new URI("");
-//        }
-//        Identifier identifier = new Identifier(codeSpace, idValue);
-//
-//        // name
-//        String name = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_NAME)));
-//
-//        // description
-//        String description = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_DESCRIPTION)));
-//
-//        // sampled Feature
-//        String sampledFeature = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_SAMPLED_FEATURE_URL)));
-//
-//        // shape
-//        Point point = null;
-//        Object shape = row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_SHAPE)));
-//        if (shape instanceof Point) {
-//            point = (Point) shape;
-//        } else {
-//            LOGGER.log(Level.WARNING, "Shape of the feature is no point.");
-//        }
-//        
-//        // localID
-//        String localId = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_LOCAL_ID)));
-//        if (localId == null) {
-//            localId = Constants.FEATURE_LOCALID;
-//        }
-//        
-//        // namespace
-//        String namespace = (String) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_NAMESPACE)));
-//        if (namespace == null) {
-//            namespace = Constants.FEATURE_NAMESPACE;
-//        }
-//        
-//        // inletHeight
-//        Double inletHeight = (Double) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_INLET_HEIGHT)));
-//        if (inletHeight == null) {
-//            inletHeight = Constants.FEATURE_INLET_HEIGHT;
-//        }
-//        
-//        // buildingDistance
-//        Double buildingDistance = (Double) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_BUILDING_DISTANCE)));
-//        if (buildingDistance == null) {
-//            buildingDistance = Constants.FEATURE_BUILDING_DISTANCE;
-//        }
-//        
-//        // kerbDistance
-//        Double kerbDistance = (Double) row.getValue(fields.findField(concatTableAndField(Table.FEATURE, SubField.FEATURE_KERB_DISTANCE)));
-//        if (kerbDistance == null) {
-//            kerbDistance = Constants.FEATURE_KERB_DISTANCE;
-//        }
-//
-//        return new AQDSample(identifier, name, description, sampledFeature, point, localId, namespace, inletHeight, buildingDistance, kerbDistance);
+    protected AQDSample createFeature(IRow row, Fields fields) throws AutomationException, IOException, URISyntaxException
+    {	
+        // gml identifier
+        String gmlId = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
+        
+        // resource URI
+        URI resourceUri = null;
+        String resource = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
+        if (resource != null) {
+        	resourceUri = new URI(resource);
+        }
+
+        // local ID
+        int localId = (Integer) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST)));
+        
+        // shape
+        Point point = null;
+        Object shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+        if (shape instanceof Point) {
+            point = (Point) shape;
+        } else {
+            LOGGER.warn("Shape of the feature '" + gmlId + "' is no point.");
+        }
+        
+        // inletHeight
+        Double inletHeight = (Double) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT)));
+        if (inletHeight == null) {
+            inletHeight = Constants.FEATURE_INLET_HEIGHT;
+        }
+        
+        // buildingDistance
+        Double buildingDistance = (Double) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE)));
+        if (buildingDistance == null) {
+            buildingDistance = Constants.FEATURE_BUILDING_DISTANCE;
+        }
+        
+        // kerbDistance
+        Double kerbDistance = (Double) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE)));
+        if (kerbDistance == null) {
+            kerbDistance = Constants.FEATURE_KERB_DISTANCE;
+        }
+
+        return new AQDSample(resourceUri, gmlId, localId, null, null, null, point, null, inletHeight, buildingDistance, kerbDistance);
+    }
+    
+    
+    /**
+     * helper method to reduce code length. Appends "AND" to WHERE clause if 'isFirst == false'.
+     */
+    private boolean ifIsFirstAppendAND (StringBuilder whereClauseParameterAppend, boolean isFirst) {
+    	if (isFirst == false) {
+    		whereClauseParameterAppend.append(" AND ");
+    	}
+    	else {
+    		isFirst = false;
+    	}
+    	return isFirst;
     }
 }

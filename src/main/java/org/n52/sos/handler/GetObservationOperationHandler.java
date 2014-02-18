@@ -1,19 +1,12 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,6 +43,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 	private static final String SPATIAL_FILTER_KEY = "spatialFilter";
 	private static final String TEMPORAL_FILTER_KEY = "temporalFilter";
 	private static final String RESPONSE_FORMAT_KEY = "responseFormat";
+	private static final String AGGREGATION_TYPE = "aggregationType";
 	
     private static List<String> supportedValueReferences = Arrays.asList(new String[] {
         	"om:phenomenonTime"	
@@ -92,7 +86,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         String spatialFilter = null;
         if (inputObject.has(SPATIAL_FILTER_KEY)) {
             String spatialFilterOGC = inputObject.getString(SPATIAL_FILTER_KEY);
-            spatialFilter = convertSpatialFilterFromOGCtoESRI(spatialFilterOGC);
+            spatialFilter = convertSpatialFilterFromOGCtoArcGisREST(spatialFilterOGC);
         }
         
         String temporalFilter = createTemporalFilter(inputObject);
@@ -102,12 +96,21 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             responseFormat = inputObject.getString(RESPONSE_FORMAT_KEY);
         }
         
+        String[] aggregationTypes = null;
+        if (inputObject.has(AGGREGATION_TYPE)) {
+        	aggregationTypes = inputObject.getString(AGGREGATION_TYPE).split(",");
+        }
+        else {
+        	aggregationTypes = new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE};
+        }
+        
+        
         String result;
            
-        Map<String, MultiValueObservation> observationCollection = geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, null);
+        Map<String, MultiValueObservation> observationCollection = geoDB.getObservationAccess().getObservations(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, aggregationTypes, null);
         
         if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_RDF)) {
-        	constructInvokedURL(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, responseFormat);
+//        	constructInvokedURL(offerings, featuresOfInterest, observedProperties, procedures, spatialFilter, temporalFilter, responseFormat);
             throw new UnsupportedOperationException("RDF not yet supported");
 //            result = new RDFEncoder(sosUrlExtension).getObservationCollectionTriples(observationCollection, invokedURL);
         }
@@ -132,7 +135,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
             
         	String[] params = temporalFilterOGC.split(",");
         	if (params.length != 2) {
-        		throw new InvalidParameterValueException("The temporalFilter must consist of two comma separated values: valueReference,iso8601Time");
+        		throw new InvalidParameterValueException("The temporalFilter must consist of two comma separated values: valueReference,iso8601Time   OR   valueReference,<latest or first>");
         	}
         	
         	/*
@@ -143,7 +146,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         		throw new InvalidParameterValueException("The value reference "+params[0].trim()+" is currently not supported for temporalFilter");
         	}
             
-            temporalFilter = convertTemporalFilterFromOGCtoESRI(params[1].trim());
+            temporalFilter = convertTemporalFilterFromOGCtoArcGisREST(params[1].trim());
         }
 		return temporalFilter;
 	}

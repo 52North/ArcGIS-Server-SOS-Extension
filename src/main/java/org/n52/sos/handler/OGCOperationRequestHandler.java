@@ -1,26 +1,18 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.sos.handler;
 
 
@@ -67,7 +59,9 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     {
    		LOGGER.debug("Start " + getOperationName() + " query.");
         
-    	if (responseProperties == null) responseProperties = new String[1];
+    	if (responseProperties == null || responseProperties.length == 0){
+    		responseProperties = new String[1];
+    	}
     	
         responseProperties[0] = DEFAULT_RESPONSE_PROPERTIES;
         
@@ -133,9 +127,9 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
      * <code>spatialFilter={xmin:0.0,ymin:40.0,xmax:2.0,ymax:43.0,spatialReference:{wkid:4326}}</code>
      * 
      * @param spatialFilterOGC
-     * @return a spatial filter that conforms to ESRI's GeoServices REST API
+     * @return a spatial filter that conforms to ESRI's GeoServices REST API (ArcGIS REST API)
      */
-    protected String convertSpatialFilterFromOGCtoESRI(String spatialFilterOGC)
+    protected String convertSpatialFilterFromOGCtoArcGisREST(String spatialFilterOGC)
     {
         String[] spatialFilterOGCSubComponentArray = spatialFilterOGC.split(",");
         
@@ -168,23 +162,23 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     }
     
     /**
-     * This method converts from OGC (ISO 8601) to ESRI-style time filters.
+     * This method converts from OGC (ISO 8601) to ArcGIS REST API-style time filters.
      * 
      * 1)
      * OGC: 2011-10-18T10:00/2011-10-19T10:00
      * to
-     * ESRI: during:2011-10-18T10:00:00+00:00,2011-10-19T10:00:00+00:00
+     * ArcGIS REST API: during:2011-10-18T10:00:00+00:00,2011-10-19T10:00:00+00:00
      * 
      * 2)
      * OGC: 2011-10-18T00:00
      * to
-     * ESRI: equals:2011-10-18T00:00:00+00:00
+     * ArcGIS REST API: equals:2011-10-18T00:00:00+00:00
      * 
      * @param temporalFilterOGC
      * @return
      * @throws InvalidParameterValueException 
      */
-    protected static String convertTemporalFilterFromOGCtoESRI(String temporalFilterOGC)
+    protected static String convertTemporalFilterFromOGCtoArcGisREST(String temporalFilterOGC)
     {
         String result = "";
         
@@ -205,6 +199,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
         return result;
     }
     
+    
 	@Override
 	public boolean canHandle(String operationName) {
 		return operationName.equalsIgnoreCase(getOperationName());
@@ -216,13 +211,5 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
 	public int compareTo(OperationRequestHandler o) {
 		return this.getExecutionPriority() - o.getExecutionPriority();
 	}
-	public static void main(String[] args)
-    {
-        String timeOGC1 = "2011-10-18T10:00/2011-10-19T10:00";
-        System.out.println(convertTemporalFilterFromOGCtoESRI(timeOGC1));
-        
-        String timeOGC2 = "2011-10-18T00:00";
-        System.out.println(convertTemporalFilterFromOGCtoESRI(timeOGC2));
-        System.out.println(DEFAULT_RESPONSE_PROPERTIES);
-    }
+
 }

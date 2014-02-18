@@ -1,26 +1,18 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.n52.sos.db.impl;
 
 import java.util.Properties;
@@ -37,7 +29,6 @@ public class SubField {
     public static String OBSERVATION_FK_SAMPLINGPOINT;
     public static String OBSERVATION_FK_PROCEDURE;
     public static String OBSERVATION_FK_PROPERTY;
-    public static String OBSERVATION_FK_UNIT;
     
     public static String VALUE_PK_VALUE;
     public static String VALUE_FK_OBSERVATION;
@@ -51,6 +42,7 @@ public class SubField {
     public static String VALUE_DATETIME_UPDATED;
     public static String VALUE_RESULTTIME;
     public static String VALUE_FK_AGGREGATIONTYPE;
+    public static String VALUE_FK_UNIT;
     
     public static String PROPERTY_PK_PROPERTY;
     public static String PROPERTY_ID;
@@ -129,7 +121,6 @@ public class SubField {
         OBSERVATION_FK_SAMPLINGPOINT = props.getProperty("database.table.OBSERVATION.FK_SAMPLINGPOINT");
         OBSERVATION_FK_PROCEDURE = props.getProperty("database.table.OBSERVATION.FK_PROCEDURE");
         OBSERVATION_FK_PROPERTY = props.getProperty("database.table.OBSERVATION.FK_PROPERTY");
-        OBSERVATION_FK_UNIT = props.getProperty("database.table.OBSERVATION.FK_UNIT");
     
         VALUE_PK_VALUE = props.getProperty("database.table.VALUE.PK_VALUE");
     	VALUE_FK_OBSERVATION = props.getProperty("database.table.VALUE.FK_OBSERVATION");
@@ -143,6 +134,7 @@ public class SubField {
     	VALUE_DATETIME_UPDATED = props.getProperty("database.table.VALUE.DATETIME_UPDATED");
     	VALUE_RESULTTIME = props.getProperty("database.table.VALUE.RESULTTIME");
     	VALUE_FK_AGGREGATIONTYPE = props.getProperty("database.table.VALUE.FK_AGGREGATION_TYPE");
+    	VALUE_FK_UNIT = props.getProperty("database.table.VALUE.FK_UNIT");
     	
         PROPERTY_PK_PROPERTY = props.getProperty("database.table.PROPERTY.PK_PROPERTY");
         PROPERTY_ID = props.getProperty("database.table.PROPERTY.ID");

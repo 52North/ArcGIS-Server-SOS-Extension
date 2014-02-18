@@ -1,19 +1,12 @@
-/*
- * Copyright (C) 2013
- * by 52 North Initiative for Geospatial Open Source Software GmbH
- * 
- * Contact: Andreas Wytzisk
- * 52 North Initiative for Geospatial Open Source Software GmbH
- * Martin-Luther-King-Weg 24
- * 48155 Muenster, Germany
- * info@52north.org
- * 
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +15,17 @@
  */
 package org.n52.sos.it;
 
+import java.io.File;
+import java.util.Map;
+
 import org.junit.Test;
 import org.n52.sos.handler.GetObservationOperationHandler;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.server.json.JSONObject;
 
 /**
- * @author Arne
+ * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  *
  */
 public class GetObservationOperationHandlerIT extends EsriTestBase {
@@ -42,61 +39,40 @@ public class GetObservationOperationHandlerIT extends EsriTestBase {
     {
         super.setUp();
         getObsOpHandler = new GetObservationOperationHandler();
-        getObsOpHandler.initialize("http://localhost:6080/arcgis/rest/services/ObservationDB/MapServer/exts/SOSExtension");
+        getObsOpHandler.initialize(ITConstants.SOS_GETOBSERVATION_ENDPOINT_AGS);
     }
 
     /**
      * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
      */
     @Test
-    public void testInvokeOGCOperation()
+    public void testInvokeGetObservation()
     {
-        JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[0];
-        
-        // init the JSONObject to simulate a GetObservation request:
-        inputObject = inputObject.put("version", "2.0.0");
-        inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "ES1865A,ES1863A");
-        
-        try {
-            String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
-            
-            System.out.println(result);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+        this.executeOGCOperation(getObsOpHandler,
+				ITConstants.SOS_GETOBSERVATION, new File(
+						"c:/temp/getObservation.xml"));
     }
 
     /**
      * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
      */
     @Test
-    public void testInvokeOGCOperation_RDF()
+    public void testInvokeGetObservation_MultipleProperties()
     {
-        JSONObject inputObject = new JSONObject();
-        String[] responseProperties = new String[0];
-        
-        // init the JSONObject to simulate a GetObservation request:
-        inputObject = inputObject.put("version", "2.0.0");
-        inputObject = inputObject.put("service", "SOS");
-        inputObject = inputObject.put("request", "GetObservation");
-        inputObject = inputObject.put("procedure", "CO-SensorNetwork");
-        inputObject = inputObject.put("featureOfInterest", "ES1865A,ES1863A");
-        inputObject = inputObject.put("responseFormat", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
-        
-        try {
-            String result = new String(getObsOpHandler.invokeOGCOperation(gdb, inputObject, responseProperties));
-            
-            System.out.println(result);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+        this.executeOGCOperation(getObsOpHandler,
+				ITConstants.SOS_GETOBSERVATION_MULTIPLE_PROPERTIES, new File(
+						"c:/temp/getObservation_MultipleProperties.xml"));
     }
+    
+//    /**
+//     * Test method for {@link org.n52.sos.handler.GetObservationOperationHandler#invokeOGCOperation(com.esri.arcgis.server.json.JSONObject, java.lang.String[])}.
+//     */
+//    @Test
+//    public void testInvokeGetObservation_GetLatest()
+//    {
+//        this.executeOGCOperation(getObsOpHandler,
+//				ITConstants.SOS_GETOBSERVATION_LOCAL_GET_LATEST, new File(
+//						"c:/temp/getObservation_GetLatest.xml"));
+//    }
+
 }
