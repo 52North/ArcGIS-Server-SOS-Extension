@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.activation.UnsupportedDataTypeException;
-
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
 import org.n52.sos.Constants;
@@ -94,9 +92,13 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE));
-        if (observedProperties != null || procedures != null){
-	        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        
+        if (procedures != null){
 	        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        }
+        
+        if (observedProperties != null) {
+            subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         }
         
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
@@ -109,18 +111,20 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.FEATUREOFINTEREST);
-        if (observedProperties != null || procedures != null){
+        if (procedures != null){
 	        tables.add(Table.OBSERVATION);
-	        tables.add(Table.PROPERTY);
 	        tables.add(Table.PROCEDURE);
 	    }
+        
+        if (observedProperties != null) {
+        	tables.add(Table.OBSERVATION);
+        	tables.add(Table.PROPERTY);        	
+        }
         
         queryDef.setTables(gdb.createCommaSeparatedList(tables));
         
         // Log out the query clause
         LOGGER.info("FROM " + queryDef.getTables());
-        
-        
         
         
         // create the where clause with joins and constraints

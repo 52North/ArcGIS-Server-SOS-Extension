@@ -26,10 +26,7 @@ import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IFeatureWorkspace;
 import com.esri.arcgis.geodatabase.IQueryDef;
-import com.esri.arcgis.geodatabase.IQueryDef2;
-import com.esri.arcgis.geodatabase.IQueryDef2Proxy;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -254,7 +251,11 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
             		newProcedure.addAggregationTypeID(aggrTypeID);
             	}
             	
-            	if (property != null && propertyLabel != null) {
+            	/*
+            	 * also check for unit. this addresses issues #40.
+            	 * TODO Check if this breaks functionality
+            	 */
+            	if (property != null && propertyLabel != null && unit != null) {
             		newProcedure.addOutput(property, propertyLabel, unit);
             	}
             	
@@ -267,7 +268,14 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
                                 
                 existingProcedure.addFeatureOfInterest(feature);
                 existingProcedure.addAggregationTypeID(aggrTypeID);
-                existingProcedure.addOutput(property, propertyLabel, unit);
+                
+            	/*
+            	 * check for unit. this addresses issues #40.
+            	 * TODO Check if this breaks functionality
+            	 */
+            	if (property != null && propertyLabel != null && unit != null) {
+            		existingProcedure.addOutput(property, propertyLabel, unit);
+            	}
             }
         }
         
