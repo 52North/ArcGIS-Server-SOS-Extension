@@ -16,14 +16,12 @@
 package org.n52.sos.encoder;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 
 import javax.activation.UnsupportedDataTypeException;
 
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
-import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.Point;
@@ -96,8 +94,7 @@ public class OGCFeatureEncoder extends AbstractEncoder {
             
             if (feature.getShape() != null) {
             	IGeometry geometry = feature.getShape();
-            	
-	            int dimension  = geometry.getDimension();
+	            int dimension  = feature.getShape().getSpatialReference().getZCoordinateUnit() == null ? 2 : 3;
 	            int epsgCode   = geometry.getSpatialReference().getFactoryCode();
 	            String epsgUrn = "urn:ogc:def:crs:EPSG::" + epsgCode;
 	            
