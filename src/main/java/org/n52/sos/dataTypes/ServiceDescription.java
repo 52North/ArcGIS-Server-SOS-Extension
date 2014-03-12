@@ -23,7 +23,7 @@ import java.util.List;
 public class ServiceDescription {
 
     /**
-     * title of the SOSExt service
+     * title of the SosSoe service
      */
     private String title;
     
@@ -33,7 +33,7 @@ public class ServiceDescription {
     private String description;
     
     /**
-     * keywords describing the SOSExt service
+     * keywords describing the SosSoe service
      */
     private String[] keywordArray;
 
@@ -53,7 +53,7 @@ public class ServiceDescription {
     private ContactDescription[] serviceContacts;
 
     /**
-     * procedures associated with the SOSExt
+     * procedures associated with the SosSoe
      */
     private List<String> procedureIdList;
     
