@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.n52.sos.dataTypes.Output;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.db.AccessGdbForProcedures;
 import org.n52.util.logging.Logger;
@@ -255,7 +256,18 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
             	 * also check for unit. this addresses issues #40.
             	 * TODO Check if this breaks functionality
             	 */
+            	outer:
             	if (property != null && propertyLabel != null && unit != null) {
+            		if (newProcedure.getOutputs() != null) {
+                		for (Output o : newProcedure.getOutputs()) {
+    						if (o.getObservedPropertyID().equals(property) &&
+    								o.getObservedPropertyLabel().equals(propertyLabel)) {
+    							LOGGER.info("Ignoring output as this property is already present: "+property);
+    							break outer;
+    						}
+    					}           			
+            		}
+
             		newProcedure.addOutput(property, propertyLabel, unit);
             	}
             	
@@ -273,7 +285,18 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
             	 * check for unit. this addresses issues #40.
             	 * TODO Check if this breaks functionality
             	 */
+                outer:
             	if (property != null && propertyLabel != null && unit != null) {
+            		if (existingProcedure.getOutputs() != null) {
+            			for (Output o : existingProcedure.getOutputs()) {
+    						if (o.getObservedPropertyID().equals(property) &&
+    								o.getObservedPropertyLabel().equals(propertyLabel)) {
+    							LOGGER.info("Ignoring output as this property is already present: "+property);
+    							break outer;
+    						}
+    					}	
+            		}
+            		
             		existingProcedure.addOutput(property, propertyLabel, unit);
             	}
             }
