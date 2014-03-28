@@ -322,7 +322,8 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
         subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
+        queryDef.setSubFields("DISTINCT "+gdb.createCommaSeparatedList(subFields));
         LOGGER.info("SELECT " + queryDef.getSubFields());
 
         String fromClause = 
@@ -332,7 +333,10 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         		" INNER JOIN " + Table.PROPERTY 		+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_PROPERTY 			+ " = " + Table.PROPERTY + "." + SubField.PROPERTY_PK_PROPERTY +
         		" INNER JOIN " + Table.SAMPLINGPOINT 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
         		" INNER JOIN " + Table.STATION 			+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
-        		" INNER JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID;
+        		" INNER JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID +
+        		" INNER JOIN " + Table.VALUE 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_PK_OBSERVATION		+ " = " + Table.VALUE + "." + SubField.VALUE_FK_OBSERVATION +
+        		" INNER JOIN " + Table.UNIT 			+ " ON " + Table.VALUE+ "." + SubField.VALUE_FK_UNIT							+ " = " + Table.UNIT + "." + SubField.UNIT_PK_UNIT;
+       
         queryDef.setTables(fromClause);
         LOGGER.debug("FROM " + queryDef.getTables());
         
@@ -353,27 +357,27 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         	String propertyLabel= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL))).toString();
         	String feature 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE))).toString();
         	
-            // case: procedure new
+        	String unit = row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION))).toString();
+        	
+            Procedure procedure;
+			// case: procedure new
             if (procedureList.contains(procedureID) == false) {
-            	Procedure procedure = new Procedure(procedureID, resource);
-            	
-            	procedure.addFeatureOfInterest(feature);
-            	procedure.addOutput(property, propertyLabel, null);
-            	
+            	procedure = new Procedure(procedureID, resource);
             	procedureList.add(procedure);
             }
             // case: procedure is already present in procedureList
             else {
                 int index = procedureList.indexOf(procedureID);
-                Procedure procedure = procedureList.get(index);
-                                
-                procedure.addFeatureOfInterest(feature);
-                procedure.addOutput(property, propertyLabel, null);
+                procedure = procedureList.get(index);
             }
+            
+            procedure.addFeatureOfInterest(feature);
+        	procedure.addOutput(property, propertyLabel, unit);
         }
         
         return procedureList;
 	}
+
 
 	@Override
 	public boolean isNetwork(String procedureID) throws AutomationException, IOException {
