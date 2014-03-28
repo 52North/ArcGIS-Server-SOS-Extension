@@ -59,7 +59,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
      */
     public Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException
     {
-        LOGGER.debug("getObservationOfferings() is called.");
+        LOGGER.info("getNetworksAsObservationOfferings() is called.");
         
         List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
         
@@ -97,8 +97,8 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             offerings.add(offering);
         }
 
+        List<ObservationOffering> offeringsWithoutObservations = new ArrayList<ObservationOffering>();
         for (ObservationOffering offering : offerings) {
-            
             LOGGER.debug("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
             
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,9 +142,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             Object startValue = nextRow.getValue(0);
             Object endValue = nextRow.getValue(1);
                 
-            boolean noObservationsForOffering = false;
             if (startValue == null || endValue == null) {
-                noObservationsForOffering = true;
+            	offeringsWithoutObservations.add(offering);
+            	continue;
             }
             else {
 //                LOGGER.info("start time: " + startValue);
@@ -165,130 +165,120 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // set observed property
             
-            if (noObservationsForOffering == false) {
-                IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
+            IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
 
-                // set tables
-                List<String> tablesProp = new ArrayList<String>();
-                tablesProp.add(Table.PROPERTY);
-                tablesProp.add(Table.OBSERVATION);
-                tablesProp.add(Table.SAMPLINGPOINT);
-                tablesProp.add(Table.STATION);
-                tablesProp.add(Table.NETWORK);
-                queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
-                LOGGER.debug("Tables clause := " + queryDefProp.getTables());
+            // set tables
+            List<String> tablesProp = new ArrayList<String>();
+            tablesProp.add(Table.PROPERTY);
+            tablesProp.add(Table.OBSERVATION);
+            tablesProp.add(Table.SAMPLINGPOINT);
+            tablesProp.add(Table.STATION);
+            tablesProp.add(Table.NETWORK);
+            queryDefProp.setTables(gdb.createCommaSeparatedList(tablesProp));
+            LOGGER.debug("Tables clause := " + queryDefProp.getTables());
 
-                // set sub fields
-                List<String> subFieldsProp = new ArrayList<String>();
-                subFieldsProp.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
-                queryDefProp.setSubFields(gdb.createCommaSeparatedList(subFieldsProp));
-                LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
+            // set sub fields
+            List<String> subFieldsProp = new ArrayList<String>();
+            subFieldsProp.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+            queryDefProp.setSubFields(gdb.createCommaSeparatedList(subFieldsProp));
+            LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
 
-                // create where clause with joins and constraints
-                StringBuilder whereClauseProp = new StringBuilder();
-                whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
-                whereClauseProp.append(" AND ");
-                whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
-                whereClauseProp.append(" AND ");
-                whereClauseProp.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
-                whereClauseProp.append(" AND ");
-                whereClauseProp.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
-                whereClauseProp.append(" AND ");
-                whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
-                queryDefProp.setWhereClause(whereClauseProp.toString());
-                LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
+            // create where clause with joins and constraints
+            StringBuilder whereClauseProp = new StringBuilder();
+            whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+            whereClauseProp.append(" AND ");
+            whereClauseProp.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
+            whereClauseProp.append(" AND ");
+            whereClauseProp.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
+            whereClauseProp.append(" AND ");
+            whereClauseProp.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
+            whereClauseProp.append(" AND ");
+            whereClauseProp.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
+            queryDefProp.setWhereClause(whereClauseProp.toString());
+            LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
 
-                // evaluate the database query
-                ICursor cursorProp = queryDefProp.evaluate();
-                
-                fields = (Fields) cursorProp.getFields();
-                List<String> obsProps = new ArrayList<String>();
-                while ((row = cursorProp.nextRow()) != null) {
-                    String obsPropID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
-                    if (! obsProps.contains(obsPropID)) {
-                        obsProps.add(obsPropID);
-                    }
+            // evaluate the database query
+            ICursor cursorProp = queryDefProp.evaluate();
+            
+            fields = (Fields) cursorProp.getFields();
+            List<String> obsProps = new ArrayList<String>();
+            while ((row = cursorProp.nextRow()) != null) {
+                String obsPropID = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+                if (! obsProps.contains(obsPropID)) {
+                    obsProps.add(obsPropID);
                 }
-                
-                // copy obsProps list to String Array:
-                String[] obsPropsArray = new String[obsProps.size()];
-                int i=0;
-                for (Iterator<String> iterator = obsProps.iterator(); iterator.hasNext();) {
-                    obsPropsArray[i] = (String) iterator.next();
-                    i++;
-                }
-                
-                offering.setObservedProperties(obsPropsArray);
             }
-            // no observations associated with this offering/procedure yet, so an empty String array is attached:
-            else {
-                offering.setObservedProperties(new String[0]);
+            
+            // copy obsProps list to String Array:
+            String[] obsPropsArray = new String[obsProps.size()];
+            int i=0;
+            for (Iterator<String> iterator = obsProps.iterator(); iterator.hasNext();) {
+                obsPropsArray[i++] = (String) iterator.next();
             }
+            
+            offering.setObservedProperties(obsPropsArray);
             
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // set envelope through feature positions
             
-            if (noObservationsForOffering == false) {
-                IQueryDef queryDefFoi = gdb.getWorkspace().createQueryDef();
-                
-                // set tables
-                List<String> tablesFoi = new ArrayList<String>();
-                tablesFoi.add(Table.FEATUREOFINTEREST);
-                tablesFoi.add(Table.OBSERVATION);
-                tablesFoi.add(Table.SAMPLINGPOINT);
-                tablesFoi.add(Table.STATION);
-                tablesFoi.add(Table.NETWORK);
-                queryDefFoi.setTables(gdb.createCommaSeparatedList(tablesFoi));
-                
-                // set sub fields
-                List<String> subFieldsFoi = new ArrayList<String>();
-                subFieldsFoi.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
-                queryDefFoi.setSubFields(gdb.createCommaSeparatedList(subFieldsFoi));
-                
-                // create the where clause with joins and constraints
-                StringBuilder whereClauseFoi = new StringBuilder();
-                whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
-                whereClauseFoi.append(" AND ");
-                whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
-                whereClauseFoi.append(" AND ");
-                whereClauseFoi.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
-                whereClauseFoi.append(" AND ");
-                whereClauseFoi.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
-                whereClauseFoi.append(" AND ");
-                whereClauseFoi.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
-                queryDefFoi.setWhereClause(whereClauseFoi.toString());
+            IQueryDef queryDefFoi = gdb.getWorkspace().createQueryDef();
+            
+            // set tables
+            List<String> tablesFoi = new ArrayList<String>();
+            tablesFoi.add(Table.FEATUREOFINTEREST);
+            tablesFoi.add(Table.OBSERVATION);
+            tablesFoi.add(Table.SAMPLINGPOINT);
+            tablesFoi.add(Table.STATION);
+            tablesFoi.add(Table.NETWORK);
+            queryDefFoi.setTables(gdb.createCommaSeparatedList(tablesFoi));
+            
+            // set sub fields
+            List<String> subFieldsFoi = new ArrayList<String>();
+            subFieldsFoi.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+            queryDefFoi.setSubFields(gdb.createCommaSeparatedList(subFieldsFoi));
+            
+            // create the where clause with joins and constraints
+            StringBuilder whereClauseFoi = new StringBuilder();
+            whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+            whereClauseFoi.append(" AND ");
+            whereClauseFoi.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
+            whereClauseFoi.append(" AND ");
+            whereClauseFoi.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
+            whereClauseFoi.append(" AND ");
+            whereClauseFoi.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
+            whereClauseFoi.append(" AND ");
+            whereClauseFoi.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
+            queryDefFoi.setWhereClause(whereClauseFoi.toString());
 //                LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
 
-                // evaluate the database query
-                ICursor cursorFoi = queryDefFoi.evaluate();
-                
-                List<Point> points = new ArrayList<Point>();
-                fields = (Fields) cursorFoi.getFields();
-                while ((row = cursorFoi.nextRow()) != null) {
-                    Object shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
-                    if (shape instanceof Point) {
-                        points.add((Point) shape);
-                    } else {
-                        throw new IllegalArgumentException("Could not cast a shape in offering " + offering.getId() + " to a Point");
-                    }
+            // evaluate the database query
+            ICursor cursorFoi = queryDefFoi.evaluate();
+            
+            List<Point> points = new ArrayList<Point>();
+            fields = (Fields) cursorFoi.getFields();
+            while ((row = cursorFoi.nextRow()) != null) {
+                Object shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+                if (shape instanceof Point) {
+                    points.add((Point) shape);
+                } else {
+                    throw new IllegalArgumentException("Could not cast a shape in offering " + offering.getId() + " to a Point");
                 }
-
-                Point[] pointArray = new Point[points.size()];
-                for (int i = 0; i < pointArray.length; i++) {
-                    pointArray[i] = points.get(i);
-                }
-
-                Envelope envelope = new Envelope();
-                envelope.defineFromPoints(pointArray);
-                offering.setObservedArea(envelope);
             }
-            // no observations associated with this offering/procedure yet, so an empty envelope is attached:
-            else {
-                Envelope envelope = new Envelope();
-                offering.setObservedArea(envelope);
+
+            Point[] pointArray = new Point[points.size()];
+            for (int j = 0; j < pointArray.length; j++) {
+                pointArray[j] = points.get(j);
             }
+
+            Envelope envelope = new Envelope();
+            envelope.defineFromPoints(pointArray);
+            offering.setObservedArea(envelope);
+            
         }
         
+        offerings.removeAll(offeringsWithoutObservations);
+        
+        LOGGER.info("Networks with observations: "+offerings.size());
         
         return offerings;
     }
