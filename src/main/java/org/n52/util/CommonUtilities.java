@@ -16,6 +16,7 @@
 package org.n52.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,6 +107,24 @@ public class CommonUtilities {
         out.flush();
         out.close();
     }
+	
+	public static File resolveCacheBaseDir() throws FileNotFoundException {
+		String res = CommonUtilities.class.getResource("").toExternalForm();
+		
+		String prefix = "jar:file:/";
+		if (res.startsWith(prefix)) {
+			String soeJarFile = res.substring(prefix.length(), res.indexOf(".jar!"));
+			String cachePath = soeJarFile.substring(0, soeJarFile.lastIndexOf("/"));
+			
+			File f = new File(cachePath);
+			
+			if (f.exists() && f.isDirectory()) {
+				return f;
+			}
+		}
+		
+		throw new FileNotFoundException("Could not resolve the cache directory.");
+	}
 	
 	/**
      * sends a POST-request using org.apache.commons.httpclient.HttpClient.

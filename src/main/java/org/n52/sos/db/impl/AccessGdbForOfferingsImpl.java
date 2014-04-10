@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimePeriod;
+import org.n52.sos.dataTypes.AGSEnvelope;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGdbForOfferings;
 import org.n52.util.logging.Logger;
@@ -272,7 +273,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
             Envelope envelope = new Envelope();
             envelope.defineFromPoints(pointArray);
-            offering.setObservedArea(envelope);
+            offering.setObservedArea(new AGSEnvelope(envelope));
             
         }
         
@@ -499,12 +500,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
     
                     Envelope envelope = new Envelope();
                     envelope.defineFromPoints(pointArray);
-                    offering.setObservedArea(envelope);
+                    offering.setObservedArea(new AGSEnvelope(envelope));
                 }
                 // no observations associated with this offering/procedure yet, so an empty envelope is attached:
                 else {
                     Envelope envelope = new Envelope();
-                    offering.setObservedArea(envelope);
+                    offering.setObservedArea(new AGSEnvelope(envelope));
                 }
             }
 

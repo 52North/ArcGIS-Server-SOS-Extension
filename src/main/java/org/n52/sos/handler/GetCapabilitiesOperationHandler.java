@@ -17,9 +17,12 @@ package org.n52.sos.handler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.n52.sos.cache.ObservationOfferingCache;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.db.AccessGDB;
@@ -81,7 +84,10 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 //        }
         
         ServiceDescription serviceDesc = geoDB.getServiceDescription();
-        Collection<ObservationOffering> obsOfferings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
+//        Collection<ObservationOffering> obsOfferings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
+        
+        Collection<ObservationOffering> obsOfferings = ObservationOfferingCache.instance().getEntityCollection().values();
+        
         
         String capabilitiesDocument = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDesc, obsOfferings, operationsMetadataProviders);
                 

@@ -33,6 +33,7 @@ import org.n52.ows.InvalidRequestException;
 import org.n52.ows.NoApplicableCodeException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
+import org.n52.sos.cache.CacheScheduler;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
@@ -103,6 +104,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     private int maximumRecordCount;
     
 	private List<OperationRequestHandler> operationHandlers;
+
+	private CacheScheduler cacheScheduler;
     
     /**
      * constructs a new server object extension
@@ -143,6 +146,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         this.mapServerDataAccess = null;
 
+        this.cacheScheduler.shutdown();
+        
         // TODO make sure all references are being cut.
     }
 
@@ -201,6 +206,11 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
         }
+        
+        /*
+         * initiate the cache
+         */
+        this.cacheScheduler = new CacheScheduler(geoDB);
     }
     
     private void resolveServiceProperties() {
