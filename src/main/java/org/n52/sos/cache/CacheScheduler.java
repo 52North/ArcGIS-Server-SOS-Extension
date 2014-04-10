@@ -47,8 +47,10 @@ public class CacheScheduler {
 		@Override
 		public void run() {
 			try {
+				LOGGER.info("update observation offerings cache...");
 				Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
 				ObservationOfferingCache.instance().storeEntityCollection(entities);
+				LOGGER.info("observation offerings cache updated!");
 			} catch (IOException e) {
 				LOGGER.warn(e.getMessage(), e);
 			} catch (CacheException e) {

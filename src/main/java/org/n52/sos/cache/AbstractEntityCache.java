@@ -30,8 +30,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.n52.util.CommonUtilities;
+import org.n52.util.logging.Logger;
 
 public abstract class AbstractEntityCache<T> {
+	
+	public Logger LOGGER = Logger.getLogger(AbstractEntityCache.class.getName());
 	
 	private File cacheFile;
 	private FileOutputStream fileStream;
@@ -103,6 +106,8 @@ public abstract class AbstractEntityCache<T> {
 			throw new CacheException(e);
 		}
 		
+		
+		LOGGER.info("storing cache to temporary file "+ tempCacheFile.getAbsolutePath());
 		for (String id : entities.keySet()) {
 			storeEntity(id, entities.get(id), this.fileStream);
 		}
@@ -116,6 +121,7 @@ public abstract class AbstractEntityCache<T> {
 		
 		synchronized (cacheFileMutex) {
 			try {
+				LOGGER.info("replacing target cache file "+ cacheFile.getAbsolutePath());
 				Files.copy(tempCacheFile.toPath(), this.cacheFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				tempCacheFile.delete();
 			} catch (IOException e) {
