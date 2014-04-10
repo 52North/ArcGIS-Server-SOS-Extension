@@ -16,7 +16,9 @@
 package org.n52.sos.cache;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,8 +36,24 @@ public class CacheScheduler {
 
 	public CacheScheduler(AccessGDB geoDB) {
 		this.geoDB = geoDB;
-		this.timer = new Timer();
-		this.timer.scheduleAtFixedRate(new UpdateCacheTask(), 0, PERIOD);
+		this.timer = new Timer(true);
+		
+		/*
+		 * now + 5 seconds
+		 */
+		this.timer.schedule(new UpdateCacheTask(), 5000);
+		
+		/*
+		 * every midnight
+		 */
+		Calendar c = new GregorianCalendar();
+		c.add(Calendar.DAY_OF_MONTH, 1);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		this.timer.scheduleAtFixedRate(new UpdateCacheTask(), c.getTime(), PERIOD * 24);
+		
+		LOGGER.info("Next scheduled cache update: "+c.getTime().toString());
 	}
 
 	public void shutdown() {
@@ -47,7 +65,7 @@ public class CacheScheduler {
 		@Override
 		public void run() {
 			try {
-				LOGGER.info("update observation offerings cache...");
+				LOGGER.info("update observation offerings cache... using thread "+ Thread.currentThread().getName());
 				Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
 				ObservationOfferingCache.instance().storeEntityCollection(entities);
 				LOGGER.info("observation offerings cache updated!");

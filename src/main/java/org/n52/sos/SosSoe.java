@@ -210,7 +210,9 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         /*
          * initiate the cache
          */
-        this.cacheScheduler = new CacheScheduler(geoDB);
+		cacheScheduler = new CacheScheduler(geoDB);				
+        
+        LOGGER.info("Construction of SOE finished.");
     }
     
     private void resolveServiceProperties() {
@@ -400,9 +402,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String operationInput,
             String outputFormat,
             String requestProperties,
-            String[] responseProperties) throws IOException, AutomationException
-    {
-//        LOGGER.info("Starting to handle REST request...");
+            String[] responseProperties) throws IOException, AutomationException {
+    	LOGGER.info("Starting to handle REST request...");
 //        LOGGER.info("capabilities: " + capabilities);
 //        LOGGER.info("resourceName: " + resourceName);
 //        LOGGER.info("operationName: " + operationName);
