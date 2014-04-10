@@ -185,4 +185,51 @@ public abstract class AbstractEntityCache<T> {
 			return cacheFile.exists() && cacheFile.length() > 0;
 		}
 	}
+	
+	public long lastUpdated() {
+		if (isCacheAvailable()) {
+			return cacheFile.lastModified();
+		}
+		return 0;
+	}
+	
+	public boolean requestUpdateLock() {
+		File f = getCacheLockFile();
+		
+		if (f != null && f.exists()) {
+			return false;
+		}
+		
+		try {
+			f.createNewFile();
+			return true;
+		} catch (IOException e) {
+			LOGGER.warn(e.getMessage(), e);
+			LOGGER.warn("Could not access cache lock file.");
+		}
+		
+		return false;
+	}
+	
+	public void freeUpdateLock() {
+		File f = getCacheLockFile();
+		
+		if (f != null && f.exists()) {
+			f.delete();
+		}
+	}
+	
+	public boolean isUpdateOngoing() {
+		File f = getCacheLockFile();
+		
+		if (f.exists()) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	private File getCacheLockFile() {
+		return new File(this.cacheFile.getParent(), this.cacheFile.getName()+".lock");
+	}
 }

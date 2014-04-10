@@ -15,6 +15,7 @@
  */
 package org.n52.sos.cache;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -31,6 +32,8 @@ public class CacheScheduler {
 	public Logger LOGGER = Logger.getLogger(CacheScheduler.class.getName());
 
 	private static final long PERIOD = 1000 * 60 * 60;
+
+	private static final long MINIMUM_UPDATE_DELTA = 1000 * 60 * 10;
 	private Timer timer;
 	private AccessGDB geoDB;
 
@@ -38,10 +41,21 @@ public class CacheScheduler {
 		this.geoDB = geoDB;
 		this.timer = new Timer(true);
 		
-		/*
-		 * now + 5 seconds
-		 */
-		this.timer.schedule(new UpdateCacheTask(), 5000);
+		try {
+			if (cacheUpdateRequired()) {
+				/*
+				 * now
+				 */
+				this.timer.schedule(new UpdateCacheTask(), 0);	
+			}
+			else {
+				LOGGER.info("No cache update required. Last update not longer ago than ms "+MINIMUM_UPDATE_DELTA);
+			}
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+			LOGGER.warn("could not initialize cache. disabling scheduled updates.");
+			return;
+		}
 		
 		/*
 		 * every midnight
@@ -56,8 +70,24 @@ public class CacheScheduler {
 		LOGGER.info("Next scheduled cache update: "+c.getTime().toString());
 	}
 
+	private boolean cacheUpdateRequired() throws FileNotFoundException {
+		if (ObservationOfferingCache.instance().isCacheAvailable()) {
+			long lastUpdated = ObservationOfferingCache.instance().lastUpdated();
+			
+			if (System.currentTimeMillis() - lastUpdated > MINIMUM_UPDATE_DELTA) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void shutdown() {
 		this.timer.cancel();
+		try {
+			ObservationOfferingCache.instance().freeUpdateLock();
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
 	}
 	
 	private class UpdateCacheTask extends TimerTask {
@@ -66,8 +96,19 @@ public class CacheScheduler {
 		public void run() {
 			try {
 				LOGGER.info("update observation offerings cache... using thread "+ Thread.currentThread().getName());
+				
+				ObservationOfferingCache ooc = ObservationOfferingCache.instance();
+				
+				if (!ooc.requestUpdateLock()) {
+					LOGGER.info("cache is currently already updating");
+					return;
+				}
+				
 				Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
-				ObservationOfferingCache.instance().storeEntityCollection(entities);
+				ooc.storeEntityCollection(entities);
+				
+				ooc.freeUpdateLock();
+				
 				LOGGER.info("observation offerings cache updated!");
 			} catch (IOException e) {
 				LOGGER.warn(e.getMessage(), e);

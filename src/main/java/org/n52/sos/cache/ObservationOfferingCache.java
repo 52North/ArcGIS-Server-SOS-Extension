@@ -108,4 +108,5 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 		return new ObservationOffering(id, name, props, proc, env, time);
 	}
 
+
 }
