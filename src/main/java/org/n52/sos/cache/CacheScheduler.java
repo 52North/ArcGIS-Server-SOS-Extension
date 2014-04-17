@@ -37,12 +37,12 @@ public class CacheScheduler {
 	private Timer timer;
 	private AccessGDB geoDB;
 
-	public CacheScheduler(AccessGDB geoDB) {
+	public CacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
 		this.geoDB = geoDB;
 		this.timer = new Timer(true);
 		
 		try {
-			if (cacheUpdateRequired()) {
+			if (updateCacheOnStartup && cacheUpdateRequired()) {
 				/*
 				 * now
 				 */

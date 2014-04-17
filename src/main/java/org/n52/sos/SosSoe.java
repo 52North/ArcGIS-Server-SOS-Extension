@@ -106,6 +106,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 	private List<OperationRequestHandler> operationHandlers;
 
 	private CacheScheduler cacheScheduler;
+
+	private boolean updateCacheOnStartup;
     
     /**
      * constructs a new server object extension
@@ -190,6 +192,12 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             this.sosContactPersonCountry = (String) propertySet.getProperty("contactPersonCountry");
             this.sosContactPersonEmail = (String) propertySet.getProperty("contactPersonEmail");
             
+            Object updateCache = propertySet.getProperty("updateCacheOnStartup");
+            if (updateCache != null) {
+            	this.updateCacheOnStartup = Boolean.parseBoolean(updateCache.toString());
+            }
+            LOGGER.info("Update cache on startup? "+ this.updateCacheOnStartup);
+            
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
@@ -210,7 +218,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         /*
          * initiate the cache
          */
-		cacheScheduler = new CacheScheduler(geoDB);				
+		cacheScheduler = new CacheScheduler(geoDB, this.updateCacheOnStartup);				
         
         LOGGER.info("Construction of SOE finished.");
     }
@@ -816,6 +824,11 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     {
         return sosContactPersonEmail;
     }
+
+	public boolean isUpdateCacheOnStartup() {
+		return updateCacheOnStartup;
+	}
+    
     
 }
 
