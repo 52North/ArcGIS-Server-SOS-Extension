@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -26,6 +27,7 @@ import java.util.Scanner;
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.sos.dataTypes.EnvelopeWrapper;
 import org.n52.sos.dataTypes.ObservationOffering;
+import org.n52.sos.db.AccessGDB;
 
 public class ObservationOfferingCache extends AbstractEntityCache<ObservationOffering> {
 
@@ -106,6 +108,18 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 		ITimePeriod time = TimePeriodEncoder.decode(values[5]);
 		
 		return new ObservationOffering(id, name, props, proc, env, time);
+	}
+
+	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
+		if (!instance.requestUpdateLock()) {
+			LOGGER.info("cache is currently already updating");
+			return;
+		}
+		
+		Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
+		instance.storeEntityCollection(entities);
+		
+		instance.freeUpdateLock();		
 	}
 
 

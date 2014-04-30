@@ -18,12 +18,10 @@ package org.n52.sos.cache;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.logging.Logger;
 
@@ -99,15 +97,7 @@ public class CacheScheduler {
 				
 				ObservationOfferingCache ooc = ObservationOfferingCache.instance();
 				
-				if (!ooc.requestUpdateLock()) {
-					LOGGER.info("cache is currently already updating");
-					return;
-				}
-				
-				Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
-				ooc.storeEntityCollection(entities);
-				
-				ooc.freeUpdateLock();
+				ooc.updateCache(geoDB);
 				
 				LOGGER.info("observation offerings cache updated!");
 			} catch (IOException e) {

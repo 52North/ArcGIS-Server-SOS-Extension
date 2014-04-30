@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
@@ -67,6 +68,8 @@ public abstract class AbstractEntityCache<T> {
 	protected abstract Map<String, T> deserializeEntityCollection(FileInputStream fis);
 	
 	protected abstract T deserializeEntity(String line);
+	
+	public abstract void updateCache(AccessGDB geoDB) throws CacheException, IOException;
 	
 	public synchronized void storeEntity(String id, T entity, FileOutputStream fos) throws CacheException {
 		StringBuilder sb = new StringBuilder();
@@ -139,9 +142,22 @@ public abstract class AbstractEntityCache<T> {
 	}
 	
 	public Map<String, T> getEntityCollection() throws CacheException {
+		return getEntityCollection(null);
+	}
+	
+	public Map<String, T> getEntityCollection(AccessGDB geoDB) throws CacheException {
 		synchronized (cacheFileMutex) {
-			if (this.cacheFile == null) {
-				return Collections.emptyMap();
+			if (this.cacheFile == null || !this.isCacheAvailable()) {
+				if (geoDB != null) {
+					try {
+						updateCache(geoDB);
+					} catch (IOException e) {
+						throw new CacheException(e);
+					}
+				}
+				else {
+					return Collections.emptyMap();
+				}
 			}
 			
 			try {
