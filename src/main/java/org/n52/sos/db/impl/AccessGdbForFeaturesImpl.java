@@ -121,7 +121,8 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         	tables.add(Table.PROPERTY);        	
         }
         
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        String tableList = gdb.createCommaSeparatedList(tables);
+        queryDef.setTables(tableList);
         
         // Log out the query clause
         LOGGER.info("FROM " + queryDef.getTables());
@@ -188,6 +189,11 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         // Log out the query clause
         LOGGER.info("WHERE " + queryDef.getWhereClause());
 
+        /*
+         * check for exceeding the size limit
+         */
+        DatabaseUtils.assertMaximumRecordCount(tableList, whereClause.toString(), gdb);
+        
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
 

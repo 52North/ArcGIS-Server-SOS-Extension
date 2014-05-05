@@ -148,10 +148,8 @@ public class JSONEncoder {
 
         try {
             if (!o.getObservedArea().isEmpty()) {
-                json.put("observedarea", ServerUtilities.getJSONFromEnvelope(o.getObservedArea()));
+                json.put("observedarea", o.getObservedArea().toJSON());
             }
-        } catch (AutomationException e) {
-            LOGGER.warn(e.getMessage(), e);
         } catch (IOException e) {
         	LOGGER.warn(e.getMessage(), e);
         }

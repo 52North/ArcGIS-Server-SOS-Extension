@@ -37,6 +37,7 @@
 						<contactPersonPostalCode>48155</contactPersonPostalCode>
 						<contactPersonCountry>Germany</contactPersonCountry>
 						<contactPersonEmail>broering@52north.org</contactPersonEmail>
+						<updateCacheOnStartup>false</updateCacheOnStartup>
 					</Properties>
 					<Info>
 						<DefaultWebCapabilities />

@@ -17,6 +17,7 @@ package org.n52.sos.db.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -285,6 +286,10 @@ public class AccessGDBImpl implements AccessGDB {
         }
         return sb.substring(0, sb.length() - 1);
     }
+    
+    protected String createCommaSeparatedList(String... list) {
+    	return createCommaSeparatedList(Arrays.asList(list));
+    }
 
     /**
      * This method creates an or-clause out of a given field and a list of
@@ -378,6 +383,16 @@ public class AccessGDBImpl implements AccessGDB {
      */
     protected String join(String table1, String field1, String table2, String field2) {
     	return concatTableAndField(table1, field1) + " = " + concatTableAndField(table2, field2);
+    }
+    
+    protected String innerJoin(String table1, String field1, String table2, String field2) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("INNER JOIN ");
+    	sb.append(table2);
+    	sb.append(" ON ");
+    	sb.append(join(table1, field1, table2, field2));
+    	
+    	return sb.toString();
     }
 
     /**

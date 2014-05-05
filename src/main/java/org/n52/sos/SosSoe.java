@@ -33,6 +33,7 @@ import org.n52.ows.InvalidRequestException;
 import org.n52.ows.NoApplicableCodeException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
+import org.n52.sos.cache.CacheScheduler;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
@@ -103,6 +104,10 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     private int maximumRecordCount;
     
 	private List<OperationRequestHandler> operationHandlers;
+
+	private CacheScheduler cacheScheduler;
+
+	private boolean updateCacheOnStartup;
     
     /**
      * constructs a new server object extension
@@ -143,6 +148,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
         this.mapServerDataAccess = null;
 
+        this.cacheScheduler.shutdown();
+        
         // TODO make sure all references are being cut.
     }
 
@@ -185,6 +192,12 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             this.sosContactPersonCountry = (String) propertySet.getProperty("contactPersonCountry");
             this.sosContactPersonEmail = (String) propertySet.getProperty("contactPersonEmail");
             
+            Object updateCache = propertySet.getProperty("updateCacheOnStartup");
+            if (updateCache != null) {
+            	this.updateCacheOnStartup = Boolean.parseBoolean(updateCache.toString());
+            }
+            LOGGER.info("Update cache on startup? "+ this.updateCacheOnStartup);
+            
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
@@ -201,6 +214,13 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             LOGGER.severe("There was a problem while creating DB access: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
         }
+        
+        /*
+         * initiate the cache
+         */
+		cacheScheduler = new CacheScheduler(geoDB, this.updateCacheOnStartup);				
+        
+        LOGGER.info("Construction of SOE finished.");
     }
     
     private void resolveServiceProperties() {
@@ -390,9 +410,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String operationInput,
             String outputFormat,
             String requestProperties,
-            String[] responseProperties) throws IOException, AutomationException
-    {
-//        LOGGER.info("Starting to handle REST request...");
+            String[] responseProperties) throws IOException, AutomationException {
+    	LOGGER.info("Starting to handle REST request...");
 //        LOGGER.info("capabilities: " + capabilities);
 //        LOGGER.info("resourceName: " + resourceName);
 //        LOGGER.info("operationName: " + operationName);
@@ -805,6 +824,11 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     {
         return sosContactPersonEmail;
     }
+
+	public boolean isUpdateCacheOnStartup() {
+		return updateCacheOnStartup;
+	}
+    
     
 }
 

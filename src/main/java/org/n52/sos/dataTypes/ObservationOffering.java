@@ -17,7 +17,6 @@ package org.n52.sos.dataTypes;
 
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 
-import com.esri.arcgis.geometry.Envelope;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -47,7 +46,7 @@ public class ObservationOffering {
     /**
      * the envelope (e.g., a bbox) containing all features associated with this observation offering.
      */
-    private Envelope observedArea;
+    private EnvelopeWrapper observedArea;
     
     /**
      * the time extent containing all observation timestamps.
@@ -62,7 +61,7 @@ public class ObservationOffering {
      * @param observedArea
      * @param timeExtent
      */
-    public ObservationOffering(String id, String name, String[] observedProperties, String procedureIdentifier, Envelope observedArea, ITimePeriod timeExtent) {
+    public ObservationOffering(String id, String name, String[] observedProperties, String procedureIdentifier, EnvelopeWrapper observedArea, ITimePeriod timeExtent) {
         this.id = id;
         this.name = name;
         this.observedProperties = observedProperties;
@@ -91,7 +90,7 @@ public class ObservationOffering {
         return procedureIdentifier;
     }
 
-    public Envelope getObservedArea()
+    public EnvelopeWrapper getObservedArea()
     {
         return observedArea;
     }
@@ -106,7 +105,7 @@ public class ObservationOffering {
         this.observedProperties = observedProperties;
     }
 
-    public void setObservedArea(Envelope observedArea)
+    public void setObservedArea(EnvelopeWrapper observedArea)
     {
         this.observedArea = observedArea;
     }

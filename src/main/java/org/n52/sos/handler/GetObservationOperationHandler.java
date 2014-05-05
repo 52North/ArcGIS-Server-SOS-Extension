@@ -15,6 +15,10 @@
  */
 package org.n52.sos.handler;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -126,6 +130,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         
         return result.getBytes("utf-8");
     }
+
 
 	private String createTemporalFilter(JSONObject inputObject)
 			throws InvalidParameterValueException {

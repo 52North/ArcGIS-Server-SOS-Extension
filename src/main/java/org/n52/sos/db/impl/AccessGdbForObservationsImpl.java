@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import java.util.TimeZone;
 import org.n52.gml.Identifier;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
-import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.Constants;
@@ -40,7 +38,6 @@ import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -62,10 +59,9 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      */
     public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws Exception
     {
-        return getObservations(
-        		gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID), observationIdentifiers),
-        		false
-        		);
+        return getObservations(gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION,
+        		SubField.OBSERVATION_ID), observationIdentifiers),
+        		true);
     }
 
     /**
@@ -168,10 +164,11 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         List<String> subFields = createSubFieldsForQuery();
         
         if (checkForMaxRecords) {
-        	assertMaximumRecordCount(tables, whereClause);
+        	DatabaseUtils.assertMaximumRecordCount(tables, whereClause, gdb);
         }
         
-        ICursor cursor = evaluateQuery(tables, whereClause, " DISTINCT " + gdb.createCommaSeparatedList(subFields));
+        ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
+        		" DISTINCT " + gdb.createCommaSeparatedList(subFields), gdb);
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
@@ -194,43 +191,6 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         return idObsMap;
     }
 
-	private void assertMaximumRecordCount(String tables, String whereClause) throws ResponseExceedsSizeLimitException {
-		try {
-			ICursor countCursor = evaluateQuery(tables, whereClause, "count(*)");
-			IRow row;
-			if ((row = countCursor.nextRow()) != null) {
-				Object value = row.getValue(0);
-				if (value != null && value instanceof Integer) {
-					if ((int) value > gdb.getMaxNumberOfResults()) {
-						throw new ResponseExceedsSizeLimitException(gdb.getMaxNumberOfResults());
-					}
-				}
-			}
-		} catch (AutomationException e) {
-			LOGGER.warn(e.getMessage(), e);
-		} catch (IOException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}		
-	}
-	
-	private ICursor evaluateQuery(String tables, String whereClause, String subFields) 
-			throws IOException, AutomationException
-	{
-		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-
-        queryDef.setSubFields(subFields);
-       	LOGGER.debug("SELECT " + queryDef.getSubFields());
-       	
-        queryDef.setTables(tables);
-       	LOGGER.debug("FROM " + queryDef.getTables());
-
-        queryDef.setWhereClause(whereClause);
-       	LOGGER.debug("WHERE " + queryDef.getWhereClause());
-
-        // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
-		return cursor;
-	}
 
 	private List<String> createSubFieldsForQuery() {
 		List<String> subFields = new ArrayList<String>();
