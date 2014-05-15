@@ -274,11 +274,6 @@
 		</profile>
 		<profile>
 			<id>create-sos-soe-EEA</id>
-			<activation>
-				<property>
-					<name>disable-sos-soe-EEA</name>
-				</property>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>
@@ -299,16 +294,15 @@
 						</executions>
 					</plugin>
 				</plugins>
-				<finalName>${soe.name}</finalName>
 			</build>
 			<properties>
 				<soe.tmp.target>${project.build.directory}/soe-temp</soe.tmp.target>
-				<soe.name>52nArcGisSos</soe.name>
+				<soe.name>52nArcGisSosSoe2</soe.name>
 				<soe.config.xml>Config_EEA.xml</soe.config.xml>
 				<extension.library>${project.build.finalName}.${project.packaging}</extension.library>
-				<extension.class>org.n52.sos.SOSExtension</extension.class>
+				<extension.class>org.n52.sos.SosSoe</extension.class>
 				<extension.id>${extension.class}</extension.id>
-				<extension.displayName>SOS</extension.displayName>
+				<extension.displayName>SOS-SOE</extension.displayName>
 				<extension.description>${project.description}</extension.description>
 				<maven.build.timestamp.format>yyyy-MM-dd_HH:mm</maven.build.timestamp.format>
 				<TIME>${maven.build.timestamp}</TIME>
@@ -318,11 +312,6 @@
 		</profile>
 		<profile>
 			<id>create-analyzer-soe</id>
-			<activation>
-				<property>
-					<name>disable-sos-soe</name>
-				</property>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>
