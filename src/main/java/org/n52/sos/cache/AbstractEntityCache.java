@@ -42,6 +42,10 @@ public abstract class AbstractEntityCache<T> {
 	private Object cacheFileMutex = new Object();
 	
 	public AbstractEntityCache() throws FileNotFoundException {
+		initializeCacheFile();
+	}
+
+	protected void initializeCacheFile() throws FileNotFoundException {
 		File baseDir = CommonUtilities.resolveCacheBaseDir();
 		
 		synchronized (cacheFileMutex) {
@@ -150,6 +154,7 @@ public abstract class AbstractEntityCache<T> {
 			if (this.cacheFile == null || !this.isCacheAvailable()) {
 				if (geoDB != null) {
 					try {
+						initializeCacheFile();
 						updateCache(geoDB);
 					} catch (IOException e) {
 						throw new CacheException(e);
@@ -198,12 +203,18 @@ public abstract class AbstractEntityCache<T> {
 	
 	public boolean isCacheAvailable() {
 		synchronized (cacheFileMutex) {
+			return cacheFile.exists();
+		}
+	}
+	
+	public boolean hasCacheContent() {
+		synchronized (cacheFileMutex) {
 			return cacheFile.exists() && cacheFile.length() > 0;
 		}
 	}
 	
 	public long lastUpdated() {
-		if (isCacheAvailable()) {
+		if (isCacheAvailable() && hasCacheContent()) {
 			return cacheFile.lastModified();
 		}
 		return 0;
