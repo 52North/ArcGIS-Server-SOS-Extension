@@ -116,7 +116,10 @@ public class OGCFeatureEncoder extends AbstractEncoder {
 				}
             }
             else {
-            	replace(featureString, FEATURE_GEOMETRY, "");
+            	/*
+            	 * TODO resolve Feature Geometry via referenced Stations
+            	 */
+            	replace(featureString, FEATURE_GEOMETRY, "<sams:shape />");
             }
             
             if (feature.getSampledFeature() != null) {
