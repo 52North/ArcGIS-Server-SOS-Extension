@@ -282,6 +282,28 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
          */
         DatabaseUtils.assertMaximumRecordCount(tableList, whereClause.toString(), gdb);
         
+        boolean shapeFromStations = false;
+		/*
+         * WORKAROUND for missing geometries/shapes
+         */
+        if (this.gdb.isResolveGeometriesFromStations()) {
+        	StringBuilder isNullWhereClause = new StringBuilder();
+        	isNullWhereClause.append(" AND ");
+        	isNullWhereClause.append(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+        	isNullWhereClause.append(" IS NULL");
+        	
+        	int count = DatabaseUtils.resolveRecordCount(queryDef.getTables(),
+        			whereClause.toString().concat(isNullWhereClause.toString()),
+        			gdb);
+        	
+        	if (count > 0) {
+        		subFields.remove(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+        		subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_SHAPE));
+        		queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        		shapeFromStations = true;
+        	}
+        }
+        
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();
 
@@ -292,7 +314,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         int count = 0;
         while ((row = cursor.nextRow()) != null && count < gdb.getMaxNumberOfResults()) {
             count++;
-            Feature feature = createFeature(row, fields);
+            Feature feature = createFeature(row, fields, shapeFromStations);
             features.add(feature);
         }
 
@@ -306,7 +328,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     /**
      * This method creates a {@link AQDSample} of a given {@link IRow} and it's {@link Fields}
      */
-    protected AQDSample createFeature(IRow row, Fields fields) throws AutomationException, IOException, URISyntaxException
+    protected AQDSample createFeature(IRow row, Fields fields, boolean shapeFromStations) throws AutomationException, IOException, URISyntaxException
     {	
         // gml identifier
         String gmlId = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
@@ -323,7 +345,14 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         
         // shape
         Point point = null;
-        Object shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+        Object shape;
+		if (!shapeFromStations) {
+        	shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+        }
+        else {
+        	shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.STATION, SubField.STATION_SHAPE)));
+        }
+        
         if (shape instanceof Point) {
             point = (Point) shape;
         } else {

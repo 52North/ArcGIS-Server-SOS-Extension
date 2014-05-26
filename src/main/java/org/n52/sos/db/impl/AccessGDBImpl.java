@@ -503,6 +503,11 @@ public class AccessGDBImpl implements AccessGDB {
         }
         return featureAsString;
     }
+
+    @Override
+	public boolean isResolveGeometriesFromStations() {
+		return true;
+	}
     
     
 }

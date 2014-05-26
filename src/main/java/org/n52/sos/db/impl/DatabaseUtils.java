@@ -33,6 +33,16 @@ public class DatabaseUtils {
 	public static void assertMaximumRecordCount(String tables,
 			String whereClause, AccessGDBImpl geoDB)
 			throws ResponseExceedsSizeLimitException {
+		int value = resolveRecordCount(tables, whereClause, geoDB);
+		
+		if (value > geoDB.getMaxNumberOfResults()) {
+			throw new ResponseExceedsSizeLimitException(
+					geoDB.getMaxNumberOfResults());
+		}
+	}
+	
+	public static int resolveRecordCount(String tables,
+			String whereClause, AccessGDBImpl geoDB) {
 		try {
 			ICursor countCursor = evaluateQuery(tables, whereClause,
 					"count(*)", geoDB);
@@ -40,10 +50,7 @@ public class DatabaseUtils {
 			if ((row = countCursor.nextRow()) != null) {
 				Object value = row.getValue(0);
 				if (value != null && value instanceof Integer) {
-					if ((int) value > geoDB.getMaxNumberOfResults()) {
-						throw new ResponseExceedsSizeLimitException(
-								geoDB.getMaxNumberOfResults());
-					}
+					return (int) value;
 				}
 			}
 		} catch (AutomationException e) {
@@ -51,6 +58,8 @@ public class DatabaseUtils {
 		} catch (IOException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
+		
+		return 0;
 	}
 
 	public static ICursor evaluateQuery(String tables, String whereClause,
