@@ -151,7 +151,7 @@ public abstract class AbstractEntityCache<T> {
 	
 	public Map<String, T> getEntityCollection(AccessGDB geoDB) throws CacheException {
 		synchronized (cacheFileMutex) {
-			if (this.cacheFile == null || !this.isCacheAvailable()) {
+			if (this.cacheFile == null || !(this.isCacheAvailable() && this.hasCacheContent())) {
 				if (geoDB != null) {
 					try {
 						initializeCacheFile();
@@ -161,6 +161,7 @@ public abstract class AbstractEntityCache<T> {
 					}
 				}
 				else {
+					LOGGER.warn("Could not access or create the cache file: "+getCacheFileName());
 					return Collections.emptyMap();
 				}
 			}
