@@ -300,6 +300,12 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         		subFields.remove(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
         		subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_SHAPE));
         		queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        		
+        		//add station table - might not be there
+        		tables.add(Table.STATION);
+        		tableList = gdb.createCommaSeparatedList(tables);
+				queryDef.setTables(tableList);
+        		
         		shapeFromStations = true;
         	}
         }
