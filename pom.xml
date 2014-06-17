@@ -60,10 +60,18 @@
 		</mailingList>
 	</mailingLists>
 
-	<scm>
-		<connection>git@github.com:52North/ArcGIS-Server-SOS-Extension.git</connection>
-		<url>https://github.com/52North/ArcGIS-Server-SOS-Extension</url>
-	</scm>
+    <scm>
+        <!-- Specification of the Source-Content-Managmentsystem -->
+        <connection>
+            scm:git:git://github.com/52North/ArcGIS-Server-SOS-Extension.git
+        </connection>
+        <developerConnection>
+            scm:git:git://github.com/52North/ArcGIS-Server-SOS-Extension.git
+        </developerConnection>
+        <url>
+            https://github.com/52North/ArcGIS-Server-SOS-Extension.git
+        </url>
+    </scm>
 
 	<issueManagement>
 		<url>https://github.com/52North/ArcGIS-Server-SOS-Extension/issues</url>
@@ -150,6 +158,19 @@
 							<goal>check</goal>
 						</goals>
 					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.3</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					 </execution>
 				</executions>
 			</plugin>
 		</plugins>
