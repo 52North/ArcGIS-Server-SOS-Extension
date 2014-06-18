@@ -69,10 +69,16 @@ public class CacheScheduler {
 	}
 
 	private boolean cacheUpdateRequired() throws FileNotFoundException {
-		if (ObservationOfferingCache.instance().isCacheAvailable()) {
-			long lastUpdated = ObservationOfferingCache.instance().lastUpdated();
-			
-			if (System.currentTimeMillis() - lastUpdated > MINIMUM_UPDATE_DELTA) {
+		ObservationOfferingCache obsCache = ObservationOfferingCache.instance();
+		if (obsCache.isCacheAvailable()) {
+			if (obsCache.hasCacheContent()) {
+				long lastUpdated = ObservationOfferingCache.instance().lastUpdated();
+				
+				if (System.currentTimeMillis() - lastUpdated > MINIMUM_UPDATE_DELTA) {
+					return true;
+				}	
+			}
+			else {
 				return true;
 			}
 		}

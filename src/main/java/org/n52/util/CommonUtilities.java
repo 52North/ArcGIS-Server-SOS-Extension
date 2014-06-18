@@ -26,13 +26,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.n52.util.logging.Logger;
 
 
 /**
@@ -42,6 +42,7 @@ public class CommonUtilities {
     
     public static final String NEW_LINE_CHAR = System.getProperty("line.separator");
 	private static final String TAB_CHAR = "\t";
+	private static final Logger logger = Logger.getLogger(CommonUtilities.class.getName());
 
 
 	/**
@@ -118,9 +119,24 @@ public class CommonUtilities {
 			
 			File f = new File(cachePath);
 			
-			if (f.exists() && f.isDirectory()) {
-				return f;
+			synchronized (CommonUtilities.class) {
+				if (f.exists() && f.isDirectory()) {
+					File parent = f.getParentFile().getParentFile();
+					File sosSoeCache = new File(parent, "sos-soe-cache");
+					if (sosSoeCache != null) {
+						logger.info("Cache base dir: "+ sosSoeCache.getAbsolutePath());
+						if (!sosSoeCache.exists() && sosSoeCache.mkdir()) {
+							return sosSoeCache;
+						}
+						else {
+							if (sosSoeCache.isDirectory()) {
+								return sosSoeCache;
+							}
+						}
+					}
+				}	
 			}
+			
 		}
 		
 		throw new FileNotFoundException("Could not resolve the cache directory.");
