@@ -17,7 +17,6 @@ package org.n52.sos.encoder;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.n52.sos.Constants;
@@ -26,7 +25,6 @@ import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.sos.handler.capabilities.OperationsMetadataProvider;
 import org.n52.util.CommonUtilities;
-import org.n52.util.logging.Logger;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -80,11 +78,10 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
         replace(templateCapabilites, SERVICE_DESCRIPTION, sd.getDescription());
         
         String[] keywordArray = sd.getKeywordArray();
-        String keywordElement = "<ows:Keywords>";
+        String keywordElement = "";
         for (int i = 0; i < keywordArray.length; i++) {
             keywordElement += "<ows:Keyword>" + keywordArray[i].trim() + "</ows:Keyword>";
         }
-        keywordElement += "</ows:Keywords>";
         replace(templateCapabilites, SERVICE_KEYWORDS, keywordElement);
         
         replace(templateCapabilites, PROVIDER_NAME, sd.getProviderName());

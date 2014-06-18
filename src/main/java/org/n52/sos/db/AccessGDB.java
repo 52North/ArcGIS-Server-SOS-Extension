@@ -36,4 +36,11 @@ public interface AccessGDB {
 
 	ServiceDescription getServiceDescription() throws IOException;
 
+
+	/**
+	 * @return true, if geometries of features should be resolved via
+	 * associated stations if they are missing
+	 */
+	boolean isResolveGeometriesFromStations();
+
 }
