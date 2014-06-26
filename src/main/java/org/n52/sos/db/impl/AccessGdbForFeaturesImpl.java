@@ -120,6 +120,13 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         		throw new InvalidParameterValueException("The parameter 'PROCEDURE' can either contain NETWORK identifiers or PROCEDURE resource identifiers. A mix is unsupported.");
         	}
         	
+        	if (proceduresWhichAreNetworks.size() == 0 && proceduresWhichAreProcedures.size() == 0) {
+        		/*
+        		 * this filter does not match, the query will return 0 elements
+        		 */
+        		return features;
+        	}
+        	
         	if (proceduresWhichAreProcedures.size() > 0) {
         		subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         	}
