@@ -134,11 +134,6 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         
         queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
         
-		// Log out the query clause
-        LOGGER.info("SELECT " + queryDef.getSubFields());
-
-
-        
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.FEATUREOFINTEREST);
@@ -162,9 +157,6 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         
         String tableList = gdb.createCommaSeparatedList(tables);
         queryDef.setTables(tableList);
-        
-        // Log out the query clause
-        LOGGER.info("FROM " + queryDef.getTables());
         
         
         // create the where clause with joins and constraints
@@ -274,9 +266,6 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
 
         queryDef.setWhereClause(whereClause.toString());
 
-        // Log out the query clause
-        LOGGER.info("WHERE " + queryDef.getWhereClause());
-
         /*
          * check for exceeding the size limit
          */
@@ -301,14 +290,25 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         		subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_SHAPE));
         		queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
         		
-        		//add station table - might not be there
-        		tables.add(Table.STATION);
-        		tableList = gdb.createCommaSeparatedList(tables);
-				queryDef.setTables(tableList);
+        		if (!tables.contains(Table.STATION)) {
+            		//add station table - might not be there
+            		tables.add(Table.STATION);
+            		tableList = gdb.createCommaSeparatedList(tables);
+    				queryDef.setTables(tableList);        			
+        		}
         		
         		shapeFromStations = true;
         	}
         }
+   
+		// Log out the query clause
+        LOGGER.info("SELECT " + queryDef.getSubFields());
+        
+        // Log out the query clause
+        LOGGER.info("FROM " + queryDef.getTables());
+        
+        // Log out the query clause
+        LOGGER.info("WHERE " + queryDef.getWhereClause());
         
         // evaluate the database query
         ICursor cursor = queryDef.evaluate();

@@ -15,10 +15,6 @@
  */
 package org.n52.sos.handler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +101,8 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         	aggregationTypes = inputObject.getString(AGGREGATION_TYPE).split(",");
         }
         else {
-        	aggregationTypes = new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE};
+        	aggregationTypes = new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE,
+        			Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_ALT};
         }
         
         
@@ -156,7 +153,7 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 		return temporalFilter;
 	}
 
-    private String constructInvokedURL(String[] offerings,
+    protected String constructInvokedURL(String[] offerings,
 			String[] featuresOfInterest, String[] observedProperties,
 			String[] procedures, String spatialFilter, String temporalFilter, String responseFormat) {
         StringBuilder invokedURL = new StringBuilder(this.sosUrlExtension);
