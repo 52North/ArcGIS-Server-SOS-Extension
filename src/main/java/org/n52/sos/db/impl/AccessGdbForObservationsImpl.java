@@ -48,6 +48,10 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
     static Logger LOGGER = Logger.getLogger(AccessGdbForObservationsImpl.class.getName());
 
+    static String[][] aggregationTypesCandidates = new String[][] {
+			new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE, Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_ALT},
+			new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_SECOND, Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_SECOND_ALT}};
+    
     private AccessGDBImpl gdb;
 
     public AccessGdbForObservationsImpl(AccessGDBImpl accessGDB) {
@@ -59,8 +63,8 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      */
     public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws Exception
     {
-        return getObservations(gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION,
-        		SubField.OBSERVATION_ID), observationIdentifiers),
+        return getObservations(new StringBuilder(gdb.createOrClause(gdb.concatTableAndField(Table.OBSERVATION,
+        		SubField.OBSERVATION_ID), observationIdentifiers)), null,
         		true);
     }
 
@@ -137,33 +141,43 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             whereClauseParameterAppend.append(createTemporalClauseSDE(temporalFilter));
         }
         
-        // build query for aggregation type
-        if (aggregationTypes != null) {
-        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
-            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
-        }
-        
         // build query for the where clause
         if (where != null) {
         	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
             whereClauseParameterAppend.append(where);
         }
 
-        return getObservations(whereClauseParameterAppend.toString(), true);
+        return getObservations(whereClauseParameterAppend, aggregationTypes, true);
     }
 
     
     /**
      * This method serves as a skeleton for the other 2 methods above and
      * expects a WHERE clause that parameterizes the database query.
+     * @param aggregationTypes 
      */
-    private Map<String, MultiValueObservation> getObservations(String whereClause, boolean checkForMaxRecords) throws Exception
+    private Map<String, MultiValueObservation> getObservations(StringBuilder whereClauseParameterAppend, String[] aggregationTypes, boolean checkForMaxRecords) throws Exception
     {
         String tables = createFromClause();
 
         List<String> subFields = createSubFieldsForQuery();
         
-        if (checkForMaxRecords) {
+        /*
+         * if there are values for aggregationTypes, then it
+         * is defined via the request. otherwise try the default
+         * values
+         */
+        boolean alreadyAssertedMaxRecords = false;
+        if (aggregationTypes != null) {
+        	ifIsFirstAppendAND(whereClauseParameterAppend, whereClauseParameterAppend.toString().trim().isEmpty());
+            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
+        }
+        else {
+        	alreadyAssertedMaxRecords = determineBestAggregationType(whereClauseParameterAppend, tables, checkForMaxRecords);
+        }
+        
+        String whereClause = whereClauseParameterAppend.toString();
+        if (checkForMaxRecords && !alreadyAssertedMaxRecords) {
         	DatabaseUtils.assertMaximumRecordCount(tables, whereClause, gdb);
         }
         
@@ -191,6 +205,26 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         return idObsMap;
     }
 
+
+	private boolean determineBestAggregationType(
+			StringBuilder whereClauseParameterAppend, String tables, boolean checkForMaxRecords) {
+		int lengthBefore = whereClauseParameterAppend.length();
+        
+		int c;
+		for (String[] aggregationTypes : aggregationTypesCandidates) {
+        	ifIsFirstAppendAND(whereClauseParameterAppend, whereClauseParameterAppend.toString().trim().isEmpty());
+            whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
+            
+            c = DatabaseUtils.resolveRecordCount(tables, whereClauseParameterAppend.toString(), gdb);
+            if (c > 0 && (!checkForMaxRecords || c < gdb.getMaxNumberOfResults())) {
+            	return true;
+            }
+            
+            whereClauseParameterAppend.setLength(lengthBefore);
+        }
+		
+		return false;
+	}
 
 	private List<String> createSubFieldsForQuery() {
 		List<String> subFields = new ArrayList<String>();

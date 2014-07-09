@@ -100,11 +100,6 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
         if (inputObject.has(AGGREGATION_TYPE)) {
         	aggregationTypes = inputObject.getString(AGGREGATION_TYPE).split(",");
         }
-        else {
-        	aggregationTypes = new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE,
-        			Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_ALT};
-        }
-        
         
         String result;
            
