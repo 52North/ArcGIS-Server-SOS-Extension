@@ -29,8 +29,8 @@ public class ResponseExceedsSizeLimitException extends ExceptionReport {
 		super(CODE, TEXT);
 	}
 	
-	public ResponseExceedsSizeLimitException(int currentMaxCount) {
-		super(CODE, TEXT.concat(" The current maximum record count is set to "+currentMaxCount));
+	public ResponseExceedsSizeLimitException(int currentMaxCount, int actualValue) {
+		super(CODE, TEXT.concat(" The current maximum record count is set to "+currentMaxCount+"; the resulting value would have been "+actualValue));
 	}
 
 }

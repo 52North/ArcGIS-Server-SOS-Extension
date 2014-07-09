@@ -30,15 +30,17 @@ public class DatabaseUtils {
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtils.class
 			.getName());
 
-	public static void assertMaximumRecordCount(String tables,
+	public static int assertMaximumRecordCount(String tables,
 			String whereClause, AccessGDBImpl geoDB)
 			throws ResponseExceedsSizeLimitException {
 		int value = resolveRecordCount(tables, whereClause, geoDB);
 		
 		if (value > geoDB.getMaxNumberOfResults()) {
 			throw new ResponseExceedsSizeLimitException(
-					geoDB.getMaxNumberOfResults());
+					geoDB.getMaxNumberOfResults(), value);
 		}
+		
+		return value;
 	}
 	
 	public static int resolveRecordCount(String tables,
