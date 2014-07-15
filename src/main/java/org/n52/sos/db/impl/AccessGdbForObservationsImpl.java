@@ -29,10 +29,12 @@ import java.util.TimeZone;
 import org.n52.gml.Identifier;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
+import org.n52.ows.InvalidRequestException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGdbForObservations;
+import org.n52.sos.handler.GetObservationOperationHandler;
 import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
@@ -46,7 +48,7 @@ import com.esri.arcgis.interop.AutomationException;
  */
 public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
-    static Logger LOGGER = Logger.getLogger(AccessGdbForObservationsImpl.class.getName());
+	static Logger LOGGER = Logger.getLogger(AccessGdbForObservationsImpl.class.getName());
 
     static String[][] aggregationTypesCandidates = new String[][] {
 			new String[] {Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE, Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_ALT},
@@ -136,9 +138,16 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         }
 
         // build query for temporal filter
+        boolean firstOrLatest = false;
         if (temporalFilter != null) {
-        	isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
-            whereClauseParameterAppend.append(createTemporalClauseSDE(temporalFilter));
+        	if (temporalFilter.equals(GetObservationOperationHandler.OM_PHENOMENON_TIME_FIRST) ||
+        			temporalFilter.equals(GetObservationOperationHandler.OM_PHENOMENON_TIME_LATEST)) {
+        		LOGGER.debug("Temporal filter special case: ".concat(temporalFilter));
+        		firstOrLatest = true;
+        	} else {
+        		isFirst = ifIsFirstAppendAND (whereClauseParameterAppend, isFirst);
+                whereClauseParameterAppend.append(createTemporalClauseSDE(temporalFilter));	
+        	}
         }
         
         // build query for the where clause
@@ -147,11 +156,72 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             whereClauseParameterAppend.append(where);
         }
 
+        if (firstOrLatest) {
+        	return getFirstOrLatestObservation(whereClauseParameterAppend, temporalFilter.equals(GetObservationOperationHandler.OM_PHENOMENON_TIME_FIRST), aggregationTypes);
+        }
         return getObservations(whereClauseParameterAppend, aggregationTypes, true);
     }
 
     
-    /**
+    private Map<String, MultiValueObservation> getFirstOrLatestObservation(
+			StringBuilder whereClauseParameterAppend, boolean first, String[] aggregationTypes) throws Exception {
+        if (whereClauseParameterAppend.toString().trim().isEmpty()) {
+        	throw new InvalidRequestException("No filter of any kind was defined. Rejecting request.");
+        }
+    	
+    	String tables = createFromClause();
+        List<String> subFields = createSubFieldsForQuery();
+        
+        /*
+         * if no aggregation type was defined in the query use
+         * hourly as this should be there always
+         */
+        if (aggregationTypes == null) {
+        	aggregationTypes = new String[] {
+        			Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE,
+        			Constants.GETOBSERVATION_DEFAULT_AGGREGATIONTYPE_ALT
+        	};
+        }
+        
+        ifIsFirstAppendAND(whereClauseParameterAppend, false);
+        whereClauseParameterAppend.append(gdb.createOrClause(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
+        
+        String originalWhereClause = whereClauseParameterAppend.toString();
+        
+        /*
+         * SubQuery using MIN/MAX as ArcObject does not support ORDER BY
+         */
+        whereClauseParameterAppend.append(" AND ");
+        whereClauseParameterAppend.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END));
+        whereClauseParameterAppend.append(" = (");
+        
+        if (first) {
+        	whereClauseParameterAppend.append("SELECT MIN(");
+        }
+        else {
+        	whereClauseParameterAppend.append("SELECT MAX(");
+        }
+        whereClauseParameterAppend.append(gdb.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END));
+        whereClauseParameterAppend.append(")");
+        whereClauseParameterAppend.append(" FROM ");
+        whereClauseParameterAppend.append(tables);
+        whereClauseParameterAppend.append(" WHERE ");
+        whereClauseParameterAppend.append(originalWhereClause);
+        
+        whereClauseParameterAppend.append(" )");
+        
+        String whereClause = whereClauseParameterAppend.toString();
+        LOGGER.debug("WHERE "+ whereClause);
+        
+        ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
+        		" DISTINCT TOP 1 ".concat(gdb.createCommaSeparatedList(subFields)), gdb);
+
+        Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor);
+
+        return idObsMap;
+	}
+
+	/**
      * This method serves as a skeleton for the other 2 methods above and
      * expects a WHERE clause that parameterizes the database query.
      * @param aggregationTypes 
@@ -184,7 +254,14 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
         		" DISTINCT " + gdb.createCommaSeparatedList(subFields), gdb);
 
-        // convert cursor entries to abstract observations
+        Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor);
+
+        return idObsMap;
+    }
+
+	private Map<String, MultiValueObservation> createObservationsFromCursor(
+			ICursor cursor) throws IOException, AutomationException, Exception {
+		// convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
 
         // map that associates an observation-ID with an observation:
@@ -201,9 +278,8 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             	idObsMap.get(obsID).getResult().addResultValue(createResultValue(row, fields));
             }
         }
-
-        return idObsMap;
-    }
+		return idObsMap;
+	}
 
 
 	private boolean determineBestAggregationType(

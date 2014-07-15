@@ -23,6 +23,7 @@ import org.n52.om.observation.MultiValueObservation;
 import org.n52.ows.InvalidParameterValueException;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGDB;
+import org.n52.sos.db.impl.AccessGdbForObservationsImpl;
 import org.n52.sos.encoder.AQDObservationEncoder;
 import org.n52.sos.encoder.OGCObservationSWECommonEncoder;
 
@@ -34,6 +35,9 @@ import com.esri.arcgis.server.json.JSONObject;
 public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 	
 	private static final String GET_OBSERVATION_OPERATION_NAME = "GetObservation";
+	
+    public static final String OM_PHENOMENON_TIME_LATEST = "om:phenomenonTime,latest";
+	public static final String OM_PHENOMENON_TIME_FIRST = "om:phenomenonTime,first";
     
     private static final String VERSION_KEY = "version";
 	private static final String OFFERING_KEY = "offering";
@@ -129,6 +133,11 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 		String temporalFilter = null;
         if (inputObject.has(TEMPORAL_FILTER_KEY)) {
             String temporalFilterOGC = inputObject.getString(TEMPORAL_FILTER_KEY);
+            
+            if (temporalFilterOGC.equals(OM_PHENOMENON_TIME_FIRST) ||
+            		temporalFilterOGC.equals(OM_PHENOMENON_TIME_LATEST)) {
+            	return temporalFilterOGC;
+            }
             
         	String[] params = temporalFilterOGC.split(",");
         	if (params.length != 2) {

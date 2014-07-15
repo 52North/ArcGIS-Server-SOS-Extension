@@ -308,7 +308,10 @@ public class AccessGDBImpl implements AccessGDB {
         StringBuilder sb = new StringBuilder();
         sb.append("(");
         for (String entry : list) {
-            sb.append(field + " = '" + entry + "'");
+            sb.append(field);
+            sb.append(" = '");
+            sb.append(entry);
+            sb.append("'");
             sb.append(" OR ");
         }
         sb.delete(sb.length() - 4, sb.length());
@@ -375,14 +378,14 @@ public class AccessGDBImpl implements AccessGDB {
     protected String concatTableAndField(String table,
             String field)
     {
-        return table + "." + field;
+        return String.format("%s.%s", table, field);
     }
     
     /**
      * @return table1.field1 = table2.field2
      */
     protected String join(String table1, String field1, String table2, String field2) {
-    	return concatTableAndField(table1, field1) + " = " + concatTableAndField(table2, field2);
+    	return String.format("%s = %s", concatTableAndField(table1, field1), concatTableAndField(table2, field2));
     }
     
     protected String innerJoin(String table1, String field1, String table2, String field2) {

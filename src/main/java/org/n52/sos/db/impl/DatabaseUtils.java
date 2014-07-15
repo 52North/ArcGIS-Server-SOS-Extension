@@ -77,7 +77,7 @@ public class DatabaseUtils {
 
 		queryDef.setWhereClause(whereClause);
 		LOGGER.debug("WHERE " + queryDef.getWhereClause());
-
+		
 		// evaluate the database query
 		ICursor cursor = queryDef.evaluate();
 		return cursor;
