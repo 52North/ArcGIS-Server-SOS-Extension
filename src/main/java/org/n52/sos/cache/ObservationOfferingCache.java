@@ -15,14 +15,10 @@
  */
 package org.n52.sos.cache;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.sos.dataTypes.EnvelopeWrapper;
@@ -49,24 +45,6 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 	@Override
 	protected String getCacheFileName() {
 		return "observationOfferings.cache";
-	}
-
-	@Override
-	protected Map<String, ObservationOffering> deserializeEntityCollection(
-			FileInputStream fis) {
-		Map<String, ObservationOffering> result = new HashMap<>();
-		Scanner sc = new Scanner(fis);
-		
-		String line;
-		while (sc.hasNext()) {
-			line = sc.nextLine();
-			String id = line.substring(0, line.indexOf("="));
-			result.put(id, deserializeEntity(line.substring(line.indexOf("="), line.length())));
-		}
-		
-		sc.close();
-		
-		return result;
 	}
 
 	@Override
@@ -110,17 +88,15 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 		return new ObservationOffering(id, name, props, proc, env, time);
 	}
 
-	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
-		if (!instance.requestUpdateLock()) {
-			LOGGER.info("cache is currently already updating");
-			return;
-		}
-		
+	protected Collection<ObservationOffering> getCollectionFromDAO(AccessGDB geoDB)
+			throws IOException {
 		Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
-		instance.storeEntityCollection(entities);
-		
-		instance.freeUpdateLock();		
+		return entities;
 	}
 
+	@Override
+	protected AbstractEntityCache<ObservationOffering> getSingleInstance() {
+		return instance;
+	}
 
 }

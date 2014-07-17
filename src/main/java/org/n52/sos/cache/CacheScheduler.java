@@ -17,8 +17,10 @@ package org.n52.sos.cache;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,32 +29,56 @@ import org.n52.util.logging.Logger;
 
 public class CacheScheduler {
 	
-	public Logger LOGGER = Logger.getLogger(CacheScheduler.class.getName());
+	public static Logger LOGGER = Logger.getLogger(CacheScheduler.class.getName());
 
 	private static final long PERIOD = 1000 * 60 * 60;
 
-	private static final long MINIMUM_UPDATE_DELTA = 1000 * 60 * 10;
+	public static final long MINIMUM_UPDATE_DELTA = 1000 * 60 * 15;
 	private Timer timer;
 	private AccessGDB geoDB;
+	
+	
+	static List<AbstractEntityCache<?>> candidates = new ArrayList<>();
+	
+	static {
+		try {
+			candidates.add(ObservationOfferingCache.instance());
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+		
+		try {
+			candidates.add(PropertyUnitMappingCache.instance());
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+	}
 
 	public CacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
 		this.geoDB = geoDB;
 		this.timer = new Timer(true);
 		
-		try {
-			if (updateCacheOnStartup && cacheUpdateRequired()) {
-				/*
-				 * now
-				 */
-				this.timer.schedule(new UpdateCacheTask(), 0);	
-			}
-			else {
-				LOGGER.info("No cache update required. Last update not longer ago than ms "+MINIMUM_UPDATE_DELTA);
-			}
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-			LOGGER.warn("could not initialize cache. disabling scheduled updates.");
-			return;
+		if (!updateCacheOnStartup) {
+			LOGGER.info("Update cache on startup disabled!");
+		}
+		else {
+			try {
+				List<AbstractEntityCache<?>> requiresUpdates = cacheUpdateRequired();
+				if (!requiresUpdates.isEmpty()) {
+					LOGGER.info(String.format("Cache update required for: %s", requiresUpdates.toString()));
+					/*
+					 * now
+					 */
+					this.timer.schedule(new UpdateCacheTask(requiresUpdates), 0);	
+				}
+				else {
+					LOGGER.info("No cache update required. Last update not longer ago than ms "+MINIMUM_UPDATE_DELTA);
+				}
+			} catch (FileNotFoundException e) {
+				LOGGER.warn(e.getMessage(), e);
+				LOGGER.warn("could not initialize cache. disabling scheduled updates.");
+				return;
+			}			
 		}
 		
 		/*
@@ -63,26 +89,21 @@ public class CacheScheduler {
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);
-		this.timer.scheduleAtFixedRate(new UpdateCacheTask(), c.getTime(), PERIOD * 24);
+		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD * 24);
 		
 		LOGGER.info("Next scheduled cache update: "+c.getTime().toString());
 	}
 
-	private boolean cacheUpdateRequired() throws FileNotFoundException {
-		ObservationOfferingCache obsCache = ObservationOfferingCache.instance();
-		if (obsCache.isCacheAvailable()) {
-			if (obsCache.hasCacheContent()) {
-				long lastUpdated = ObservationOfferingCache.instance().lastUpdated();
-				
-				if (System.currentTimeMillis() - lastUpdated > MINIMUM_UPDATE_DELTA) {
-					return true;
-				}	
-			}
-			else {
-				return true;
+	private List<AbstractEntityCache<?>> cacheUpdateRequired() throws FileNotFoundException {
+		List<AbstractEntityCache<?>> result = new ArrayList<>();
+		
+		for (AbstractEntityCache<?> cand : candidates) {
+			if (cand.requiresUpdate()) {
+				result.add(cand);
 			}
 		}
-		return false;
+		
+		return result;
 	}
 
 	public void shutdown() {
@@ -96,16 +117,23 @@ public class CacheScheduler {
 	
 	private class UpdateCacheTask extends TimerTask {
 
+		private List<AbstractEntityCache<?>> candidates;
+
+		public UpdateCacheTask(List<AbstractEntityCache<?>> candidates) {
+			this.candidates = candidates;
+		}
+
 		@Override
 		public void run() {
 			try {
-				LOGGER.info("update observation offerings cache... using thread "+ Thread.currentThread().getName());
+				LOGGER.info("update cache... using thread "+ Thread.currentThread().getName());
 				
-				ObservationOfferingCache ooc = ObservationOfferingCache.instance();
+				for (AbstractEntityCache<?> aec : this.candidates) {
+					aec.updateCache(geoDB);
+					LOGGER.info("cache updated: "+aec.getClass());
+				}
 				
-				ooc.updateCache(geoDB);
-				
-				LOGGER.info("observation offerings cache updated!");
+				LOGGER.info("all caches updated!");
 			} catch (IOException e) {
 				LOGGER.warn(e.getMessage(), e);
 			} catch (CacheException e) {

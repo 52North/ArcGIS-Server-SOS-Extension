@@ -89,6 +89,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<guice-version>3.0</guice-version>
 		<arcobjects.version>10.1</arcobjects.version>
 		<arcobjects.local.location>
 			C:\Program Files
@@ -213,6 +214,24 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-core</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.esri</groupId>
 			<artifactId>arcobjects</artifactId>
 			<version>${arcobjects.version}</version>
@@ -222,17 +241,34 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.3</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.google.inject</groupId> -->
+<!-- 			<artifactId>guice</artifactId> -->
+<!-- 			<version>${guice-version}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.google.inject.extensions</groupId> -->
+<!-- 			<artifactId>guice-multibindings</artifactId> -->
+<!-- 			<version>${guice-version}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.google.inject.extensions</groupId> -->
+<!-- 			<artifactId>guice-servlet</artifactId> -->
+<!-- 			<version>${guice-version}</version> -->
+<!-- 		</dependency> -->
 	</dependencies>
 
 	<dependencyManagement>

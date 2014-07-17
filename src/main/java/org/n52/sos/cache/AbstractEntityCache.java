@@ -41,6 +41,8 @@ public abstract class AbstractEntityCache<T> {
 	private FileOutputStream fileStream;
 	private Object cacheFileMutex = new Object();
 	
+	
+	
 	public AbstractEntityCache() throws FileNotFoundException {
 		initializeCacheFile();
 	}
@@ -69,11 +71,11 @@ public abstract class AbstractEntityCache<T> {
 
 	protected abstract String serializeEntity(T entity) throws CacheException;
 
-	protected abstract Map<String, T> deserializeEntityCollection(FileInputStream fis);
-	
 	protected abstract T deserializeEntity(String line);
 	
-	public abstract void updateCache(AccessGDB geoDB) throws CacheException, IOException;
+	protected abstract Collection<T> getCollectionFromDAO(AccessGDB geoDB) throws IOException;
+	
+	protected abstract AbstractEntityCache<T> getSingleInstance();
 	
 	public synchronized void storeEntity(String id, T entity, FileOutputStream fos) throws CacheException {
 		StringBuilder sb = new StringBuilder();
@@ -90,6 +92,23 @@ public abstract class AbstractEntityCache<T> {
 			throw new CacheException(e);
 		}
 		
+	}
+	
+	protected Map<String, T> deserializeEntityCollection(
+			InputStream fis) {
+		Map<String, T> result = new HashMap<>();
+		Scanner sc = new Scanner(fis);
+		
+		String line;
+		while (sc.hasNext()) {
+			line = sc.nextLine();
+			String id = line.substring(0, line.indexOf("="));
+			result.put(id, deserializeEntity(line.substring(line.indexOf("=")+1, line.length())));
+		}
+		
+		sc.close();
+		
+		return result;
 	}
 	
 	public synchronized void storeEntityCollection(Collection<T> entities) throws CacheException {
@@ -161,12 +180,13 @@ public abstract class AbstractEntityCache<T> {
 					}
 				}
 				else {
-					LOGGER.warn("Could not access or create the cache file: "+getCacheFileName());
+					LOGGER.warn("Could not access or create the cache file. AccessGDB not available! "+getCacheFileName());
 					return Collections.emptyMap();
 				}
 			}
 			
 			try {
+				LOGGER.info("Returning data from cache file...");
 				return deserializeCacheFile();
 			} catch (IOException e) {
 				throw new CacheException(e);
@@ -260,4 +280,35 @@ public abstract class AbstractEntityCache<T> {
 	private File getCacheLockFile() {
 		return new File(this.cacheFile.getParent(), this.cacheFile.getName()+".lock");
 	}
+	
+	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
+		AbstractEntityCache<T> instance = getSingleInstance();
+		if (!instance.requestUpdateLock()) {
+			LOGGER.info("cache is currently already updating");
+			return;
+		}
+		
+		Collection<T> entities = getCollectionFromDAO(geoDB);
+		instance.storeEntityCollection(entities);
+		
+		instance.freeUpdateLock();		
+	}
+
+	public boolean requiresUpdate() {
+		if (this.isCacheAvailable()) {
+			if (this.hasCacheContent()) {
+				long lastUpdated = this.getSingleInstance().lastUpdated();
+				
+				if (System.currentTimeMillis() - lastUpdated > CacheScheduler.MINIMUM_UPDATE_DELTA) {
+					return true;
+				}	
+			}
+			else {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 }
