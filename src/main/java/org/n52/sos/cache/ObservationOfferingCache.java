@@ -44,7 +44,7 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 
 	@Override
 	protected String getCacheFileName() {
-		return "observationOfferings.cache";
+		return "observationOfferingsList.cache";
 	}
 
 	@Override
