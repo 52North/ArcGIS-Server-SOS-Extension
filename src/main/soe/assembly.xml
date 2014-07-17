@@ -6,13 +6,13 @@
 	</formats>
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
-		<fileSet>
-			<directory>${project.build.directory}</directory>
-			<includes>
-				<include>${project.build.finalName}.${project.packaging}</include>
-			</includes>
-			<outputDirectory>/Install</outputDirectory>
-		</fileSet>
+<!-- 		<fileSet> -->
+<!-- 			<directory>${project.build.directory}</directory> -->
+<!-- 			<includes> -->
+<!-- 				<include>${project.build.finalName}.${project.packaging}</include> -->
+<!-- 			</includes> -->
+<!-- 			<outputDirectory>/Install</outputDirectory> -->
+<!-- 		</fileSet> -->
 		<fileSet>
 			<directory>src/main/soe</directory>
 			<includes>
@@ -32,9 +32,9 @@
 	    <dependencySet>
 	      <outputDirectory>/Install</outputDirectory>
 	      <unpack>false</unpack>
-	      <includes>
-	        <include>org.apache.commons:commons-lang3</include>
-	      </includes>
+<!-- 	      <includes> -->
+<!-- 	        <include>org.apache.commons:commons-lang3</include> -->
+<!-- 	      </includes> -->
 	    </dependencySet>
   	</dependencySets>
 </assembly>
