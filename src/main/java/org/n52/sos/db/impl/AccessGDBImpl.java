@@ -261,7 +261,7 @@ public class AccessGDBImpl implements AccessGDB {
     // //////////////////////////// Helper Methods:
     ///////////////////////////////	
 
-    protected ITimePosition createTimePosition(Object startValue)
+    public static ITimePosition createTimePosition(Object startValue)
     {
         ITimePosition timePosition = null;
         if (startValue != null && startValue instanceof Date) {
@@ -277,7 +277,7 @@ public class AccessGDBImpl implements AccessGDB {
      *            List of entries
      * @return a comma separated string
      */
-    protected String createCommaSeparatedList(List<String> list)
+    public static String createCommaSeparatedList(List<String> list)
     {
         StringBuilder sb = new StringBuilder();
         for (String entry : list) {
@@ -287,7 +287,7 @@ public class AccessGDBImpl implements AccessGDB {
         return sb.substring(0, sb.length() - 1);
     }
     
-    protected String createCommaSeparatedList(String... list) {
+    public static String createCommaSeparatedList(String... list) {
     	return createCommaSeparatedList(Arrays.asList(list));
     }
 
@@ -302,7 +302,7 @@ public class AccessGDBImpl implements AccessGDB {
      *            compared with the field.
      * @return the created or-clause
      */
-    protected String createOrClause(String field,
+    public static String createOrClause(String field,
             String[] list)
     {
         StringBuilder sb = new StringBuilder();
@@ -330,7 +330,7 @@ public class AccessGDBImpl implements AccessGDB {
      *            are compared with the field.
      * @return the created or-clause
      */
-    protected String createOrClause(String field,
+    public static String createOrClause(String field,
             Collection<Integer> list)
     {
         StringBuilder sb = new StringBuilder();
@@ -375,7 +375,7 @@ public class AccessGDBImpl implements AccessGDB {
     /**
      * Concatenates names of a database table and field with a '.'.
      */
-    protected String concatTableAndField(String table,
+    public static String concatTableAndField(String table,
             String field)
     {
         return String.format("%s.%s", table, field);
@@ -384,11 +384,11 @@ public class AccessGDBImpl implements AccessGDB {
     /**
      * @return table1.field1 = table2.field2
      */
-    protected String join(String table1, String field1, String table2, String field2) {
+    public static String join(String table1, String field1, String table2, String field2) {
     	return String.format("%s = %s", concatTableAndField(table1, field1), concatTableAndField(table2, field2));
     }
     
-    protected String innerJoin(String table1, String field1, String table2, String field2) {
+    public static String innerJoin(String table1, String field1, String table2, String field2) {
     	StringBuilder sb = new StringBuilder();
     	sb.append("INNER JOIN ");
     	sb.append(table2);
@@ -407,7 +407,7 @@ public class AccessGDBImpl implements AccessGDB {
      * @return
      * @throws Exception
      */
-    protected static ITable createRelQueryTable(ITable targetTable,
+    public static ITable createRelQueryTable(ITable targetTable,
             ITable joinTable,
             String fromField,
             String toField) throws Exception
@@ -495,7 +495,7 @@ public class AccessGDBImpl implements AccessGDB {
     /**
      * Support method.
      */
-    protected String featureToString(Feature f) throws AutomationException, IOException
+    public static String featureToString(Feature f) throws AutomationException, IOException
     {
         String featureAsString = "";
         IFields fields = f.getFields();

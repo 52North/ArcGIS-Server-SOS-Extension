@@ -18,10 +18,16 @@ package org.n52.sos.db.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.n52.sos.cache.PropertyUnitMappingCache;
 import org.n52.sos.dataTypes.Output;
 import org.n52.sos.dataTypes.Procedure;
+import org.n52.sos.dataTypes.PropertyUnitMapping;
+import org.n52.sos.dataTypes.Unit;
 import org.n52.sos.db.AccessGdbForProcedures;
 import org.n52.util.logging.Logger;
 
@@ -36,7 +42,9 @@ import com.esri.arcgis.interop.AutomationException;
  */
 public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
-    static Logger LOGGER = Logger.getLogger(AccessGdbForProceduresImpl.class.getName());
+   
+
+	static Logger LOGGER = Logger.getLogger(AccessGdbForProceduresImpl.class.getName());
 
     private AccessGDBImpl gdb;
 
@@ -44,7 +52,8 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         this.gdb = accessGDB;
     }
     
-    /**
+
+	/**
      * This method can be used to retrieve the IDs of all procedures.
      * 
      * @throws AutomationException
@@ -58,13 +67,13 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        queryDef.setTables(AccessGDBImpl.createCommaSeparatedList(tables));
 //        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
 //        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
         
         // evaluate the database query
@@ -74,7 +83,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         IRow row;
         List<String> procedureIdList = new ArrayList<String>();
         while ((row = cursor.nextRow()) != null) {
-            String procedureId = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+            String procedureId = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
             
             procedureIdList.add(procedureId);
         }
@@ -94,19 +103,19 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
-        queryDef.setTables(gdb.createCommaSeparatedList(tables));
+        queryDef.setTables(AccessGDBImpl.createCommaSeparatedList(tables));
 //        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
 //        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
 
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
+            whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
             
             queryDef.setWhereClause(whereClause.toString());
         }
@@ -120,9 +129,9 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         List<Procedure> procedures = new ArrayList<Procedure>();
         while ((row = cursor.nextRow()) != null) {
 
-            String id = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+            String id = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
 
-            String resource = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
+            String resource = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
 
             procedures.add(new Procedure(id, resource));
         }
@@ -140,15 +149,15 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
         // set sub fields
         List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE)); //this field is only needed so that DISTINCT works
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
-        queryDef.setSubFields(" DISTINCT " + gdb.createCommaSeparatedList(subFields));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE)); //this field is only needed so that DISTINCT works
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
+        queryDef.setSubFields(" DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields));
         LOGGER.info("SELECT " + queryDef.getSubFields());
         
 //        // set tables
@@ -193,7 +202,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 //        	whereClause.append(" AND ");
         	
         	// identifiers:
-        	whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedureIdentifierArray));
+        	whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedureIdentifierArray));
             
             queryDef.setWhereClause(whereClause.toString());
         }
@@ -207,35 +216,35 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         IRow row;
         while ((row = cursor.nextRow()) != null) {
 
-            String procedureID 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
-            String resource 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
+            String procedureID 	= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+            String resource 	= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
         	
             String unit = null;
-            Object unitField = row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
+            Object unitField = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
             if (unitField != null) {
             	unit = unitField.toString();
             }
         	
             String property = null;
-            Object propertyField = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+            Object propertyField = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
             if (propertyField != null) {
             	property = propertyField.toString();
             }
         	
             String propertyLabel = null;
-            Object propertyLabelField = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL)));
+            Object propertyLabelField = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL)));
             if (propertyLabelField != null) {
             	propertyLabel = propertyField.toString();
             }
         	
             String feature = null;
-            Object featureField = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
+            Object featureField = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
             if (featureField != null) {
             	feature = featureField.toString();
             }
         	
             String aggrTypeID = null;
-            Object aggrTypeIDField = row.getValue(fields.findField(gdb.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID)));
+            Object aggrTypeIDField = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID)));
             if (aggrTypeIDField != null) {
             	aggrTypeID = aggrTypeIDField.toString();
             }
@@ -309,21 +318,29 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      * @return a {@link Collection} of all {@link Procedure}s for a given network.
      */
     public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
-    {   
+    {
+    	PropertyUnitMappingCache pumCache = PropertyUnitMappingCache.instance();
+    	Map<Integer, Unit> propertyUnitMap = pumCache.resolvePropertyUnitMappings(gdb);
+    	Unit fallbackDefaultUnit = pumCache.getDefaultFallbackUnit();
+    	
+    	LOGGER.debug("propertyUnitMap= "+propertyUnitMap.toString());
+    	LOGGER.debug("fallbackDefaultUnit= "+fallbackDefaultUnit);
+    	
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // request all procedures for network with ID 'networkID':
         IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE)); //this field is only needed so that DISTINCT works
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
-        subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION));
-        queryDef.setSubFields("DISTINCT "+gdb.createCommaSeparatedList(subFields));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE)); //this field is only needed so that DISTINCT works
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
+        
+        queryDef.setSubFields("DISTINCT "+AccessGDBImpl.createCommaSeparatedList(subFields));
         LOGGER.info("SELECT " + queryDef.getSubFields());
 
         String fromClause = 
@@ -334,13 +351,12 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         		" INNER JOIN " + Table.SAMPLINGPOINT 	+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_SAMPLINGPOINT 		+ " = " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT + 
         		" INNER JOIN " + Table.STATION 			+ " ON " + Table.SAMPLINGPOINT + "." + SubField.SAMPLINGPOINT_FK_STATION 		+ " = " + Table.STATION + "." + SubField.STATION_PK_STATION +
         		" INNER JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID +
-        		" INNER JOIN " + Table.VALUE 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_PK_OBSERVATION		+ " = " + Table.VALUE + "." + SubField.VALUE_FK_OBSERVATION +
-        		" INNER JOIN " + Table.UNIT 			+ " ON " + Table.VALUE+ "." + SubField.VALUE_FK_UNIT							+ " = " + Table.UNIT + "." + SubField.UNIT_PK_UNIT;
+        		" INNER JOIN " + Table.VALUE 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_PK_OBSERVATION		+ " = " + Table.VALUE + "." + SubField.VALUE_FK_OBSERVATION;
        
         queryDef.setTables(fromClause);
         LOGGER.debug("FROM " + queryDef.getTables());
         
-	    queryDef.setWhereClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID + " = '" + networkID + "'"));
+	    queryDef.setWhereClause(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID + " = '" + networkID + "'"));
 	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
         
 		List<Procedure> procedureList = new ArrayList<Procedure>();
@@ -351,13 +367,20 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         IRow row;
         while ((row = cursor.nextRow()) != null) {
 
-            String procedureID 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
-            String resource 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
-        	String property 	= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID))).toString();
-        	String propertyLabel= row.getValue(fields.findField(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL))).toString();
-        	String feature 		= row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE))).toString();
+            String procedureID 	= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID))).toString();
+            String resource 	= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
+            String propertyPk 	= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY))).toString();
+            String property 	= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID))).toString();
+        	String propertyLabel= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL))).toString();
+        	String feature 		= row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE))).toString();
         	
-        	String unit = row.getValue(fields.findField(gdb.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION))).toString();
+        	//TODO: check for null value -> resolve a "default for all properties" unit
+        	Unit relatedUnit = propertyUnitMap.get(Integer.parseInt(propertyPk));
+        	if (relatedUnit == null) {
+        		LOGGER.warn("No property to unit mapping for: "+propertyPk);
+        		relatedUnit = fallbackDefaultUnit;
+        	}
+        	String unit = relatedUnit.getNotation();
         	
             Procedure procedure;
 			// case: procedure new
@@ -384,20 +407,20 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 		
 		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
-        queryDef.setSubFields(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
+        queryDef.setSubFields(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
         LOGGER.info("SELECT " + queryDef.getSubFields());
 
         queryDef.setTables(Table.NETWORK);
         LOGGER.debug("FROM " + queryDef.getTables());
         
-	    queryDef.setWhereClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + procedureID + "'");
+	    queryDef.setWhereClause(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + procedureID + "'");
 	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
 
         ICursor cursor = queryDef.evaluate();
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {
-            String networkID = row.getValue(fields.findField(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID))).toString();
+            String networkID = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID))).toString();
             
             if (networkID != null && networkID.equalsIgnoreCase(procedureID)) {
             	return true;
@@ -412,20 +435,20 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 			
 		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
-        queryDef.setSubFields(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        queryDef.setSubFields(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         LOGGER.info("SELECT " + queryDef.getSubFields());
 
         queryDef.setTables(Table.PROCEDURE);
         LOGGER.debug("FROM " + queryDef.getTables());
         
-	    queryDef.setWhereClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE) + " = '" + procedureResourceID + "'");
+	    queryDef.setWhereClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE) + " = '" + procedureResourceID + "'");
 	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
 
         ICursor cursor = queryDef.evaluate();
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {
-            String procedureIdFromDB = row.getValue(fields.findField(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
+            String procedureIdFromDB = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE))).toString();
             
             if (procedureIdFromDB != null && procedureIdFromDB.equalsIgnoreCase(procedureResourceID)) {
             	return true;
@@ -433,6 +456,78 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         }
         
 		return false;
+	}
+
+	@Override
+	public Collection<PropertyUnitMapping> getPropertyUnitMappings() throws IOException {
+		PropertyUnitMapping result = new PropertyUnitMapping();
+		
+		String subFields = AccessGDBImpl.createCommaSeparatedList(
+				AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY),
+				AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT)
+				);
+		
+		String tables = AccessGDBImpl.createCommaSeparatedList(
+				Table.PROPERTY,
+				Table.OBSERVATION,
+				Table.VALUE
+				);
+		
+		StringBuilder whereClause = new StringBuilder();
+		whereClause.append(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+		whereClause.append(" = ");
+		whereClause.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY));
+		whereClause.append(" AND ");
+		
+		whereClause.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_PK_OBSERVATION));
+		whereClause.append(" = ");
+		whereClause.append(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_FK_OBSERVATION));
+		whereClause.append(" AND ");
+		
+		whereClause.append(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT));
+		whereClause.append(" IS NOT NULL");
+		
+		ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause.toString(), "DISTINCT ".concat(subFields), gdb.getWorkspace());
+        
+        IRow row;
+        int count = 0;
+        while ((row = cursor.nextRow()) != null) {
+        	LOGGER.debug("Working on row "+ count++);
+        	String propertyId = row.getValue(0).toString();
+        	String valueFkUnit = row.getValue(1).toString();
+        	
+        	try {
+        		Integer propertyIntId = Integer.parseInt(propertyId);
+        		if (result.containsKey(propertyIntId)) {
+        			LOGGER.warn(String.format("Multiple mappings for property '%s' - skipping candidate unit: '%s'",
+        					propertyIntId, valueFkUnit));
+        		} else {
+        			result.put(propertyIntId, Integer.parseInt(valueFkUnit));
+        		}
+        	}
+        	catch (NumberFormatException e) {
+        		LOGGER.warn(e.getMessage(), e);
+        	}
+        }
+		
+		return Collections.singleton(result);
+	}
+
+
+	@Override
+	public Map<Integer, Unit> getUnitsOfMeasure() throws IOException {
+		ICursor result = DatabaseUtils.evaluateQuery(Table.UNIT, null, "*", gdb.getWorkspace());
+
+		Map<Integer, Unit> units = new HashMap<>();
+		IRow row;
+		Unit u;
+		while ((row = result.nextRow()) != null) {
+			u = Unit.fromRow(row);
+			units.put(u.getPkUnit(), u);
+		}
+		LOGGER.debug(String.format("Resolved units: %s", units));
+		
+		return units;
 	}
 	
 }

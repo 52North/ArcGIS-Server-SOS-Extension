@@ -196,7 +196,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             if (updateCache != null) {
             	this.updateCacheOnStartup = Boolean.parseBoolean(updateCache.toString());
             }
-            LOGGER.info("Update cache on startup? "+ this.updateCacheOnStartup);
+            LOGGER.info("Update cache on startup? "+ this.updateCacheOnStartup +" object: "+ updateCache);
             
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));

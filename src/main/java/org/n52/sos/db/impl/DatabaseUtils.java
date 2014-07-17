@@ -23,6 +23,7 @@ import org.n52.util.logging.Logger;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
+import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.interop.AutomationException;
 
 public class DatabaseUtils {
@@ -33,7 +34,7 @@ public class DatabaseUtils {
 	public static int assertMaximumRecordCount(String tables,
 			String whereClause, AccessGDBImpl geoDB)
 			throws ResponseExceedsSizeLimitException {
-		int value = resolveRecordCount(tables, whereClause, geoDB);
+		int value = resolveRecordCount(tables, whereClause, geoDB.getWorkspace());
 		
 		if (value > geoDB.getMaxNumberOfResults()) {
 			throw new ResponseExceedsSizeLimitException(
@@ -44,10 +45,10 @@ public class DatabaseUtils {
 	}
 	
 	public static int resolveRecordCount(String tables,
-			String whereClause, AccessGDBImpl geoDB) {
+			String whereClause, Workspace workspace) {
 		try {
 			ICursor countCursor = evaluateQuery(tables, whereClause,
-					"count(*)", geoDB);
+					"count(*)", workspace);
 			IRow row;
 			if ((row = countCursor.nextRow()) != null) {
 				Object value = row.getValue(0);
@@ -65,9 +66,9 @@ public class DatabaseUtils {
 	}
 
 	public static ICursor evaluateQuery(String tables, String whereClause,
-			String subFields, AccessGDBImpl geoDB) throws IOException,
+			String subFields, Workspace workspace) throws IOException,
 			AutomationException {
-		IQueryDef queryDef = geoDB.getWorkspace().createQueryDef();
+		IQueryDef queryDef = workspace.createQueryDef();
 
 		queryDef.setSubFields(subFields);
 		LOGGER.debug("SELECT " + queryDef.getSubFields());
@@ -75,8 +76,10 @@ public class DatabaseUtils {
 		queryDef.setTables(tables);
 		LOGGER.debug("FROM " + queryDef.getTables());
 
-		queryDef.setWhereClause(whereClause);
-		LOGGER.debug("WHERE " + queryDef.getWhereClause());
+		if (whereClause != null && !whereClause.isEmpty()) {
+			queryDef.setWhereClause(whereClause);
+			LOGGER.debug("WHERE " + queryDef.getWhereClause());			
+		}
 		
 		// evaluate the database query
 		ICursor cursor = queryDef.evaluate();

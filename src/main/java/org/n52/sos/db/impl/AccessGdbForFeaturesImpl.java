@@ -86,13 +86,13 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE));
-        subFields.add(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE));
+        subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE));
         
 		/*
 		 * The 'procedure' parameter of GetFOI can either be a
@@ -128,18 +128,18 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         	}
         	
         	if (proceduresWhichAreProcedures.size() > 0) {
-        		subFields.add(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
+        		subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
         	}
         	else if (proceduresWhichAreNetworks.size() > 0) {
-        		subFields.add(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
+        		subFields.add(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
         	}
         }
         
         if (observedProperties != null) {
-            subFields.add(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
+            subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         }
         
-        queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
         
         // set tables
         List<String> tables = new ArrayList<String>();
@@ -162,7 +162,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         	tables.add(Table.PROPERTY);        	
         }
         
-        String tableList = gdb.createCommaSeparatedList(tables);
+        String tableList = AccessGDBImpl.createCommaSeparatedList(tables);
         queryDef.setTables(tableList);
         
         
@@ -173,22 +173,22 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         
         // joins
         if (observedProperties != null || procedures != null) {
-	        whereClause.append(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST) + " = " + 
-	        				   gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
+	        whereClause.append(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST) + " = " + 
+	        		AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
 	        isFirst = false;
         }
         
         if (observedProperties != null) {
         	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
-	        whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + 
-	        				   gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
+	        whereClause.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROPERTY) + " = " + 
+	        		AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_PK_PROPERTY));
         }
 
         if (procedures != null) {
         	if (proceduresWhichAreProcedures.size() > 0) {
         		isFirst = ifIsFirstAppendAND (whereClause, isFirst);
-    	        whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + 
-    	        				   gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));	
+    	        whereClause.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + 
+    	        		AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));	
         	}
         	else if (proceduresWhichAreNetworks.size() > 0) {
         		isFirst = ifIsFirstAppendAND (whereClause, isFirst);
@@ -198,24 +198,24 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
   					SAMPLINGPOINT.PK_SAMPLINGPOINT = Observation.fk_samplingpoint AND
   					Observation.fk_featureofinterest = FEATUREOFINTEREST.PK_FEATUREOFINTEREST
         		 */
-        		whereClause.append(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
         		whereClause.append(" = ");
-        		whereClause.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));        		
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID));        		
         		
         		whereClause.append(" AND ");
-        		whereClause.append(gdb.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
         		whereClause.append(" = ");
-        		whereClause.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION));
         		
         		whereClause.append(" AND ");
-        		whereClause.append(gdb.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
         		whereClause.append(" = ");
-        		whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT));
         		
         		whereClause.append(" AND ");
-        		whereClause.append(gdb.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST));
         		whereClause.append(" = ");
-        		whereClause.append(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+        		whereClause.append(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
         		
 //        		whereClause.append(" AND (");
 //        		/*
@@ -236,13 +236,13 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         // build query for feature of interest
         if (featuresOfInterest != null) {
             isFirst = ifIsFirstAppendAND (whereClause, isFirst);
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE), featuresOfInterest));
+            whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE), featuresOfInterest));
         }
 
         // build query for observed properties
         if (observedProperties != null) {
         	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
-            whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID), observedProperties));
+            whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID), observedProperties));
         }
 
         // build query for procedures
@@ -250,10 +250,10 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
         	
         	if (proceduresWhichAreProcedures.size() > 0) {
-        		whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedures));
+        		whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedures));
         	}
         	else if (proceduresWhichAreNetworks.size() > 0) {
-        		whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID), procedures));
+        		whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID), procedures));
         	}
         }
 
@@ -265,7 +265,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
             if (featureList.size() > 0) {
                 // append the list of feature IDs:
             	isFirst = ifIsFirstAppendAND (whereClause, isFirst);
-            	whereClause.append(gdb.createOrClause(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
+            	whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID), featureArray));
             } else {
                 LOGGER.warn("The defined spatialFilter '" + spatialFilter + "' did not match any features in the database.");
             }
@@ -285,22 +285,22 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         if (this.gdb.isResolveGeometriesFromStations()) {
         	StringBuilder isNullWhereClause = new StringBuilder();
         	isNullWhereClause.append(" AND ");
-        	isNullWhereClause.append(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+        	isNullWhereClause.append(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
         	isNullWhereClause.append(" IS NULL");
         	
         	int count = DatabaseUtils.resolveRecordCount(queryDef.getTables(),
         			whereClause.toString().concat(isNullWhereClause.toString()),
-        			gdb);
+        			gdb.getWorkspace());
         	
         	if (count > 0) {
-        		subFields.remove(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
-        		subFields.add(gdb.concatTableAndField(Table.STATION, SubField.STATION_SHAPE));
-        		queryDef.setSubFields(gdb.createCommaSeparatedList(subFields));
+        		subFields.remove(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+        		subFields.add(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_SHAPE));
+        		queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
         		
         		if (!tables.contains(Table.STATION)) {
             		//add station table - might not be there
             		tables.add(Table.STATION);
-            		tableList = gdb.createCommaSeparatedList(tables);
+            		tableList = AccessGDBImpl.createCommaSeparatedList(tables);
     				queryDef.setTables(tableList);        			
         		}
         		
@@ -344,26 +344,26 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     protected AQDSample createFeature(IRow row, Fields fields, boolean shapeFromStations) throws AutomationException, IOException, URISyntaxException
     {	
         // gml identifier
-        String gmlId = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
+        String gmlId = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
         
         // resource URI
         URI resourceUri = null;
-        String resource = (String) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
+        String resource = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
         if (resource != null) {
         	resourceUri = new URI(resource);
         }
 
         // local ID
-        int localId = (Integer) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST)));
+        int localId = (Integer) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST)));
         
         // shape
         Point point = null;
         Object shape;
 		if (!shapeFromStations) {
-        	shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+        	shape = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
         }
         else {
-        	shape = row.getValue(fields.findField(gdb.concatTableAndField(Table.STATION, SubField.STATION_SHAPE)));
+        	shape = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_SHAPE)));
         }
         
         if (shape instanceof Point) {
@@ -373,19 +373,19 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         }
         
         // inletHeight
-        Double inletHeight = (Double) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT)));
+        Double inletHeight = (Double) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT)));
         if (inletHeight == null) {
             inletHeight = Constants.FEATURE_INLET_HEIGHT;
         }
         
         // buildingDistance
-        Double buildingDistance = (Double) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE)));
+        Double buildingDistance = (Double) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE)));
         if (buildingDistance == null) {
             buildingDistance = Constants.FEATURE_BUILDING_DISTANCE;
         }
         
         // kerbDistance
-        Double kerbDistance = (Double) row.getValue(fields.findField(gdb.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE)));
+        Double kerbDistance = (Double) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE)));
         if (kerbDistance == null) {
             kerbDistance = Constants.FEATURE_KERB_DISTANCE;
         }
