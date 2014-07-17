@@ -218,7 +218,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         /*
          * initiate the cache
          */
-		cacheScheduler = new CacheScheduler(geoDB, this.updateCacheOnStartup);				
+        CacheScheduler.init(geoDB, this.updateCacheOnStartup);
+		cacheScheduler = CacheScheduler.instance(); 				
         
         LOGGER.info("Construction of SOE finished.");
     }
@@ -358,6 +359,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         // create a schema object for the GetFeatureOfInterest operation:
         ogcOperationArray.put(ServerUtilities.createOperation("GetFeatureOfInterest", "service, version, request, featureOfInterest, observedProperty, procedure, namespaces, spatialFilter", "json, xml", false));
 
+        ogcOperationArray.put(ServerUtilities.createOperation("GetCacheMetadata", "service, version, request", "json", false));
         
         // include all resource objects into 'resources' array:
         JSONArray resourceArray = new JSONArray();

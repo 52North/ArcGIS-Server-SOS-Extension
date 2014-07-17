@@ -31,16 +31,32 @@ public class CacheScheduler {
 	
 	public static Logger LOGGER = Logger.getLogger(CacheScheduler.class.getName());
 
+	private static CacheScheduler instance;
+
 	private static final long PERIOD = 1000 * 60 * 60;
 
 	public static final long MINIMUM_UPDATE_DELTA = 1000 * 60 * 15;
 	private Timer timer;
 	private AccessGDB geoDB;
 	
+	private List<AbstractEntityCache<?>> candidates = new ArrayList<>();
+
+	private boolean updateCacheOnStartup;
+
+	public static synchronized void init(AccessGDB geoDB, boolean updateCacheOnStartup) {
+		if (instance == null) {
+			instance = new CacheScheduler(geoDB, updateCacheOnStartup);
+		}
+	}
 	
-	static List<AbstractEntityCache<?>> candidates = new ArrayList<>();
+	public static synchronized CacheScheduler instance() {
+		return instance;
+	}
 	
-	static {
+	private CacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
+		this.geoDB = geoDB;
+		this.updateCacheOnStartup = updateCacheOnStartup;
+		
 		try {
 			candidates.add(ObservationOfferingCache.instance());
 		} catch (FileNotFoundException e) {
@@ -52,10 +68,7 @@ public class CacheScheduler {
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
-	}
-
-	public CacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
-		this.geoDB = geoDB;
+		
 		this.timer = new Timer(true);
 		
 		if (!updateCacheOnStartup) {
@@ -82,16 +95,25 @@ public class CacheScheduler {
 		}
 		
 		/*
-		 * every midnight
+		 * every 4am
 		 */
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.DAY_OF_MONTH, 1);
-		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.HOUR_OF_DAY, 4);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);
 		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD * 24);
 		
 		LOGGER.info("Next scheduled cache update: "+c.getTime().toString());
+	}
+	
+	
+	public List<AbstractEntityCache<?>> getCandidates() {
+		return candidates;
+	}
+
+	public boolean isUpdateCacheOnStartup() {
+		return updateCacheOnStartup;
 	}
 
 	private List<AbstractEntityCache<?>> cacheUpdateRequired() throws FileNotFoundException {
