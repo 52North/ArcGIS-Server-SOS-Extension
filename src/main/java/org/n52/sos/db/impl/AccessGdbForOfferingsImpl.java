@@ -134,7 +134,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseTime.append(" AND ");
             whereClauseTime.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
             queryDefTime.setWhereClause(whereClauseTime.toString());
-            LOGGER.debug("Where clause := " + queryDefTime.getWhereClause());
+            LOGGER.debug(String.format("Evaluating time query for network: '%s'", offering.getId()));
 
             ICursor cursorOffering = queryDefTime.evaluate();
             
@@ -176,13 +176,11 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             tablesProp.add(Table.STATION);
             tablesProp.add(Table.NETWORK);
             queryDefProp.setTables(AccessGDBImpl.createCommaSeparatedList(tablesProp));
-            LOGGER.debug("Tables clause := " + queryDefProp.getTables());
 
             // set sub fields
             List<String> subFieldsProp = new ArrayList<String>();
             subFieldsProp.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
             queryDefProp.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsProp));
-            LOGGER.debug("Subfields clause := " + queryDefProp.getSubFields());
 
             // create where clause with joins and constraints
             StringBuilder whereClauseProp = new StringBuilder();
@@ -196,7 +194,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseProp.append(" AND ");
             whereClauseProp.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
             queryDefProp.setWhereClause(whereClauseProp.toString());
-            LOGGER.debug("Where clause := " + queryDefProp.getWhereClause());
+            LOGGER.debug(String.format("Evaluating property query for network: '%s'", offering.getId()));
 
             // evaluate the database query
             ICursor cursorProp = queryDefProp.evaluate();
@@ -252,6 +250,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             queryDefFoi.setWhereClause(whereClauseFoi.toString());
 //                LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
 
+            LOGGER.debug(String.format("Evaluating FOI query for network: '%s'", offering.getId()));
             // evaluate the database query
             ICursor cursorFoi = queryDefFoi.evaluate();
             
