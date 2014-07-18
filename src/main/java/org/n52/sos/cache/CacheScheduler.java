@@ -58,14 +58,17 @@ public class CacheScheduler {
 		this.geoDB = geoDB;
 		this.updateCacheOnStartup = updateCacheOnStartup;
 		
+		/*
+		 * first use the PUMC, others might depend on it
+		 */
 		try {
-			candidates.add(ObservationOfferingCache.instance());
+			candidates.add(PropertyUnitMappingCache.instance());
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
-		
+
 		try {
-			candidates.add(PropertyUnitMappingCache.instance());
+			candidates.add(ObservationOfferingCache.instance());
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
