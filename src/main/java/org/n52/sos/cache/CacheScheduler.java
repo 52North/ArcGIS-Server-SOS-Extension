@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -102,6 +103,10 @@ public class CacheScheduler {
 		c.set(Calendar.HOUR_OF_DAY, 4);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);
+		
+		Random random = new Random();
+		c.add(Calendar.SECOND, 5 + (random.nextInt(11)*2));
+		
 		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD * 24);
 		
 		LOGGER.info("Next scheduled cache update: "+c.getTime().toString());
@@ -152,7 +157,6 @@ public class CacheScheduler {
 				
 				for (AbstractEntityCache<?> aec : this.candidates) {
 					aec.updateCache(geoDB);
-					LOGGER.info("cache updated: "+aec.getClass());
 				}
 				
 				LOGGER.info("all caches updated!");

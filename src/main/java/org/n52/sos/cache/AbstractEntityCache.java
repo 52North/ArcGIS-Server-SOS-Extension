@@ -40,6 +40,8 @@ public abstract class AbstractEntityCache<T> {
 	private File cacheFile;
 	private FileOutputStream fileStream;
 	private Object cacheFileMutex = new Object();
+
+	private long lastUpdateDuration;
 	
 	
 	
@@ -241,6 +243,10 @@ public abstract class AbstractEntityCache<T> {
 		return 0;
 	}
 	
+	public long getLastUpdateDuration() {
+		return lastUpdateDuration;
+	}
+
 	public boolean requestUpdateLock() {
 		File f = getCacheLockFile();
 		
@@ -284,12 +290,16 @@ public abstract class AbstractEntityCache<T> {
 	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
 		AbstractEntityCache<T> instance = getSingleInstance();
 		if (!instance.requestUpdateLock()) {
-			LOGGER.info("cache is currently already updating");
+			LOGGER.info("cache is currently already updating: "+ this.getClass().getSimpleName());
 			return;
 		}
 		
+		LOGGER.info("Getting DAO data for "+ this.getClass().getSimpleName());
+		long start = System.currentTimeMillis();
 		Collection<T> entities = getCollectionFromDAO(geoDB);
 		instance.storeEntityCollection(entities);
+		this.lastUpdateDuration = System.currentTimeMillis() - start;
+		LOGGER.info("Update for "+ this.getClass().getSimpleName() +" took ms: "+this.lastUpdateDuration);
 		
 		instance.freeUpdateLock();		
 	}

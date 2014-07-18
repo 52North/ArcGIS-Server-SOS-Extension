@@ -15,19 +15,20 @@
  */
 package org.n52.sos.handler;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.FileNotFoundException;
 
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.n52.sos.cache.AbstractEntityCache;
 import org.n52.sos.cache.CacheScheduler;
 import org.n52.sos.db.AccessGDB;
+import org.n52.util.CommonUtilities;
 
 import com.esri.arcgis.server.json.JSONObject;
 
 public class GetCacheMetadataHandler implements OperationRequestHandler {
 	
-	DateFormat format = SimpleDateFormat.getDateTimeInstance();
+	DateTimeFormatter format = ISODateTimeFormat.dateTimeNoMillis();
 
 	@Override
 	public int compareTo(OperationRequestHandler o) {
@@ -47,13 +48,21 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 		CacheScheduler cache = CacheScheduler.instance();
 		if (cache != null) {
 			for (AbstractEntityCache<?> aec : cache.getCandidates()) {
+				JSONObject candidateObject = new JSONObject();
 				long lastUpdate = aec.lastUpdated();
-				if (lastUpdate > 0) {
-					result.put(aec.getClass().getSimpleName(), format.format(new Date(lastUpdate)));
-				}
+				candidateObject.put("lastUpdated", format.print(lastUpdate));
+				candidateObject.put("lastUpdatedUnixTimestamp", lastUpdate / 1000);
+				candidateObject.put("lastUpdateDuration", aec.getLastUpdateDuration());
+				result.put(aec.getClass().getSimpleName(), candidateObject);
 			}
 			
 			result.put("updateCacheOnStartup", cache.isUpdateCacheOnStartup());
+			try {
+				result.put("cacheBaseDir", CommonUtilities.resolveCacheBaseDir());
+			}
+			catch (FileNotFoundException e) {
+				result.put("cacheBaseDir", "n/a");
+			}
 		}
 		
 		return result.toString().getBytes();
