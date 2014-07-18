@@ -73,7 +73,7 @@ public class CacheScheduler {
 			LOGGER.warn(e.getMessage(), e);
 		}
 		
-		this.timer = new Timer(true);
+		this.timer = new Timer(false);
 		
 		if (!updateCacheOnStartup) {
 			LOGGER.info("Update cache on startup disabled!");
@@ -112,7 +112,16 @@ public class CacheScheduler {
 		
 		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD * 24);
 		
-		LOGGER.info("Next scheduled cache update: "+c.getTime().toString());
+//		Calendar c = new GregorianCalendar();
+//		c.add(Calendar.MINUTE, 2);
+//		c.set(Calendar.SECOND, 0);
+//		
+//		Random random = new Random();
+//		c.add(Calendar.SECOND, 5 + (random.nextInt(11)*2));
+//		
+//		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD /2);
+		
+		LOGGER.severe("Next scheduled cache update: "+c.getTime().toString());
 	}
 	
 	
@@ -138,11 +147,14 @@ public class CacheScheduler {
 
 	public void shutdown() {
 		this.timer.cancel();
-		try {
-			ObservationOfferingCache.instance().freeUpdateLock();
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
+		for (AbstractEntityCache<?> aec : candidates) {
+			try {
+				aec.getSingleInstance().freeUpdateLock();
+			} catch (FileNotFoundException e) {
+				LOGGER.warn(e.getMessage(), e);
+			}	
 		}
+		
 	}
 	
 	private class UpdateCacheTask extends TimerTask {
@@ -156,13 +168,15 @@ public class CacheScheduler {
 		@Override
 		public void run() {
 			try {
-				LOGGER.info("update cache... using thread "+ Thread.currentThread().getName());
-				
-				for (AbstractEntityCache<?> aec : this.candidates) {
-					aec.updateCache(geoDB);
+				synchronized (CacheScheduler.class) {
+					LOGGER.info("update cache... using thread "+ Thread.currentThread().getName());
+					
+					for (AbstractEntityCache<?> aec : this.candidates) {
+						aec.updateCache(geoDB);
+					}
+					
+					LOGGER.info("all caches updated!");					
 				}
-				
-				LOGGER.info("all caches updated!");
 			} catch (IOException e) {
 				LOGGER.warn(e.getMessage(), e);
 			} catch (CacheException e) {

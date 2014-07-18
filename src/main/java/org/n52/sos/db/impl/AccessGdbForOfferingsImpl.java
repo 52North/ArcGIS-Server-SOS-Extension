@@ -58,9 +58,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
      * @return all offerings from the Geodatabase
      * @throws IOException
      */
-    public Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException
+    public synchronized Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException
     {
-        LOGGER.info("getNetworksAsObservationOfferings() is called.");
+        LOGGER.info("getNetworksAsObservationOfferings() is called. "+System.identityHashCode(this));
         
         List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
         
@@ -102,6 +102,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         for (ObservationOffering offering : offerings) {
             LOGGER.debug("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
             
+            safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // request the timeperiod
             IQueryDef queryDefTime = gdb.getWorkspace().createQueryDef();
@@ -134,6 +135,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseTime.append(" AND ");
             whereClauseTime.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
             queryDefTime.setWhereClause(whereClauseTime.toString());
+
             LOGGER.debug(String.format("Evaluating time query for network: '%s'", offering.getId()));
 
             ICursor cursorOffering = queryDefTime.evaluate();
@@ -142,8 +144,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             
             Object startValue = nextRow.getValue(0);
             Object endValue = nextRow.getValue(1);
-                
+            
             if (startValue == null || endValue == null) {
+            	LOGGER.debug("skipping network");
             	offeringsWithoutObservations.add(offering);
             	continue;
             }
@@ -163,9 +166,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                 }
             }
             
+            safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // set observed property
-            
             IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
 
             // set tables
@@ -217,9 +220,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             
             offering.setObservedProperties(obsPropsArray);
             
+            safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // set envelope through feature positions
-            
             IQueryDef queryDefFoi = gdb.getWorkspace().createQueryDef();
             
             // set tables
@@ -283,7 +286,16 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         return offerings;
     }
     
-    /**
+    private void safetySleep(int i) {
+    	try {
+			Thread.sleep(i);
+		} catch (InterruptedException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}		
+	}
+
+
+	/**
      * META: Currently this method is not used. Instead {@link getNetworksAsObservationOfferings()} is used.
      * 
      * This method can be used to retrieve all {@link ObservationOffering}s associated with the SOS.
@@ -292,7 +304,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
      * @return all offerings from the Geodatabase
      * @throws IOException
      */
-    public Collection<ObservationOffering> getProceduresAsObservationOfferings() throws IOException
+    public synchronized Collection<ObservationOffering> getProceduresAsObservationOfferings() throws IOException
     {
         LOGGER.debug("getObservationOfferings() is called.");
         

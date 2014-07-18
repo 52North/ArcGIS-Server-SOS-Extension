@@ -265,7 +265,7 @@ public abstract class AbstractEntityCache<T> {
 		return false;
 	}
 	
-	public void freeUpdateLock() {
+	public void freeUpdateLock() throws FileNotFoundException {
 		File f = getCacheLockFile();
 		
 		if (f != null && f.exists()) {

@@ -459,7 +459,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 	}
 
 	@Override
-	public Collection<PropertyUnitMapping> getPropertyUnitMappings() throws IOException {
+	public synchronized Collection<PropertyUnitMapping> getPropertyUnitMappings() throws IOException {
 		PropertyUnitMapping result = new PropertyUnitMapping();
 		
 		String subFields = AccessGDBImpl.createCommaSeparatedList(
