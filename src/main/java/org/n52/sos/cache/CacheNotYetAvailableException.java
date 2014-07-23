@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.db;
+package org.n52.sos.cache;
 
-import java.io.IOException;
-import java.util.Collection;
+public class CacheNotYetAvailableException extends Exception {
 
-import org.n52.om.sampling.Feature;
-import org.n52.ows.InvalidParameterValueException;
-import org.n52.ows.ResponseExceedsSizeLimitException;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-public interface AccessGdbForFeatures {
-
-	Collection<Feature> getFeaturesOfInterest(String[] featuresOfInterest,
-			String[] observedProperties, String[] procedures,
-			String spatialFilter) throws IOException, InvalidParameterValueException, ResponseExceedsSizeLimitException;
-
+	public CacheNotYetAvailableException() {
+		super("The service cache has not yet been established. Please try again in a few minutes.");
+	}
+	
 }

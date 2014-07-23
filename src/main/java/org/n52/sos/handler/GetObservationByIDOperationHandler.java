@@ -15,10 +15,13 @@
  */
 package org.n52.sos.handler;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.n52.om.observation.MultiValueObservation;
+import org.n52.ows.ExceptionReport;
 import org.n52.ows.InvalidParameterValueException;
+import org.n52.ows.NoApplicableCodeException;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.encoder.AQDObservationEncoder;
@@ -44,61 +47,66 @@ public class GetObservationByIDOperationHandler extends OGCOperationRequestHandl
      * @throws Exception
      */
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
-            String[] responseProperties) throws Exception
+            String[] responseProperties) throws ExceptionReport
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
         
         // keep track of the invokedURL (for possible RDF response):
-        String invokedURL = sosUrlExtension + "/GetObservation";
-        invokedURL += "?service=" + SERVICE;
-        invokedURL += "&request=" + getOperationName();
+//        String invokedURL = sosUrlExtension + "/GetObservation";
+//        invokedURL += "?service=" + SERVICE;
+//        invokedURL += "&request=" + getOperationName();
         
         // check 'version' parameter:
         checkMandatoryParameter(inputObject, "version", VERSION);
-        invokedURL += "&version=" + VERSION;
+//        invokedURL += "&version=" + VERSION;
         
         String[] observationIDs = null;
         if (inputObject.has("observation")) {
             observationIDs = inputObject.getString("observation").split(",");
             
-            invokedURL += "&observation=" + inputObject.getString("observation");
+//            invokedURL += "&observation=" + inputObject.getString("observation");
         }
         
         String responseFormat = null;
         if (inputObject.has("responseFormat")) {
             responseFormat = inputObject.getString("responseFormat");
             
-            invokedURL += "&responseFormat=" + inputObject.getString("responseFormat");
+//            invokedURL += "&responseFormat=" + inputObject.getString("responseFormat");
         }
         
         String result = "";
            
-        Map<String, MultiValueObservation> idObsMap = geoDB.getObservationAccess().getObservations(observationIDs);
+        Map<String, MultiValueObservation> idObsMap;
+		try {
+			idObsMap = geoDB.getObservationAccess().getObservations(observationIDs);
         
-        if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_RDF)) {
-            throw new UnsupportedOperationException("RDF not yet supported");
-//            if (idObsMap.size() == 1) {
-//                
-//                idObsMap.
-//                
-//                AbstractObservation observation = observationCollection.getObservations().get(0);
-//                result = new RDFEncoder(sosUrlExtension).getObservationTriple(observation, invokedURL);
-//            }
-//            else {
-//                result = new RDFEncoder(sosUrlExtension).getObservationCollectionTriples(observationCollection, invokedURL);
-//            }
-        }
-        else if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_AQ)) {
-            result = new AQDObservationEncoder().encodeObservations(idObsMap);
-        }
-        else if (responseFormat == null || responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_OM)) {
-            result = new OGCObservationSWECommonEncoder().encodeObservations(idObsMap);
-        }
-        else {
-            throw new InvalidParameterValueException("Specified responseFormat '" + responseFormat + "' is unsupported. Please use either '"+Constants.RESPONSE_FORMAT_OM+"', '"+Constants.RESPONSE_FORMAT_AQ+"', or '"+Constants.RESPONSE_FORMAT_RDF+"'.");
-        }
-        
-        return result.getBytes("utf-8");
+	        if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_RDF)) {
+	            throw new UnsupportedOperationException("RDF not yet supported");
+	//            if (idObsMap.size() == 1) {
+	//                
+	//                idObsMap.
+	//                
+	//                AbstractObservation observation = observationCollection.getObservations().get(0);
+	//                result = new RDFEncoder(sosUrlExtension).getObservationTriple(observation, invokedURL);
+	//            }
+	//            else {
+	//                result = new RDFEncoder(sosUrlExtension).getObservationCollectionTriples(observationCollection, invokedURL);
+	//            }
+	        }
+	        else if (responseFormat != null && responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_AQ)) {
+	            result = new AQDObservationEncoder().encodeObservations(idObsMap);
+	        }
+	        else if (responseFormat == null || responseFormat.equalsIgnoreCase(Constants.RESPONSE_FORMAT_OM)) {
+	            result = new OGCObservationSWECommonEncoder().encodeObservations(idObsMap);
+	        }
+	        else {
+	            throw new InvalidParameterValueException("Specified responseFormat '" + responseFormat + "' is unsupported. Please use either '"+Constants.RESPONSE_FORMAT_OM+"', '"+Constants.RESPONSE_FORMAT_AQ+"', or '"+Constants.RESPONSE_FORMAT_RDF+"'.");
+	        }
+	        
+	        return result.getBytes("utf-8");
+		} catch (IOException e) {
+			throw new NoApplicableCodeException(e);
+		}
     }
 
 	@Override

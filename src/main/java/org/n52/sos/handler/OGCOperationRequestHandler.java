@@ -55,7 +55,7 @@ public abstract class OGCOperationRequestHandler implements OperationRequestHand
     }
 
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
-            String[] responseProperties) throws Exception
+            String[] responseProperties) throws ExceptionReport
     {
    		LOGGER.debug("Start " + getOperationName() + " query.");
         

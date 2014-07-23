@@ -15,9 +15,12 @@
  */
 package org.n52.sos.handler;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.n52.om.sampling.Feature;
+import org.n52.ows.ExceptionReport;
+import org.n52.ows.NoApplicableCodeException;
 import org.n52.sos.db.AccessGDB;
 import org.n52.sos.encoder.OGCFeatureEncoder;
 
@@ -40,7 +43,7 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
      * @throws Exception
      */
     public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
-            String[] responseProperties) throws Exception
+            String[] responseProperties) throws ExceptionReport
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
 
@@ -65,11 +68,15 @@ public class GetFeatureOfInterestOperationHandler extends OGCOperationRequestHan
             spatialFilter = convertSpatialFilterFromOGCtoArcGisREST(spatialFilterOGC);
         }
 
-        Collection<Feature> featureCollection = geoDB.getFeatureAccess().getFeaturesOfInterest(featuresOfInterest, observedProperties, procedures, spatialFilter);
-        
-        String result = new OGCFeatureEncoder().encodeFeatures(featureCollection);
-        
-        return result.getBytes("utf-8");
+        try {
+            Collection<Feature> featureCollection = geoDB.getFeatureAccess().getFeaturesOfInterest(featuresOfInterest, observedProperties, procedures, spatialFilter);
+            
+            String result = new OGCFeatureEncoder().encodeFeatures(featureCollection);
+            
+            return result.getBytes("utf-8");		
+		} catch (IOException e) {
+			throw new NoApplicableCodeException(e);
+		}
     }
 
 	@Override

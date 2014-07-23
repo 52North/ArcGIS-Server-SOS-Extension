@@ -350,9 +350,14 @@ public class AccessGDBImpl implements AccessGDB {
      * @return
      * @throws Exception
      */
-    protected Collection<String> queryFeatureIDsForSpatialFilter(String spatialFilter) throws Exception
+    protected Collection<String> queryFeatureIDsForSpatialFilter(String spatialFilter) throws IOException
     {
-        IGeometry geometry = ServerUtilities.getGeometryFromJSON(new JSONObject(spatialFilter));
+        IGeometry geometry;
+		try {
+			geometry = ServerUtilities.getGeometryFromJSON(new JSONObject(spatialFilter));
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
         IFeatureClass features = workspace.openFeatureClass(Table.FEATUREOFINTEREST);
         ISpatialFilter spatialQuery = new SpatialFilter();
         spatialQuery.setGeometryByRef(geometry);

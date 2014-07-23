@@ -30,6 +30,7 @@ import org.n52.gml.Identifier;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.result.MeasureResult;
 import org.n52.ows.InvalidRequestException;
+import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeConverter;
 import org.n52.sos.Constants;
@@ -62,8 +63,11 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
     
     /**
      * @return all observations with the specified identifiers.
+     * @throws IOException 
+     * @throws AutomationException 
+     * @throws ResponseExceedsSizeLimitException 
      */
-    public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws Exception
+    public Map<String, MultiValueObservation> getObservations(String[] observationIdentifiers) throws ResponseExceedsSizeLimitException, AutomationException, IOException
     {
         return getObservations(new StringBuilder(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.OBSERVATION,
         		SubField.OBSERVATION_ID), observationIdentifiers)), null,
@@ -80,6 +84,9 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      * 
      * @return all observations from the database which comply to the
      *         specified parameters.
+     * @throws IOException 
+     * @throws ResponseExceedsSizeLimitException 
+     * @throws InvalidRequestException 
      * @throws Exception
      */
     @Override
@@ -91,7 +98,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
             String spatialFilter,
             String temporalFilter,
             String[] aggregationTypes,
-            String where) throws Exception
+            String where) throws IOException, ResponseExceedsSizeLimitException, InvalidRequestException
     {
         StringBuilder whereClauseParameterAppend = new StringBuilder();
         
@@ -164,7 +171,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
 
     
     private Map<String, MultiValueObservation> getFirstOrLatestObservation(
-			StringBuilder whereClauseParameterAppend, boolean first, String[] aggregationTypes) throws Exception {
+			StringBuilder whereClauseParameterAppend, boolean first, String[] aggregationTypes) throws InvalidRequestException, IOException {
         if (whereClauseParameterAppend.toString().trim().isEmpty()) {
         	throw new InvalidRequestException("No filter of any kind was defined. Rejecting request.");
         }
@@ -225,8 +232,11 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      * This method serves as a skeleton for the other 2 methods above and
      * expects a WHERE clause that parameterizes the database query.
      * @param aggregationTypes 
+	 * @throws ResponseExceedsSizeLimitException 
+	 * @throws IOException 
+	 * @throws AutomationException 
      */
-    private Map<String, MultiValueObservation> getObservations(StringBuilder whereClauseParameterAppend, String[] aggregationTypes, boolean checkForMaxRecords) throws Exception
+    private Map<String, MultiValueObservation> getObservations(StringBuilder whereClauseParameterAppend, String[] aggregationTypes, boolean checkForMaxRecords) throws ResponseExceedsSizeLimitException, AutomationException, IOException
     {
         String tables = createFromClause();
 
@@ -260,7 +270,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
     }
 
 	private Map<String, MultiValueObservation> createObservationsFromCursor(
-			ICursor cursor) throws IOException, AutomationException, Exception {
+			ICursor cursor) throws IOException {
 		// convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
 
@@ -351,7 +361,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
     // /////////////////////////////
 
     protected MultiValueObservation createMultiValueObservation(IRow row,
-            Fields fields) throws IOException, AutomationException, Exception
+            Fields fields) throws IOException
     {
         // Identifier
         String obsID = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();

@@ -145,7 +145,7 @@ public class PropertyUnitMappingCache extends
 			logger.debug(String.format("PropertyUnitMappings resolved: %s (%s)",
 					propertyUnitMap.size(), propertyUnitMap.toString()));
 
-		} catch (IOException | NumberFormatException | CacheException e) {
+		} catch (IOException | NumberFormatException | CacheException | CacheNotYetAvailableException e) {
 			logger.warn("Failed to resolve property to unit mappings", e);
 		}
 		

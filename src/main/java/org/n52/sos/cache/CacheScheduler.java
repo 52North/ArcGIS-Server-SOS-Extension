@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -171,6 +172,24 @@ public class CacheScheduler {
 		
 	}
 	
+	private synchronized void freeCacheUpdateLock() throws IOException {
+		File lockFile = resolveCacheLockFile();
+		
+		if (lockFile.exists()) {
+			lockFile.delete();
+		}
+	}
+
+	private File resolveCacheLockFile() throws FileNotFoundException {
+		File dir = CommonUtilities.resolveCacheBaseDir();
+		File lockFile = new File(dir, "cache.lock");
+		return lockFile;
+	}
+
+	public void forceUpdate() {
+		this.cacheTimer.schedule(new UpdateCacheTask(candidates), new Date());		
+	}
+	
 	private class UpdateCacheTask extends TimerTask {
 
 		private List<AbstractEntityCache<?>> candidates;
@@ -271,18 +290,5 @@ public class CacheScheduler {
 		return false;
 	}
 
-	private synchronized void freeCacheUpdateLock() throws IOException {
-		File lockFile = resolveCacheLockFile();
-		
-		if (lockFile.exists()) {
-			lockFile.delete();
-		}
-	}
-
-	private File resolveCacheLockFile() throws FileNotFoundException {
-		File dir = CommonUtilities.resolveCacheBaseDir();
-		File lockFile = new File(dir, "cache.lock");
-		return lockFile;
-	}
 	
 }

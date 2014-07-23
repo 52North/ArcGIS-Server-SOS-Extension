@@ -15,19 +15,24 @@
  */
 package org.n52.sos.db;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.n52.om.observation.MultiValueObservation;
+import org.n52.ows.InvalidRequestException;
+import org.n52.ows.ResponseExceedsSizeLimitException;
+
+import com.esri.arcgis.interop.AutomationException;
 
 public interface AccessGdbForObservations {
 
-	Map<String, MultiValueObservation> getObservations(String[] observationIDs) throws Exception;
+	Map<String, MultiValueObservation> getObservations(String[] observationIDs) throws ResponseExceedsSizeLimitException, AutomationException, IOException;
 
 	String createTemporalClauseSDE(String temporalFilter);
 
 	Map<String, MultiValueObservation> getObservations(String[] offerings,
 			String[] featuresOfInterest, String[] observedProperties,
 			String[] procedures, String spatialFilter, String temporalFilter,
-			String[] aggregationTypes, String where) throws Exception;
+			String[] aggregationTypes, String where) throws IOException, ResponseExceedsSizeLimitException, InvalidRequestException;
 
 }

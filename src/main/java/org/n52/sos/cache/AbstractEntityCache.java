@@ -162,21 +162,22 @@ public abstract class AbstractEntityCache<T> {
 		return new File(this.cacheFile.getParent(), getCacheFileName()+".tmp");
 	}
 
-	public T getEntity(String id) throws CacheException {
+	public T getEntity(String id) throws CacheException, CacheNotYetAvailableException {
 		return getEntityCollection().get(id);
 	}
 	
-	public Map<String, T> getEntityCollection() throws CacheException {
+	public Map<String, T> getEntityCollection() throws CacheException, CacheNotYetAvailableException {
 		return getEntityCollection(null);
 	}
 	
-	public Map<String, T> getEntityCollection(AccessGDB geoDB) throws CacheException {
+	public Map<String, T> getEntityCollection(AccessGDB geoDB) throws CacheException, CacheNotYetAvailableException {
 		synchronized (cacheFileMutex) {
 			if (this.cacheFile == null || !(this.isCacheAvailable() && this.hasCacheContent())) {
 				if (geoDB != null) {
 					try {
 						initializeCacheFile();
-						updateCache(geoDB);
+						scheduleCacheUpdate();
+						throw new CacheNotYetAvailableException();
 					} catch (IOException e) {
 						throw new CacheException(e);
 					}
@@ -194,6 +195,10 @@ public abstract class AbstractEntityCache<T> {
 				throw new CacheException(e);
 			}	
 		}
+	}
+
+	private void scheduleCacheUpdate() {
+		CacheScheduler.instance().forceUpdate();
 	}
 
 	private Map<String, T> deserializeCacheFile() throws IOException {

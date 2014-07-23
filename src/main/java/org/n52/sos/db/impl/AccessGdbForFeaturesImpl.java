@@ -25,6 +25,7 @@ import java.util.List;
 import org.n52.om.sampling.AQDSample;
 import org.n52.om.sampling.Feature;
 import org.n52.ows.InvalidParameterValueException;
+import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.sos.Constants;
 import org.n52.sos.db.AccessGdbForFeatures;
 import org.n52.util.CommonUtilities;
@@ -34,7 +35,6 @@ import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.interop.AutomationException;
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
@@ -69,13 +69,15 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
      * 
      * @return all features of interest from the Geodatabase which comply to the
      *         specified parameters.
+     * @throws InvalidParameterValueException 
+     * @throws ResponseExceedsSizeLimitException 
      * @throws Exception
      */
     public Collection<Feature> getFeaturesOfInterest(
     		String[] featuresOfInterest,
             String[] observedProperties,
             String[] procedures,
-            String spatialFilter) throws Exception
+            String spatialFilter) throws IOException, InvalidParameterValueException, ResponseExceedsSizeLimitException
     {
     	
         List<Feature> features = new ArrayList<Feature>();
@@ -311,7 +313,12 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         int count = 0;
         while ((row = cursor.nextRow()) != null && count < gdb.getMaxNumberOfResults()) {
             count++;
-            Feature feature = createFeature(row, fields, shapeFromStations);
+            Feature feature;
+			try {
+				feature = createFeature(row, fields, shapeFromStations);
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
             features.add(feature);
         }
 
@@ -325,7 +332,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     /**
      * This method creates a {@link AQDSample} of a given {@link IRow} and it's {@link Fields}
      */
-    protected AQDSample createFeature(IRow row, Fields fields, boolean shapeFromStations) throws AutomationException, IOException, URISyntaxException
+    protected AQDSample createFeature(IRow row, Fields fields, boolean shapeFromStations) throws IOException, URISyntaxException
     {	
         // gml identifier
         String gmlId = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));

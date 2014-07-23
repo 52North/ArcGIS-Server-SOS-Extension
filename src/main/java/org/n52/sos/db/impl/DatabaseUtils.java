@@ -66,8 +66,7 @@ public class DatabaseUtils {
 	}
 
 	public static ICursor evaluateQuery(String tables, String whereClause,
-			String subFields, Workspace workspace) throws IOException,
-			AutomationException {
+			String subFields, Workspace workspace) throws IOException {
 		IQueryDef queryDef = workspace.createQueryDef();
 
 		queryDef.setSubFields(subFields);

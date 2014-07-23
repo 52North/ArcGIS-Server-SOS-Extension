@@ -15,11 +15,16 @@
  */
 package org.n52.sos.handler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.n52.ows.ExceptionReport;
+import org.n52.ows.NoApplicableCodeException;
+import org.n52.sos.cache.CacheException;
+import org.n52.sos.cache.CacheNotYetAvailableException;
 import org.n52.sos.cache.ObservationOfferingCache;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.ServiceDescription;
@@ -70,9 +75,11 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
      * 
      * @param inputObject
      * @return
+     * @throws IOException 
+     * @throws NoApplicableCodeException 
      * @throws Exception
      */
-    public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject, String[] responseProperties) throws Exception
+    public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject, String[] responseProperties) throws ExceptionReport
     {
         super.invokeOGCOperation(geoDB, inputObject, responseProperties);
         
@@ -80,18 +87,24 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 //        if (inputObject.has("AcceptVersions")) {
 //            acceptVersions = inputObject.getString("AcceptVersions").split(",");
 //        }
-        
-        ServiceDescription serviceDesc = geoDB.getServiceDescription();
-//        Collection<ObservationOffering> obsOfferings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
-        
-        Collection<ObservationOffering> obsOfferings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
-        
-        
-        String capabilitiesDocument = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDesc, obsOfferings, operationsMetadataProviders);
-                
-        // sending the Capabilities document:
-        LOGGER.info("Returning capabilities document.");
-        return capabilitiesDocument.getBytes("utf-8");
+        try {
+	        ServiceDescription serviceDesc = geoDB.getServiceDescription();
+	//        Collection<ObservationOffering> obsOfferings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
+	        
+	        Collection<ObservationOffering> obsOfferings;
+			
+				obsOfferings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
+	
+	        
+	        
+	        String capabilitiesDocument = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDesc, obsOfferings, operationsMetadataProviders);
+	                
+	        // sending the Capabilities document:
+	        LOGGER.info("Returning capabilities document.");
+	        return capabilitiesDocument.getBytes("utf-8");
+		} catch (CacheException | CacheNotYetAvailableException | IOException e) {
+			throw new NoApplicableCodeException(e);
+		}
     }
 
 	@Override
