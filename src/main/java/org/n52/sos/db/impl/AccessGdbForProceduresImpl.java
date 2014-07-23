@@ -145,7 +145,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      */
     public Collection<Procedure> getProceduresComplete(String[] procedureIdentifierArray) throws AutomationException, IOException 
     {
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+//        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
 
         // set sub fields
         List<String> subFields = new ArrayList<String>();
@@ -157,8 +157,6 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
         subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
         subFields.add(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID));
-        queryDef.setSubFields(" DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields));
-        LOGGER.info("SELECT " + queryDef.getSubFields());
         
 //        // set tables
 //        List<String> tables = new ArrayList<String>();
@@ -182,8 +180,6 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     	" LEFT JOIN " + Table.VALUE + " ON " + SubField.VALUE_FK_OBSERVATION + " = " + SubField.OBSERVATION_PK_OBSERVATION + 
     	" LEFT JOIN " + Table.UNIT + " ON " + SubField.VALUE_FK_UNIT + " = " + SubField.UNIT_PK_UNIT + 
     	" LEFT JOIN " + Table.AGGREGATIONTYPE + " ON " + SubField.VALUE_FK_AGGREGATIONTYPE + " = " + SubField.AGGREGATIONTYPE_PK_AGGREGATIONTYPE;
-        queryDef.setTables(fromClause);
-        LOGGER.info("FROM " + queryDef.getTables());
         
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
@@ -204,14 +200,13 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         	// identifiers:
         	whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE), procedureIdentifierArray));
             
-            queryDef.setWhereClause(whereClause.toString());
         }
-        LOGGER.info("WHERE " + queryDef.getWhereClause());
         
         List<Procedure> procedureList = new ArrayList<Procedure>();
 
 		// evaluate the database query
-        ICursor cursor = queryDef.evaluate();
+        ICursor cursor = DatabaseUtils.evaluateQuery(fromClause, whereClause.toString(), " DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields),
+        		gdb.getWorkspace());
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {
@@ -328,7 +323,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     	
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // request all procedures for network with ID 'networkID':
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+//        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
@@ -340,9 +335,6 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_LABEL));
         subFields.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE));
         
-        queryDef.setSubFields("DISTINCT "+AccessGDBImpl.createCommaSeparatedList(subFields));
-        LOGGER.info("SELECT " + queryDef.getSubFields());
-
         String fromClause = 
         		Table.OBSERVATION +
         		" INNER JOIN " + Table.FEATUREOFINTEREST+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_FK_FEATUREOFINTEREST	+ " = " + Table.FEATUREOFINTEREST + "." + SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST +
@@ -353,16 +345,14 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         		" INNER JOIN " + Table.NETWORK 			+ " ON " + Table.NETWORK + "." + SubField.NETWORK_PK_NETWOK 					+ " = " + Table.STATION + "." + SubField.STATION_FK_NETWORK_GID +
         		" INNER JOIN " + Table.VALUE 			+ " ON " + Table.OBSERVATION + "." + SubField.OBSERVATION_PK_OBSERVATION		+ " = " + Table.VALUE + "." + SubField.VALUE_FK_OBSERVATION;
        
-        queryDef.setTables(fromClause);
-        LOGGER.debug("FROM " + queryDef.getTables());
-        
-	    queryDef.setWhereClause(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID + " = '" + networkID + "'"));
-	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
-        
 		List<Procedure> procedureList = new ArrayList<Procedure>();
 
 		// evaluate the database query
-        ICursor cursor = queryDef.evaluate();
+        ICursor cursor = DatabaseUtils.evaluateQuery(fromClause,
+        		AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID + " = '" + networkID + "'"),
+        		"DISTINCT "+AccessGDBImpl.createCommaSeparatedList(subFields),
+        		gdb.getWorkspace());
+        
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {
@@ -404,19 +394,11 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
 	@Override
 	public boolean isNetwork(String procedureID) throws AutomationException, IOException {
-		
-		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+        ICursor cursor = DatabaseUtils.evaluateQuery(Table.NETWORK,
+        		AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + procedureID + "'",
+        		AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID),
+        		gdb.getWorkspace());
         
-        queryDef.setSubFields(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
-        LOGGER.info("SELECT " + queryDef.getSubFields());
-
-        queryDef.setTables(Table.NETWORK);
-        LOGGER.debug("FROM " + queryDef.getTables());
-        
-	    queryDef.setWhereClause(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + procedureID + "'");
-	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
-
-        ICursor cursor = queryDef.evaluate();
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {
@@ -432,19 +414,12 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
 	@Override
 	public boolean isProcedure(String procedureResourceID) throws AutomationException, IOException {
-			
-		IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-        
-        queryDef.setSubFields(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        LOGGER.info("SELECT " + queryDef.getSubFields());
 
-        queryDef.setTables(Table.PROCEDURE);
-        LOGGER.debug("FROM " + queryDef.getTables());
+        ICursor cursor = DatabaseUtils.evaluateQuery(Table.PROCEDURE,
+        		AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE) + " = '" + procedureResourceID + "'",
+        		AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE),
+        		gdb.getWorkspace());
         
-	    queryDef.setWhereClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE) + " = '" + procedureResourceID + "'");
-	    LOGGER.debug("WHERE " + queryDef.getWhereClause());
-
-        ICursor cursor = queryDef.evaluate();
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {

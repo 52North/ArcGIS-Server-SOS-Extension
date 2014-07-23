@@ -32,7 +32,6 @@ import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
@@ -80,7 +79,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     {
     	
         List<Feature> features = new ArrayList<Feature>();
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
+//        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
        
         
         // set sub fields
@@ -139,8 +138,6 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
             subFields.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
         }
         
-        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
-        
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.FEATUREOFINTEREST);
@@ -163,7 +160,6 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         }
         
         String tableList = AccessGDBImpl.createCommaSeparatedList(tables);
-        queryDef.setTables(tableList);
         
         
         // create the where clause with joins and constraints
@@ -271,8 +267,6 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
             }
         }
 
-        queryDef.setWhereClause(whereClause.toString());
-
         /*
          * check for exceeding the size limit
          */
@@ -288,37 +282,27 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         	isNullWhereClause.append(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
         	isNullWhereClause.append(" IS NULL");
         	
-        	int count = DatabaseUtils.resolveRecordCount(queryDef.getTables(),
+        	int count = DatabaseUtils.resolveRecordCount(tableList,
         			whereClause.toString().concat(isNullWhereClause.toString()),
         			gdb.getWorkspace());
         	
         	if (count > 0) {
         		subFields.remove(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
         		subFields.add(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_SHAPE));
-        		queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
         		
         		if (!tables.contains(Table.STATION)) {
             		//add station table - might not be there
             		tables.add(Table.STATION);
             		tableList = AccessGDBImpl.createCommaSeparatedList(tables);
-    				queryDef.setTables(tableList);        			
         		}
         		
         		shapeFromStations = true;
         	}
         }
    
-		// Log out the query clause
-        LOGGER.info("SELECT " + queryDef.getSubFields());
-        
-        // Log out the query clause
-        LOGGER.info("FROM " + queryDef.getTables());
-        
-        // Log out the query clause
-        LOGGER.info("WHERE " + queryDef.getWhereClause());
-        
+        ICursor cursor = DatabaseUtils.evaluateQuery(tableList, whereClause.toString(), AccessGDBImpl.createCommaSeparatedList(subFields),
+        		gdb.getWorkspace());
         // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
