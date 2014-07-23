@@ -99,8 +99,9 @@ public class DescribeSensorOperationHandler extends OGCOperationRequestHandler {
      * @throws IOException 
      * @throws AutomationException 
      * @throws InvalidParameterValueException 
+     * @throws NoApplicableCodeException 
      */
-    private byte[] queryAndEncodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException, InvalidParameterValueException {
+    private byte[] queryAndEncodeProcedures(AccessGDB geoDB, JSONObject inputObject, String sensorMLVersion) throws AutomationException, IOException, InvalidParameterValueException, NoApplicableCodeException {
         
     	String[] procedures = null;
     	if (inputObject.has("procedure")) {

@@ -26,4 +26,8 @@ public class CacheException extends Exception {
 		super(e);
 	}
 
+	public CacheException(String string) {
+		super(string);
+	}
+
 }

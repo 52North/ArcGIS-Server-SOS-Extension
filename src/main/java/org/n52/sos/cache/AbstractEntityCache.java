@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -183,8 +182,7 @@ public abstract class AbstractEntityCache<T> {
 					}
 				}
 				else {
-					LOGGER.warn("Could not access or create the cache file. AccessGDB not available! "+getCacheFileName());
-					return Collections.emptyMap();
+					throw new CacheException("Could not access or create the cache file. AccessGDB not available! "+getCacheFileName());
 				}
 			}
 			

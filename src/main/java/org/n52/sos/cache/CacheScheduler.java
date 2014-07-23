@@ -187,7 +187,19 @@ public class CacheScheduler {
 	}
 
 	public void forceUpdate() {
-		this.cacheTimer.schedule(new UpdateCacheTask(candidates), new Date());		
+		try {
+			if (!retrieveCacheUpdateLock()) {
+				LOGGER.info("chache updating locked. skipping");
+				return;
+			}
+			else {
+				freeCacheUpdateLock();
+				this.cacheTimer.schedule(new UpdateCacheTask(candidates), new Date());		
+			}
+		} catch (IOException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+				
 	}
 	
 	private class UpdateCacheTask extends TimerTask {

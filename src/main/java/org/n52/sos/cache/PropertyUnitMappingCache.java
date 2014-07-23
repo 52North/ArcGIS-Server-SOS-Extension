@@ -112,10 +112,14 @@ public class PropertyUnitMappingCache extends
 	@Override
 	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
 		super.updateCache(geoDB);
-		resolvePropertyUnitMappings(geoDB);
+		try {
+			resolvePropertyUnitMappings(geoDB);
+		} catch (CacheNotYetAvailableException e) {
+			throw new CacheException(e);
+		}
 	}
 
-	public synchronized Map<Integer, Unit> resolvePropertyUnitMappings(AccessGDB gdb) {
+	public synchronized Map<Integer, Unit> resolvePropertyUnitMappings(AccessGDB gdb) throws CacheNotYetAvailableException {
 		if (propertyUnitMap != null && propertyUnitMap.isEmpty() && !requiresUpdate()) {
 			logger.debug("returning in memory instance of propertyUnitMap");
 			return new HashMap<>(propertyUnitMap);
@@ -145,7 +149,7 @@ public class PropertyUnitMappingCache extends
 			logger.debug(String.format("PropertyUnitMappings resolved: %s (%s)",
 					propertyUnitMap.size(), propertyUnitMap.toString()));
 
-		} catch (IOException | NumberFormatException | CacheException | CacheNotYetAvailableException e) {
+		} catch (IOException | NumberFormatException | CacheException e) {
 			logger.warn("Failed to resolve property to unit mappings", e);
 		}
 		

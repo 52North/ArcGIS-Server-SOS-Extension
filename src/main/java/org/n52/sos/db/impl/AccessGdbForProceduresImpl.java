@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.n52.ows.NoApplicableCodeException;
+import org.n52.sos.cache.CacheNotYetAvailableException;
 import org.n52.sos.cache.PropertyUnitMappingCache;
 import org.n52.sos.dataTypes.Output;
 import org.n52.sos.dataTypes.Procedure;
@@ -303,11 +305,17 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     
     /**
      * @return a {@link Collection} of all {@link Procedure}s for a given network.
+     * @throws NoApplicableCodeException 
      */
-    public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException
+    public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException, NoApplicableCodeException
     {
     	PropertyUnitMappingCache pumCache = PropertyUnitMappingCache.instance();
-    	Map<Integer, Unit> propertyUnitMap = pumCache.resolvePropertyUnitMappings(gdb);
+    	Map<Integer, Unit> propertyUnitMap;
+		try {
+			propertyUnitMap = pumCache.resolvePropertyUnitMappings(gdb);
+		} catch (CacheNotYetAvailableException e) {
+			throw new NoApplicableCodeException(e);
+		}
     	Unit fallbackDefaultUnit = pumCache.getDefaultFallbackUnit();
     	
     	LOGGER.debug("propertyUnitMap= "+propertyUnitMap.toString());
