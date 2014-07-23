@@ -122,15 +122,17 @@ public class CacheScheduler {
 		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS * 24);
 		
 //		Calendar c = new GregorianCalendar();
-//		c.add(Calendar.MINUTE, 2);
-//		c.set(Calendar.SECOND, 0);
+//		c.add(Calendar.MINUTE, 5);
 //		
-//		Random random = new Random();
-//		c.add(Calendar.SECOND, 5 + (random.nextInt(11)*2));
-//		
-//		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS);
+//		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS/2);
 		
 		LOGGER.severe("Next scheduled cache update: "+c.getTime().toString());
+		
+		/*
+		 * start ONE monitoring after 30 minutes and check if the .lock file
+		 * is older than 30 minutes -> an artifact .lock file!!
+		 */
+		this.monitorTimer.schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/60);
 	}
 	
 	
@@ -202,6 +204,24 @@ public class CacheScheduler {
 				
 	}
 	
+	private synchronized boolean retrieveCacheUpdateLock() throws IOException {
+		File lockFile = resolveCacheLockFile();
+		
+		if (!lockFile.exists()) {
+			boolean worked = lockFile.createNewFile();
+			if (worked) {
+				return true;
+			}
+			else {
+				LOGGER.info("Could not create cache.lock file!");
+				return false;
+			}
+		}
+		
+		return false;
+	}
+
+	
 	private class UpdateCacheTask extends TimerTask {
 
 		private List<AbstractEntityCache<?>> candidates;
@@ -239,67 +259,86 @@ public class CacheScheduler {
 		}
 
 		private void scheduleLockMonitor() {
-			CacheScheduler.this.monitorTimer.schedule(new TimerTask() {
-				
-				@Override
-				public void run() {
-					LOGGER.info("Monitoring cache update using thread "+Thread.currentThread().getId());
-					Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
-					
-					Thread target = null;
-					for (Thread t : stacks.keySet()) {
-						if (t.getId() == CacheScheduler.this.lastSchedulerThread) {
-							target = t;
-							break;
-						}
-					}
-					
-					if (target != null) {
-						LOGGER.info("lastSchedulerThread status: " + target.getState());
-						LOGGER.info("lastSchedulerThread isalive: " + target.isAlive());
-						LOGGER.info("lastSchedulerThread isinterrupted: " + target.isInterrupted());
-					}
-					else {
-						LOGGER.warn("Could not find lastSchedulerThread in current stack traces");
-					}
-					
-					try {
-						if (!retrieveCacheUpdateLock()) {
-							LOGGER.warn("The cache update took obviously too long. Freeing the lock, trying to interrupt cache update.");
-							target.interrupt();
-						}
-					} catch (IOException e) {
-						LOGGER.warn(e.getMessage(), e);
-					}
-					finally {
-						try {
-							freeCacheUpdateLock();
-						} catch (IOException e) {
-							LOGGER.warn(e.getMessage(), e);
-						}
-					}
-					
-				}
-			}, ONE_HOUR_MS/2);
+			CacheScheduler.this.monitorTimer.schedule(new MonitorCacheTask(), ONE_HOUR_MS/2);
 		}
 		
 	}
-
-	private synchronized boolean retrieveCacheUpdateLock() throws IOException {
-		File lockFile = resolveCacheLockFile();
+	
+	private class MonitorCacheTask extends TimerTask {
 		
-		if (!lockFile.exists()) {
-			boolean worked = lockFile.createNewFile();
-			if (worked) {
-				return true;
-			}
-			else {
-				LOGGER.info("Could not create cache.lock file!");
-				return false;
-			}
+		private long maximumAge = Long.MIN_VALUE;
+
+		public MonitorCacheTask() {
 		}
 		
-		return false;
+		public MonitorCacheTask(long maximumAge) {
+			this.maximumAge = maximumAge;
+		}
+		
+		@Override
+		public void run() {
+			LOGGER.info("Monitoring cache update using thread "+Thread.currentThread().getId());
+			Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
+			
+			Thread target = null;
+			for (Thread t : stacks.keySet()) {
+				if (t.getId() == CacheScheduler.this.lastSchedulerThread) {
+					target = t;
+					break;
+				}
+			}
+			
+			if (target != null) {
+				LOGGER.info("lastSchedulerThread status: " + target.getState());
+				LOGGER.info("lastSchedulerThread isalive: " + target.isAlive());
+				LOGGER.info("lastSchedulerThread isinterrupted: " + target.isInterrupted());
+			}
+			else {
+				LOGGER.warn("Could not find lastSchedulerThread in current stack traces");
+			}
+			
+			boolean gotLock = false;
+			
+			try {
+				gotLock = retrieveCacheUpdateLock();
+				if (!gotLock) {
+					LOGGER.warn("The cache update took obviously too long. trying to interrupt cache update.");
+					if (target!= null) {
+						target.interrupt();
+					}
+				}
+			} catch (IOException e) {
+				LOGGER.warn(e.getMessage(), e);
+			}
+			finally {
+				try {
+					if (gotLock) {
+						LOGGER.info("Freeing the cache.lock");
+						freeCacheUpdateLock();	
+					}
+					else {
+						if (this.maximumAge != Long.MIN_VALUE) {
+							LOGGER.info("Resolving age of cache.lock file");
+							File f = resolveCacheLockFile();
+							if (System.currentTimeMillis() - f.lastModified() > this.maximumAge) {
+								LOGGER.info("Trying to remove artifact cache.lock file");
+								freeCacheUpdateLock();	
+							}
+							else {
+								LOGGER.info("cache.lock to young, an update might be in progress.");
+							}
+						}
+						else {
+							freeCacheUpdateLock();
+						}
+					}
+				} catch (IOException e) {
+					LOGGER.warn(e.getMessage(), e);
+				}
+			}
+			
+		}
+		
 	}
 
 	
