@@ -27,7 +27,6 @@ import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
-import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.esriDatasetType;
@@ -85,11 +84,8 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
         
         JSONObject json = new JSONObject();
 
-        IQueryDef queryDef = this.workspace.createQueryDef();
         try {
-            queryDef.setTables(tableName);
-            queryDef.setSubFields("COUNT(" + primaryKeyColumn + ")");
-            ICursor cursor = queryDef.evaluate();
+            ICursor cursor = DatabaseUtils.evaluateQuery(tableName, "", "COUNT(" + primaryKeyColumn + ")", workspace);
             
             json.append("Reading count of table:", tableName);
             IRow row;
@@ -118,11 +114,8 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
         json.append("This function: ", "...checks the availability of a table as specified in the properties of this SOE (configure in ArcGIS Server Manager).");
         json.append("This function: ", "...and presents the count of rows contained in that table.");
         
-        IQueryDef queryDef = this.workspace.createQueryDef();
         try {
-            queryDef.setTables(soe.getTable());
-            queryDef.setSubFields("COUNT(" + soe.getTablePkField() + ")");
-            ICursor cursor = queryDef.evaluate();
+            ICursor cursor = DatabaseUtils.evaluateQuery(soe.getTable(), "", "COUNT(" + soe.getTablePkField() + ")", workspace);
             
             json.append("Reading count of table:", soe.getTable());
             IRow row;

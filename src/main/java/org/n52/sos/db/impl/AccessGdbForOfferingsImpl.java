@@ -30,7 +30,6 @@ import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.Point;
@@ -66,20 +65,20 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         
         // ~~~~~~~~~~~~~~~~~~~~
         // request all networks:
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
 
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.NETWORK);
-        queryDef.setTables(AccessGDBImpl.createCommaSeparatedList(tables));
 
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         subFields.add(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID));
-        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
         
         // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
+        ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
+        		"",
+        		AccessGDBImpl.createCommaSeparatedList(subFields),
+        		gdb.getWorkspace());
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
@@ -105,7 +104,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // request the timeperiod
-            IQueryDef queryDefTime = gdb.getWorkspace().createQueryDef();
             
             // set tables
             List<String> tablesTime = new ArrayList<String>();
@@ -114,14 +112,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             tablesTime.add(Table.SAMPLINGPOINT);
             tablesTime.add(Table.STATION);
             tablesTime.add(Table.NETWORK);
-            queryDefTime.setTables(AccessGDBImpl.createCommaSeparatedList(tablesTime));
 //            LOGGER.info("Tables clause := " + queryDefTime.getTables());
             
             // set sub fields
-            List<String> subFieldsOff = new ArrayList<String>();
-            subFieldsOff.add("MIN(" + AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
-            subFieldsOff.add("MAX(" + AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MAXTIME");
-            queryDefTime.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsOff));
+            List<String> subFieldsTime = new ArrayList<String>();
+            subFieldsTime.add("MIN(" + AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
+            subFieldsTime.add("MAX(" + AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MAXTIME");
             
             // create where clause with joins and constraints
             StringBuilder whereClauseTime = new StringBuilder();
@@ -134,11 +130,13 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseTime.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
             whereClauseTime.append(" AND ");
             whereClauseTime.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
-            queryDefTime.setWhereClause(whereClauseTime.toString());
 
             LOGGER.debug(String.format("Evaluating time query for network: '%s'", offering.getId()));
 
-            ICursor cursorOffering = queryDefTime.evaluate();
+            ICursor cursorOffering = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesTime),
+            		whereClauseTime.toString(),
+            		AccessGDBImpl.createCommaSeparatedList(subFieldsTime),
+            		gdb.getWorkspace());
             
             IRow nextRow = cursorOffering.nextRow();
             
@@ -169,7 +167,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // set observed property
-            IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
 
             // set tables
             List<String> tablesProp = new ArrayList<String>();
@@ -178,12 +175,10 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             tablesProp.add(Table.SAMPLINGPOINT);
             tablesProp.add(Table.STATION);
             tablesProp.add(Table.NETWORK);
-            queryDefProp.setTables(AccessGDBImpl.createCommaSeparatedList(tablesProp));
 
             // set sub fields
             List<String> subFieldsProp = new ArrayList<String>();
             subFieldsProp.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
-            queryDefProp.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsProp));
 
             // create where clause with joins and constraints
             StringBuilder whereClauseProp = new StringBuilder();
@@ -196,11 +191,13 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseProp.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
             whereClauseProp.append(" AND ");
             whereClauseProp.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
-            queryDefProp.setWhereClause(whereClauseProp.toString());
             LOGGER.debug(String.format("Evaluating property query for network: '%s'", offering.getId()));
 
             // evaluate the database query
-            ICursor cursorProp = queryDefProp.evaluate();
+            ICursor cursorProp = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesProp),
+            		whereClauseProp.toString(),
+            		AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
+            		gdb.getWorkspace());
             
             fields = (Fields) cursorProp.getFields();
             List<String> obsProps = new ArrayList<String>();
@@ -223,7 +220,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // set envelope through feature positions
-            IQueryDef queryDefFoi = gdb.getWorkspace().createQueryDef();
             
             // set tables
             List<String> tablesFoi = new ArrayList<String>();
@@ -232,12 +228,10 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             tablesFoi.add(Table.SAMPLINGPOINT);
             tablesFoi.add(Table.STATION);
             tablesFoi.add(Table.NETWORK);
-            queryDefFoi.setTables(AccessGDBImpl.createCommaSeparatedList(tablesFoi));
             
             // set sub fields
             List<String> subFieldsFoi = new ArrayList<String>();
             subFieldsFoi.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
-            queryDefFoi.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsFoi));
             
             // create the where clause with joins and constraints
             StringBuilder whereClauseFoi = new StringBuilder();
@@ -250,12 +244,14 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
             whereClauseFoi.append(" AND ");
             whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
-            queryDefFoi.setWhereClause(whereClauseFoi.toString());
 //                LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
 
             LOGGER.debug(String.format("Evaluating FOI query for network: '%s'", offering.getId()));
             // evaluate the database query
-            ICursor cursorFoi = queryDefFoi.evaluate();
+            ICursor cursorFoi = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesFoi),
+            		whereClauseFoi.toString(),
+            		AccessGDBImpl.createCommaSeparatedList(subFieldsFoi),
+            		gdb.getWorkspace());
             
             List<Point> points = new ArrayList<Point>();
             fields = (Fields) cursorFoi.getFields();
@@ -316,20 +312,18 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
             
             // create request to get all offerings an the procedures
-            IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
 
             // set tables
             List<String> tables = new ArrayList<String>();
             tables.add(Table.PROCEDURE);
-            queryDef.setTables(AccessGDBImpl.createCommaSeparatedList(tables));
 
             // set sub fields
             List<String> subFields = new ArrayList<String>();
             subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-            queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
             
             // evaluate the database query
-            ICursor cursor = queryDef.evaluate();
+            ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
+            		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb.getWorkspace());
 
             // convert cursor entries to abstract observations
             Fields fields = (Fields) cursor.getFields();
@@ -356,31 +350,28 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                 
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 // request the timeperiod
-                IQueryDef queryDefTime = gdb.getWorkspace().createQueryDef();
                 
                 // set tables
                 List<String> tablesTime = new ArrayList<String>();
                 tablesTime.add(Table.OBSERVATION);
                 tablesTime.add(Table.VALUE);
                 tablesTime.add(Table.PROCEDURE);
-                queryDefTime.setTables(AccessGDBImpl.createCommaSeparatedList(tablesTime));
-//                LOGGER.info("Tables clause := " + queryDefTime.getTables());
                                 
                 // set sub fields
                 List<String> subFieldsOff = new ArrayList<String>();
                 subFieldsOff.add("MIN(" + AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MINTIME");
                 subFieldsOff.add("MAX(" + AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)+") AS MAXTIME");
-                queryDefTime.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsOff));
                 
                 // create where clause with joins and constraints
                 StringBuilder whereClauseTime = new StringBuilder();
                 whereClauseTime.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
                 whereClauseTime.append(" AND ");
                 whereClauseTime.append(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
-                queryDefTime.setWhereClause(whereClauseTime.toString());
 //                LOGGER.info("Where clause := " + queryDefTime.getWhereClause());
 
-                ICursor cursorOffering = queryDefTime.evaluate();
+                ICursor cursorOffering = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesTime),
+                		whereClauseTime.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsOff),
+                		gdb.getWorkspace());
                 
                 IRow nextRow = cursorOffering.nextRow();
                 
@@ -411,20 +402,17 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                 // set observed property
                 
                 if (noObservationsForOffering == false) {
-                    IQueryDef queryDefProp = gdb.getWorkspace().createQueryDef();
     
                     // set tables
                     List<String> tablesProp = new ArrayList<String>();
                     tablesProp.add(Table.OBSERVATION);
                     tablesProp.add(Table.PROPERTY);
                     tablesProp.add(Table.PROCEDURE);
-                    queryDefProp.setTables(AccessGDBImpl.createCommaSeparatedList(tablesProp));
 //                    LOGGER.info("Tables clause := " + queryDefProp.getTables());
     
                     // set sub fields
                     List<String> subFieldsProp = new ArrayList<String>();
                     subFieldsProp.add(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID));
-                    queryDefProp.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsProp));
 //                    LOGGER.info("Subfields clause := " + queryDefProp.getSubFields());
     
                     // create where clause with joins and constraints
@@ -434,11 +422,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                     whereClauseProp.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
                     whereClauseProp.append(" AND ");
                     whereClauseProp.append(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
-                    queryDefProp.setWhereClause(whereClauseProp.toString());
 //                    LOGGER.info("Where clause := " + queryDefProp.getWhereClause());
     
                     // evaluate the database query
-                    ICursor cursorProp = queryDefProp.evaluate();
+                    ICursor cursorProp = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesProp),
+                    		whereClauseProp.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
+                    		gdb.getWorkspace());
                     
                     fields = (Fields) cursorProp.getFields();
                     List<String> obsProps = new ArrayList<String>();
@@ -466,19 +455,16 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                 // set envelope through feature positions
                 
                 if (noObservationsForOffering == false) {
-                    IQueryDef queryDefFoi = gdb.getWorkspace().createQueryDef();
                     
                     // set tables
                     List<String> tablesFoi = new ArrayList<String>();
                     tablesFoi.add(Table.OBSERVATION);
                     tablesFoi.add(Table.FEATUREOFINTEREST);
                     tablesFoi.add(Table.PROCEDURE);
-                    queryDefFoi.setTables(AccessGDBImpl.createCommaSeparatedList(tablesFoi));
                     
                     // set sub fields
                     List<String> subFieldsFoi = new ArrayList<String>();
                     subFieldsFoi.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
-                    queryDefFoi.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFieldsFoi));
                     
                     // create the where clause with joins and constraints
                     StringBuilder whereClauseFoi = new StringBuilder();
@@ -487,11 +473,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                     whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_PROCEDURE) + " = " + AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_PK_PROCEDURE));
                     whereClauseFoi.append(" AND ");
                     whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID) + " = '" + offering.getId() + "'");
-                    queryDefFoi.setWhereClause(whereClauseFoi.toString());
 //                    LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
     
                     // evaluate the database query
-                    ICursor cursorFoi = queryDefFoi.evaluate();
+                    ICursor cursorFoi = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesFoi),
+                    		whereClauseFoi.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsFoi),
+                    		gdb.getWorkspace());
                     
                     List<Point> points = new ArrayList<Point>();
                     fields = (Fields) cursorFoi.getFields();

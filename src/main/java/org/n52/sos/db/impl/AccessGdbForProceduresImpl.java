@@ -33,7 +33,6 @@ import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
-import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -62,22 +61,19 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
     public List<String> getProcedureIdList() throws AutomationException, IOException {
         LOGGER.debug("Querying procedure list from DB.");
         
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-        
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
-        queryDef.setTables(AccessGDBImpl.createCommaSeparatedList(tables));
 //        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
-        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
 //        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
         
         // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
+        ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
+        		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb.getWorkspace());
         
         Fields fields = (Fields) cursor.getFields();
         IRow row;
@@ -98,31 +94,27 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      */
     public Collection<Procedure> getProceduresWithIdAndResource(String[] procedureIdentifierArray) throws AutomationException, IOException
     {
-        IQueryDef queryDef = gdb.getWorkspace().createQueryDef();
-
         // set tables
         List<String> tables = new ArrayList<String>();
         tables.add(Table.PROCEDURE);
-        queryDef.setTables(AccessGDBImpl.createCommaSeparatedList(tables));
 //        LOGGER.info("Table clause := " + queryDef.getTables());
         
         // set sub fields
         List<String> subFields = new ArrayList<String>();
         subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID));
         subFields.add(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE));
-        queryDef.setSubFields(AccessGDBImpl.createCommaSeparatedList(subFields));
 //        LOGGER.info("Subfields clause := " + queryDef.getSubFields());
 
         StringBuilder whereClause = new StringBuilder();
         if (procedureIdentifierArray != null) {
             whereClause.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID), procedureIdentifierArray));
-            
-            queryDef.setWhereClause(whereClause.toString());
         }
 //        LOGGER.info(queryDef.getWhereClause());
 
         // evaluate the database query
-        ICursor cursor = queryDef.evaluate();
+        ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
+        		whereClause.toString(), AccessGDBImpl.createCommaSeparatedList(subFields),
+        		gdb.getWorkspace());
 
         Fields fields = (Fields) cursor.getFields();
         IRow row;
