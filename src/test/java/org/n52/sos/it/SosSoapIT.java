@@ -16,7 +16,13 @@
 package org.n52.sos.it;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.n52.util.CommonUtilities;
 
 /**
@@ -35,9 +41,26 @@ public class SosSoapIT {
         
         String query = CommonUtilities.readResource(SosSoapIT.class.getResourceAsStream("soapTest.xml")); 
         
-        String result = CommonUtilities.readResource(CommonUtilities.sendPostMessage(url, query));
+        String result = CommonUtilities.readResource(sendPostMessage(url, query));
         
         System.out.println("result: " + result);
     }
+	/**
+     * sends a POST-request using org.apache.commons.httpclient.HttpClient.
+     * 
+     * @param serviceURL
+     * @param request
+     * @return
+     */
+    public static InputStream sendPostMessage(String serviceURL, String request) throws IOException {
 
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost  post = new HttpPost (serviceURL);
+
+        post.setEntity(new StringEntity(request, "text/xml", "UTF-8"));
+
+        HttpResponse response = httpClient.execute(post);
+
+        return response.getEntity().getContent();
+    }
 }

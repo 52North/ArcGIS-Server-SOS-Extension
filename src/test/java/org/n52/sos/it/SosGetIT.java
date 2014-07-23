@@ -16,7 +16,9 @@
 package org.n52.sos.it;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -101,7 +103,7 @@ public class SosGetIT {
 		HttpClient client = new DefaultHttpClient();
 
 		try {
-			URL requestURL = new URL(CommonUtilities.concatRequestParameters(requestUrlEndpoint, keyValuePairs));
+			URL requestURL = new URL(concatRequestParameters(requestUrlEndpoint, keyValuePairs));
 			LOGGER.info("request: " + requestURL);
 
 			HttpGet request = new HttpGet(requestURL.toString());
@@ -118,4 +120,26 @@ public class SosGetIT {
 			client.getConnectionManager().shutdown();
 		}
 	}
+	
+	   /**
+		 * Appends the keyValuePairs to the requestBase, according to the schema: requestBase?key1=value1&key2=value2&...
+	 * @throws UnsupportedEncodingException 
+		 */
+		public static String concatRequestParameters(String requestBase, Map<String, String> keyValuePairs) throws UnsupportedEncodingException {
+
+			StringBuffer resultingURL = new StringBuffer();
+			resultingURL.append(requestBase);
+			
+			if (! requestBase.endsWith("?"))
+				resultingURL.append("?");
+			
+			for (String key : keyValuePairs.keySet()) {
+				resultingURL.append(key);
+				resultingURL.append("=");
+				resultingURL.append(URLEncoder.encode(keyValuePairs.get(key), "UTF-8"));
+				resultingURL.append("&");
+			}
+			
+			return resultingURL.toString();
+		}
 }

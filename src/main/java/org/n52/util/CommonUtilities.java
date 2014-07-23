@@ -21,17 +21,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.n52.util.logging.Logger;
 
 
@@ -124,7 +117,7 @@ public class CommonUtilities {
 					File parent = f.getParentFile().getParentFile();
 					File sosSoeCache = new File(parent, "sos-soe-cache");
 					if (sosSoeCache != null) {
-						logger.info("Cache base dir: "+ sosSoeCache.getAbsolutePath());
+						logger.debug("Cache base dir: "+ sosSoeCache.getAbsolutePath());
 						if (!sosSoeCache.exists() && sosSoeCache.mkdir()) {
 							return sosSoeCache;
 						}
@@ -142,43 +135,5 @@ public class CommonUtilities {
 		throw new FileNotFoundException("Could not resolve the cache directory.");
 	}
 	
-	/**
-     * sends a POST-request using org.apache.commons.httpclient.HttpClient.
-     * 
-     * @param serviceURL
-     * @param request
-     * @return
-     */
-    public static InputStream sendPostMessage(String serviceURL, String request) throws IOException {
-
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpPost  post = new HttpPost (serviceURL);
-
-        post.setEntity(new StringEntity(request, "text/xml", "UTF-8"));
-
-        HttpResponse response = httpClient.execute(post);
-
-        return response.getEntity().getContent();
-    }
     
-    /**
-	 * Appends the keyValuePairs to the requestBase, according to the schema: requestBase?key1=value1&key2=value2&...
-	 */
-	public static String concatRequestParameters(String requestBase, Map<String, String> keyValuePairs) {
-
-		StringBuffer resultingURL = new StringBuffer();
-		resultingURL.append(requestBase);
-		
-		if (! requestBase.endsWith("?"))
-			resultingURL.append("?");
-		
-		for (String key : keyValuePairs.keySet()) {
-			resultingURL.append(key);
-			resultingURL.append("=");
-			resultingURL.append(URLEncoder.encode(keyValuePairs.get(key)));
-			resultingURL.append("&");
-		}
-		
-		return resultingURL.toString();
-	}
 }
