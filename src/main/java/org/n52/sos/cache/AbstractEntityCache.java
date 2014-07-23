@@ -247,31 +247,31 @@ public abstract class AbstractEntityCache<T> {
 		return lastUpdateDuration;
 	}
 
-	public boolean requestUpdateLock() {
-		File f = getCacheLockFile();
-		
-		if (f != null && f.exists()) {
-			return false;
-		}
-		
-		try {
-			f.createNewFile();
-			return true;
-		} catch (IOException e) {
-			LOGGER.warn(e.getMessage(), e);
-			LOGGER.warn("Could not access cache lock file.");
-		}
-		
-		return false;
-	}
-	
-	public void freeUpdateLock() throws FileNotFoundException {
-		File f = getCacheLockFile();
-		
-		if (f != null && f.exists()) {
-			f.delete();
-		}
-	}
+//	public boolean requestUpdateLock() {
+//		File f = getCacheLockFile();
+//		
+//		if (f != null && f.exists()) {
+//			return false;
+//		}
+//		
+//		try {
+//			f.createNewFile();
+//			return true;
+//		} catch (IOException e) {
+//			LOGGER.warn(e.getMessage(), e);
+//			LOGGER.warn("Could not access cache lock file.");
+//		}
+//		
+//		return false;
+//	}
+//	
+//	public void freeUpdateLock() throws FileNotFoundException {
+//		File f = getCacheLockFile();
+//		
+//		if (f != null && f.exists()) {
+//			f.delete();
+//		}
+//	}
 	
 	public boolean isUpdateOngoing() {
 		File f = getCacheLockFile();
@@ -289,10 +289,10 @@ public abstract class AbstractEntityCache<T> {
 	
 	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
 		AbstractEntityCache<T> instance = getSingleInstance();
-		if (!instance.requestUpdateLock()) {
-			LOGGER.info("cache is currently already updating: "+ this.getClass().getSimpleName());
-			return;
-		}
+//		if (!instance.requestUpdateLock()) {
+//			LOGGER.info("cache is currently already updating: "+ this.getClass().getSimpleName());
+//			return;
+//		}
 		
 		LOGGER.info("Getting DAO data for "+ this.getClass().getSimpleName());
 		long start = System.currentTimeMillis();
@@ -301,7 +301,7 @@ public abstract class AbstractEntityCache<T> {
 		this.lastUpdateDuration = System.currentTimeMillis() - start;
 		LOGGER.info("Update for "+ this.getClass().getSimpleName() +" took ms: "+this.lastUpdateDuration);
 		
-		instance.freeUpdateLock();		
+//		instance.freeUpdateLock();		
 	}
 
 	public boolean requiresUpdate() {
@@ -309,7 +309,7 @@ public abstract class AbstractEntityCache<T> {
 			if (this.hasCacheContent()) {
 				long lastUpdated = this.getSingleInstance().lastUpdated();
 				
-				if (System.currentTimeMillis() - lastUpdated > CacheScheduler.MINIMUM_UPDATE_DELTA) {
+				if (System.currentTimeMillis() - lastUpdated > CacheScheduler.FIFTEEN_MINS_MS) {
 					return true;
 				}	
 			}

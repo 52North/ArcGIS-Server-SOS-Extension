@@ -15,17 +15,20 @@
  */
 package org.n52.sos.cache;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.n52.sos.db.AccessGDB;
+import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
 public class CacheScheduler {
@@ -34,15 +37,19 @@ public class CacheScheduler {
 
 	private static CacheScheduler instance;
 
-	private static final long PERIOD = 1000 * 60 * 60;
-
-	public static final long MINIMUM_UPDATE_DELTA = 1000 * 60 * 15;
-	private Timer timer;
+	private static final long ONE_HOUR_MS = 1000 * 60 * 60;
+	public static final long FIFTEEN_MINS_MS = 1000 * 60 * 15;
+	
+	private Timer cacheTimer;
 	private AccessGDB geoDB;
 	
 	private List<AbstractEntityCache<?>> candidates = new ArrayList<>();
 
 	private boolean updateCacheOnStartup;
+
+	public long lastSchedulerThread;
+
+	private Timer monitorTimer;
 
 	public static synchronized void init(AccessGDB geoDB, boolean updateCacheOnStartup) {
 		if (instance == null) {
@@ -73,7 +80,8 @@ public class CacheScheduler {
 			LOGGER.warn(e.getMessage(), e);
 		}
 		
-		this.timer = new Timer(false);
+		this.cacheTimer = new Timer(true);
+		this.monitorTimer = new Timer(true);
 		
 		if (!updateCacheOnStartup) {
 			LOGGER.info("Update cache on startup disabled!");
@@ -86,10 +94,10 @@ public class CacheScheduler {
 					/*
 					 * now
 					 */
-					this.timer.schedule(new UpdateCacheTask(requiresUpdates), 0);	
+					this.cacheTimer.schedule(new UpdateCacheTask(requiresUpdates), 0);	
 				}
 				else {
-					LOGGER.info("No cache update required. Last update not longer ago than ms "+MINIMUM_UPDATE_DELTA);
+					LOGGER.info("No cache update required. Last update not longer ago than minutes "+FIFTEEN_MINS_MS/(1000*60));
 				}
 			} catch (FileNotFoundException e) {
 				LOGGER.warn(e.getMessage(), e);
@@ -110,7 +118,7 @@ public class CacheScheduler {
 		Random random = new Random();
 		c.add(Calendar.SECOND, 5 + (random.nextInt(11)*2));
 		
-		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD * 24);
+		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS * 24);
 		
 //		Calendar c = new GregorianCalendar();
 //		c.add(Calendar.MINUTE, 2);
@@ -119,7 +127,7 @@ public class CacheScheduler {
 //		Random random = new Random();
 //		c.add(Calendar.SECOND, 5 + (random.nextInt(11)*2));
 //		
-//		this.timer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), PERIOD /2);
+//		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS);
 		
 		LOGGER.severe("Next scheduled cache update: "+c.getTime().toString());
 	}
@@ -146,14 +154,20 @@ public class CacheScheduler {
 	}
 
 	public void shutdown() {
-		this.timer.cancel();
-		for (AbstractEntityCache<?> aec : candidates) {
-			try {
-				aec.getSingleInstance().freeUpdateLock();
-			} catch (FileNotFoundException e) {
-				LOGGER.warn(e.getMessage(), e);
-			}	
+		this.cacheTimer.cancel();
+		this.monitorTimer.cancel();
+		try {
+			freeCacheUpdateLock();
+		} catch (IOException e) {
+			LOGGER.warn(e.getMessage(), e);
 		}
+//		for (AbstractEntityCache<?> aec : candidates) {
+//			try {
+//				aec.getSingleInstance().freeUpdateLock();
+//			} catch (FileNotFoundException e) {
+//				LOGGER.warn(e.getMessage(), e);
+//			}	
+//		}
 		
 	}
 	
@@ -167,26 +181,108 @@ public class CacheScheduler {
 
 		@Override
 		public void run() {
+			scheduleLockMonitor();
+			
 			try {
 				synchronized (CacheScheduler.class) {
-					LOGGER.info("update cache... using thread "+ Thread.currentThread().getName());
-					
-					for (AbstractEntityCache<?> aec : this.candidates) {
-						aec.updateCache(geoDB);
+					if (!retrieveCacheUpdateLock()) {
+						LOGGER.info("chache updating locked. skipping");
+						return;
 					}
-					
-					LOGGER.info("all caches updated!");					
 				}
-			} catch (IOException e) {
-				LOGGER.warn(e.getMessage(), e);
-			} catch (CacheException e) {
-				LOGGER.warn(e.getMessage(), e);
-			} catch (RuntimeException e) {
+
+				CacheScheduler.this.lastSchedulerThread = Thread.currentThread().getId();
+				LOGGER.info("update cache... using thread "+ lastSchedulerThread);
+				
+				for (AbstractEntityCache<?> aec : this.candidates) {
+					aec.updateCache(geoDB);
+				}
+				
+				freeCacheUpdateLock();
+				
+				LOGGER.info("all caches updated!");					
+			} catch (IOException | CacheException | RuntimeException e) {
 				LOGGER.warn(e.getMessage(), e);
 			}
 			
 		}
+
+		private void scheduleLockMonitor() {
+			CacheScheduler.this.monitorTimer.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					LOGGER.info("Monitoring cache update using thread "+Thread.currentThread().getId());
+					Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
+					
+					Thread target = null;
+					for (Thread t : stacks.keySet()) {
+						if (t.getId() == CacheScheduler.this.lastSchedulerThread) {
+							target = t;
+							break;
+						}
+					}
+					
+					if (target != null) {
+						LOGGER.info("lastSchedulerThread status: " + target.getState());
+						LOGGER.info("lastSchedulerThread isalive: " + target.isAlive());
+						LOGGER.info("lastSchedulerThread isinterrupted: " + target.isInterrupted());
+					}
+					else {
+						LOGGER.warn("Could not find lastSchedulerThread in current stack traces");
+					}
+					
+					try {
+						if (!retrieveCacheUpdateLock()) {
+							LOGGER.warn("The cache update took obviously too long. Freeing the lock, trying to interrupt cache update.");
+							target.interrupt();
+						}
+					} catch (IOException e) {
+						LOGGER.warn(e.getMessage(), e);
+					}
+					finally {
+						try {
+							freeCacheUpdateLock();
+						} catch (IOException e) {
+							LOGGER.warn(e.getMessage(), e);
+						}
+					}
+					
+				}
+			}, ONE_HOUR_MS/2);
+		}
 		
 	}
 
+	private synchronized boolean retrieveCacheUpdateLock() throws IOException {
+		File lockFile = resolveCacheLockFile();
+		
+		if (!lockFile.exists()) {
+			boolean worked = lockFile.createNewFile();
+			if (worked) {
+				return true;
+			}
+			else {
+				LOGGER.info("Could not create cache.lock file!");
+				return false;
+			}
+		}
+		
+		return false;
+	}
+
+	private synchronized void freeCacheUpdateLock() throws IOException {
+		File lockFile = resolveCacheLockFile();
+		
+		if (lockFile.exists()) {
+			lockFile.delete();
+		}
+	}
+
+	private File resolveCacheLockFile() throws FileNotFoundException {
+		File dir = CommonUtilities.resolveCacheBaseDir();
+		File lockFile = new File(dir, "cache.lock");
+		return lockFile;
+	}
+	
 }
