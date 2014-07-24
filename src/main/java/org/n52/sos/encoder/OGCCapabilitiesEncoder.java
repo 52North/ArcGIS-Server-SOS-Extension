@@ -123,7 +123,7 @@ public class OGCCapabilitiesEncoder extends AbstractEncoder {
                 double upperY = obsOff.getObservedArea().getUpperRight().getY();
             
                 String observedArea = "<sos:observedArea>" +
-                		"<gml:Envelope srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\">" +
+                		"<gml:Envelope srsName=\"urn:ogc:def:crs:EPSG::3857\">" +
                 		"<gml:lowerCorner>" + lowerY + " " + lowerX + "</gml:lowerCorner>" +
                 		"<gml:upperCorner>" + upperY + " " + upperX + "</gml:upperCorner>" +
                 		"</gml:Envelope>" +
