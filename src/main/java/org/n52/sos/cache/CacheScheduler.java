@@ -252,7 +252,7 @@ public class CacheScheduler {
 			 * this monitor takes care of cleaning up a staled lock file
 			 * after a certain amount of time
 			 */
-			CacheScheduler.this.monitorTimer.schedule(new MonitorCacheTask(), ONE_HOUR_MS/2);
+			CacheScheduler.this.monitorTimer.schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
 			
 			try {
 				if (!retrieveCacheUpdateLock()) {
