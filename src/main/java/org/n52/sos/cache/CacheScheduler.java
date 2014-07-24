@@ -48,7 +48,7 @@ public class CacheScheduler {
 
 	private boolean updateCacheOnStartup;
 
-	public long lastSchedulerThread;
+	public long lastSchedulerThread = Long.MIN_VALUE;
 
 	private Timer monitorTimer;
 
@@ -174,11 +174,13 @@ public class CacheScheduler {
 		
 	}
 	
-	private synchronized void freeCacheUpdateLock() throws IOException {
-		File lockFile = resolveCacheLockFile();
-		
-		if (lockFile.exists()) {
-			lockFile.delete();
+	private void freeCacheUpdateLock() throws IOException {
+		synchronized (CacheScheduler.class) {
+			File lockFile = resolveCacheLockFile();
+			
+			if (lockFile.exists()) {
+				lockFile.delete();
+			}	
 		}
 	}
 
@@ -204,17 +206,32 @@ public class CacheScheduler {
 				
 	}
 	
-	private synchronized boolean retrieveCacheUpdateLock() throws IOException {
-		File lockFile = resolveCacheLockFile();
-		
-		if (!lockFile.exists()) {
-			boolean worked = lockFile.createNewFile();
-			if (worked) {
-				return true;
-			}
-			else {
-				LOGGER.info("Could not create cache.lock file!");
+	public boolean isCurrentyLocked() {
+		synchronized (CacheScheduler.class) {
+			File lockFile;
+			try {
+				lockFile = resolveCacheLockFile();
+			} catch (FileNotFoundException e) {
 				return false;
+			}
+			
+			return lockFile.exists();
+		}
+	}
+	
+	private boolean retrieveCacheUpdateLock() throws IOException {
+		synchronized (CacheScheduler.class) {
+			File lockFile = resolveCacheLockFile();
+			
+			if (!lockFile.exists()) {
+				boolean worked = lockFile.createNewFile();
+				if (worked) {
+					return true;
+				}
+				else {
+					LOGGER.info("Could not create cache.lock file!");
+					return false;
+				}
 			}
 		}
 		
@@ -235,11 +252,9 @@ public class CacheScheduler {
 			scheduleLockMonitor();
 			
 			try {
-				synchronized (CacheScheduler.class) {
-					if (!retrieveCacheUpdateLock()) {
-						LOGGER.info("chache updating locked. skipping");
-						return;
-					}
+				if (!retrieveCacheUpdateLock()) {
+					LOGGER.info("chache updating locked. skipping");
+					return;
 				}
 
 				CacheScheduler.this.lastSchedulerThread = Thread.currentThread().getId();
@@ -281,11 +296,14 @@ public class CacheScheduler {
 			Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
 			
 			Thread target = null;
-			for (Thread t : stacks.keySet()) {
-				if (t.getId() == CacheScheduler.this.lastSchedulerThread) {
-					target = t;
-					break;
-				}
+			
+			if (CacheScheduler.this.lastSchedulerThread != Long.MIN_VALUE) {
+				for (Thread t : stacks.keySet()) {
+					if (t.getId() == CacheScheduler.this.lastSchedulerThread) {
+						target = t;
+						break;
+					}
+				}		
 			}
 			
 			if (target != null) {
@@ -297,44 +315,41 @@ public class CacheScheduler {
 				LOGGER.warn("Could not find lastSchedulerThread in current stack traces");
 			}
 			
-			boolean gotLock = false;
+			boolean isLocked = true;
 			
-			try {
-				gotLock = retrieveCacheUpdateLock();
-				if (!gotLock) {
-					LOGGER.warn("The cache update took obviously too long. trying to interrupt cache update.");
-					if (target!= null) {
-						target.interrupt();
-					}
+			isLocked = isCurrentyLocked();
+			if (isLocked) {
+				LOGGER.warn("The cache update may have taken too long. trying to interrupt cache update.");
+				if (target != null && (target.getState() == Thread.State.TIMED_WAITING
+						|| target.getState() == Thread.State.WAITING)) {
+					target.interrupt();
 				}
-			} catch (IOException e) {
-				LOGGER.warn(e.getMessage(), e);
-			}
-			finally {
+				
 				try {
-					if (gotLock) {
-						LOGGER.info("Freeing the cache.lock");
-						freeCacheUpdateLock();	
-					}
-					else {
-						if (this.maximumAge != Long.MIN_VALUE) {
-							LOGGER.info("Resolving age of cache.lock file");
-							File f = resolveCacheLockFile();
-							if (System.currentTimeMillis() - f.lastModified() > this.maximumAge) {
-								LOGGER.info("Trying to remove artifact cache.lock file");
-								freeCacheUpdateLock();	
-							}
-							else {
-								LOGGER.info("cache.lock to young, an update might be in progress.");
-							}
+					if (this.maximumAge != Long.MIN_VALUE) {
+						LOGGER.info("Resolving age of cache.lock file");
+						File f = resolveCacheLockFile();
+						if (System.currentTimeMillis() - f.lastModified() > this.maximumAge) {
+							LOGGER.info("Trying to remove artifact cache.lock file");
+							freeCacheUpdateLock();	
 						}
 						else {
-							freeCacheUpdateLock();
+							LOGGER.info("cache.lock to young, an update might be in progress.");
 						}
 					}
-				} catch (IOException e) {
+					else if (CacheScheduler.this.lastSchedulerThread != Long.MIN_VALUE) {
+						/*
+						 * only free if this CacheScheduler instance (singleton in an SOE instance)
+						 * has already started a cache update. otherwise lastSchedulerThread has
+						 * not been set yet
+						 */
+						freeCacheUpdateLock();
+					}
+				}
+				catch (IOException e) {
 					LOGGER.warn(e.getMessage(), e);
 				}
+				
 			}
 			
 		}

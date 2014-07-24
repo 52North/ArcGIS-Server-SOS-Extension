@@ -55,7 +55,8 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 				candidateObject.put("lastUpdateDuration", aec.getLastUpdateDuration());
 				result.put(aec.getClass().getSimpleName(), candidateObject);
 			}
-			
+
+			result.put("currentlyLocked", cache.isCurrentyLocked());
 			result.put("updateCacheOnStartup", cache.isUpdateCacheOnStartup());
 			try {
 				result.put("cacheBaseDir", CommonUtilities.resolveCacheBaseDir());
