@@ -36,17 +36,17 @@ public class Procedure {
     /**
      * the features of interest observed by this procedure.
      */
-    private List<String> featuresOfInterestList;
+    private List<String> featuresOfInterestList = new ArrayList<>();
     
     /**
      * the outputs of this procedure.
      */
-    private List<Output> outputsList;
+    private List<Output> outputsList = new ArrayList<>();
     
     /**
      * the IDs of supported aggregationTypes of this procedure.
      */
-    private List<String> aggregationTypeIdList;
+    private List<String> aggregationTypeIdList = new ArrayList<>();
     
 
     /**
@@ -92,9 +92,6 @@ public class Procedure {
 	}
 
 	public void addOutput(String property, String propertyLabel, String unitNotation) {
-		if (this.outputsList == null) {
-			this.outputsList = new ArrayList<Output>();
-		}
 		Output output = new Output(property, propertyLabel, unitNotation);
 		if (! this.outputsList.contains(output)) {
 			this.outputsList.add(output);
@@ -117,18 +114,12 @@ public class Procedure {
 	}
 	
 	public void addFeatureOfInterest(String featureID) {
-		if (this.featuresOfInterestList == null) {
-			this.featuresOfInterestList = new ArrayList<String>();
-		}
 		if (! this.featuresOfInterestList.contains(featureID)) {
 			this.featuresOfInterestList.add(featureID);
 		}
 	}
 	
 	public void addAggregationTypeID(String aggregationTypeID) {
-		if (this.aggregationTypeIdList == null) {
-			this.aggregationTypeIdList = new ArrayList<String>();
-		}
 		if (! aggregationTypeIdList.contains(aggregationTypeID)) {
 			aggregationTypeIdList.add(aggregationTypeID);
 		}
