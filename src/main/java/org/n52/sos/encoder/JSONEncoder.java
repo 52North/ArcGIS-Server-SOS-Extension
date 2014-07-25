@@ -20,13 +20,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.n52.om.sampling.Feature;
+import org.n52.ows.NoApplicableCodeException;
 import org.n52.sos.dataTypes.ContactDescription;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
 import org.n52.util.logging.Logger;
 
-import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.server.json.JSONArray;
 import com.esri.arcgis.server.json.JSONException;
 import com.esri.arcgis.server.json.JSONObject;
@@ -48,7 +48,7 @@ public class JSONEncoder {
      * @throws Exception
      * @throws JSONException
      */
-    public static JSONObject encodeServiceDescription(ServiceDescription sd) throws JSONException, Exception
+    public static JSONObject encodeServiceDescription(ServiceDescription sd) throws JSONException
     {
         JSONObject json = new JSONObject();
 
@@ -187,7 +187,7 @@ public class JSONEncoder {
      * @throws Exception
      * @throws JSONException
      */
-    public static JSONObject encodeProcedure(Procedure p) throws JSONException, Exception
+    public static JSONObject encodeProcedure(Procedure p) throws JSONException
     {
         JSONObject json = new JSONObject();
 
@@ -205,7 +205,7 @@ public class JSONEncoder {
      * @throws Exception
      * @throws JSONException
      */
-    public static JSONObject encodeProcedures(Collection<Procedure> procedures) throws JSONException, Exception
+    public static JSONObject encodeProcedures(Collection<Procedure> procedures) throws JSONException
     {
         JSONObject json = new JSONObject();
 
@@ -242,10 +242,14 @@ public class JSONEncoder {
 
     /**
      * creates a JSON representation for a {@link SpatialSamplingFeature}.
+     * @throws IOException 
+     * @throws NoApplicableCodeException 
+     * @throws  
+     * @throws JSONException 
      * 
      * @throws Exception
      */
-    public static JSONObject encodeSamplingFeature(Feature foi) throws Exception
+    public static JSONObject encodeSamplingFeature(Feature foi) throws JSONException, IOException, NoApplicableCodeException
     {
         JSONObject json = new JSONObject();
 
@@ -267,7 +271,11 @@ public class JSONEncoder {
 
         //json.put("boundedBy", ServerUtilities.getJSONFromEnvelope((Envelope) foi.getBoundedBy()));
 
-        json.put("shape", ServerUtilities.getJSONFromGeometry(foi.getShape()));
+        try {
+			json.put("shape", ServerUtilities.getJSONFromGeometry(foi.getShape()));
+		} catch (Exception e) {
+			throw new NoApplicableCodeException(e);
+		}
 
         return json;
     }
@@ -277,8 +285,11 @@ public class JSONEncoder {
      * {@link SpatialSamplingFeature} objects.
      * 
      * @param fois
+     * @throws IOException 
+     * @throws NoApplicableCodeException 
+     * @throws JSONException 
      */
-    public static JSONObject encodeSamplingFeatures(Collection<Feature> fois) throws Exception
+    public static JSONObject encodeSamplingFeatures(Collection<Feature> fois) throws JSONException, NoApplicableCodeException, IOException
     {
         JSONObject json = new JSONObject();
 

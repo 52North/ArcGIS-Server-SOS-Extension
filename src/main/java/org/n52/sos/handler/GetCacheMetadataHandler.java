@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.n52.ows.ExceptionReport;
 import org.n52.sos.cache.AbstractEntityCache;
 import org.n52.sos.cache.CacheScheduler;
 import org.n52.sos.db.AccessGDB;
@@ -42,7 +43,7 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 
 	@Override
 	public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
-			String[] responseProperties) throws Exception {
+			String[] responseProperties) throws ExceptionReport {
 		JSONObject result = new JSONObject();
 		
 		CacheScheduler cache = CacheScheduler.instance();

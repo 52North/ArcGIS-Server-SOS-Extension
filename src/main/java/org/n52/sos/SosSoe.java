@@ -31,6 +31,7 @@ import org.n52.ows.ExceptionReport;
 import org.n52.ows.InvalidParameterValueException;
 import org.n52.ows.InvalidRequestException;
 import org.n52.ows.NoApplicableCodeException;
+import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.cache.CacheScheduler;
@@ -310,7 +311,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     @Override
     public String getSchema() throws IOException, AutomationException
     {
-        LOGGER.verbose("getSchema() is called...");
+        LOGGER.debug("getSchema() is called...");
 
         return createSchema();
     }
@@ -413,7 +414,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String outputFormat,
             String requestProperties,
             String[] responseProperties) throws IOException, AutomationException {
-    	LOGGER.info("Starting to handle REST request...");
+    	LOGGER.debug("Starting to handle REST request...");
 //        LOGGER.info("capabilities: " + capabilities);
 //        LOGGER.info("resourceName: " + resourceName);
 //        LOGGER.info("operationName: " + operationName);
@@ -466,10 +467,11 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         } catch (ExceptionReport e) {
             LOGGER.info("OWS ExceptionReport thrown: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             return prepareExceptionResponse(e, responseProperties);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             LOGGER.severe("Error while handle REST request: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             return prepareExceptionResponse(new NoApplicableCodeException(e), responseProperties);
         }
+        
     }
 
     
@@ -484,11 +486,17 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 		}
 	}
 
-	private OperationRequestHandler resolveHandler(String operationName) throws Exception {
+	private OperationRequestHandler resolveHandler(String operationName) throws InvalidRequestException {
     	for (OperationRequestHandler h : this.operationHandlers) {
-			if (h.canHandle(operationName)) {
-				return h;
+			try {
+				if (h.canHandle(operationName)) {
+					return h;
+				}	
 			}
+			catch (RuntimeException e) {
+				LOGGER.warn("Error while resolving handler", e);
+			}
+    		
 		}
     	
     	throw new InvalidRequestException("Operation '" + operationName + "' not supported on this resource.");
@@ -496,6 +504,9 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 
 	/*************************************************************************************
      * Private, supporting & helper methods:
+	 * @throws IOException 
+	 * @throws InvalidRequestException 
+	 * @throws ResponseExceedsSizeLimitException 
      *************************************************************************************/
 
     /*
@@ -552,7 +563,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     
     protected byte[] invokeObservationQueryOperation(JSONObject inputObject,
             String outputFormat,
-            String[] responseProperties) throws Exception
+            String[] responseProperties) throws ResponseExceedsSizeLimitException, InvalidRequestException, IOException
     {
         LOGGER.info("Start observation query.");
 
@@ -595,7 +606,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         return json.toString().getBytes("utf-8");
     }
 
-    protected byte[] invokeFeatureQueryOperation(JSONObject inputObject) throws Exception
+    protected byte[] invokeFeatureQueryOperation(JSONObject inputObject) throws ExceptionReport, IOException
     {
         LOGGER.info("Start feature query.");
 
@@ -623,7 +634,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         return json.toString().getBytes("utf-8");
     }
 
-    protected byte[] invokeProcedureQueryOperation(JSONObject inputObject) throws Exception
+    protected byte[] invokeProcedureQueryOperation(JSONObject inputObject) throws IOException
     {
         LOGGER.info("Start procedures query.");
 
@@ -655,9 +666,10 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
      *            addressed. E.g.: "procedures/mysensor123".
      * 
      * @return JSON representation of specified resource as a byte[].
+     * @throws IOException 
      */
     public byte[] getResource(String resourceName,
-            String operationInput) throws Exception
+            String operationInput) throws IOException, ExceptionReport
     {
         // TODO consider operationInput
 

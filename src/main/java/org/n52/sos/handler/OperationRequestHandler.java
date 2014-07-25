@@ -15,6 +15,7 @@
  */
 package org.n52.sos.handler;
 
+import org.n52.ows.ExceptionReport;
 import org.n52.sos.db.AccessGDB;
 
 import com.esri.arcgis.server.json.JSONObject;
@@ -49,7 +50,7 @@ public interface OperationRequestHandler extends Comparable<OperationRequestHand
 	 * @throws Exception if something bad happens
 	 */
 	public byte[] invokeOGCOperation(AccessGDB geoDB, JSONObject inputObject,
-			String[] responseProperties) throws Exception;
+			String[] responseProperties) throws ExceptionReport;
 
 	/**
 	 * set the public url for the extension

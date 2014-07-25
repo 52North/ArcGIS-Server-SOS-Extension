@@ -36,7 +36,7 @@ import com.esri.arcgis.server.json.JSONObject;
 public class JSONObservationEncoder {
 
     
-    public static JSONObject encodeObservations(Map<String, MultiValueObservation> idObsList) throws Exception
+    public static JSONObject encodeObservations(Map<String, MultiValueObservation> idObsList)
     {
         JSONObject json = new JSONObject();
         
@@ -58,7 +58,7 @@ public class JSONObservationEncoder {
     /**
      * creates a JSON representation for a {@link MultiValueObservation}.
      */
-    public static JSONObject encodeObservation(MultiValueObservation obs) throws Exception
+    public static JSONObject encodeObservation(MultiValueObservation obs)
     {
         JSONObject json = new JSONObject();
 
