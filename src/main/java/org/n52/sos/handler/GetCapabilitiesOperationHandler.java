@@ -93,9 +93,7 @@ public class GetCapabilitiesOperationHandler extends OGCOperationRequestHandler 
 	        
 	        Collection<ObservationOffering> obsOfferings;
 			
-				obsOfferings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
-	
-	        
+			obsOfferings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
 	        
 	        String capabilitiesDocument = new OGCCapabilitiesEncoder().encodeCapabilities(serviceDesc, obsOfferings, operationsMetadataProviders);
 	                

@@ -34,7 +34,10 @@ import org.n52.ows.NoApplicableCodeException;
 import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
+import org.n52.sos.cache.CacheException;
+import org.n52.sos.cache.CacheNotYetAvailableException;
 import org.n52.sos.cache.CacheScheduler;
+import org.n52.sos.cache.ObservationOfferingCache;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
 import org.n52.sos.dataTypes.ServiceDescription;
@@ -690,7 +693,12 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         }
 
         else if (resourceName.matches("observations")) {
-            Collection<ObservationOffering> offerings = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
+            Collection<ObservationOffering> offerings;
+			try {
+				offerings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
+			} catch (CacheException | CacheNotYetAvailableException e) {
+				throw new NoApplicableCodeException(e);
+			}
             json = JSONEncoder.encodeObservationOfferings(offerings);
         }
 
