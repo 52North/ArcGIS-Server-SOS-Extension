@@ -29,6 +29,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
@@ -108,26 +110,16 @@ public class CacheScheduler {
 			}			
 		}
 		
-		/*
-		 * every 4am
-		 */
-		Calendar c = new GregorianCalendar();
-		c.add(Calendar.DAY_OF_MONTH, 1);
-		c.set(Calendar.HOUR_OF_DAY, 4);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
+		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
 		
-		Random random = new Random();
-		c.add(Calendar.SECOND, 5 + (random.nextInt(11)*2));
-		
-		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS * 24);
+		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), mdt.toDate(), ONE_HOUR_MS * 24);
 		
 //		Calendar c = new GregorianCalendar();
 //		c.add(Calendar.MINUTE, 5);
 //		
 //		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), c.getTime(), ONE_HOUR_MS/2);
 		
-		LOGGER.severe("Next scheduled cache update: "+c.getTime().toString());
+		LOGGER.severe("Next scheduled cache update: "+mdt.toString());
 		
 		/*
 		 * start ONE monitoring after 30 minutes and check if the .lock file
@@ -135,7 +127,24 @@ public class CacheScheduler {
 		 */
 		this.monitorTimer.schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/60);
 	}
-	
+
+	protected MutableDateTime resolveNextScheduleDate(int targetHour, DateTime referenceTime) {
+		/*
+		 * every 4am, starting with next
+		 */
+		MutableDateTime mdt = referenceTime.toMutableDateTime();
+		mdt.setHourOfDay(targetHour);
+		mdt.setMinuteOfHour(0);
+		mdt.setSecondOfMinute(0);
+		
+		if (!referenceTime.isBefore(mdt)) {
+			mdt.addDays(1);
+		}
+		
+		Random random = new Random();
+		mdt.addSeconds(random.nextInt(11)*2);
+		return mdt;
+	}
 	
 	public List<AbstractEntityCache<?>> getCandidates() {
 		return candidates;
