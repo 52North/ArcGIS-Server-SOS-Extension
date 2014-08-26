@@ -21,7 +21,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.n52.ows.ExceptionReport;
 import org.n52.sos.cache.AbstractEntityCache;
-import org.n52.sos.cache.CacheScheduler;
+import org.n52.sos.cache.AbstractCacheScheduler;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
 
@@ -46,7 +46,7 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 			String[] responseProperties) throws ExceptionReport {
 		JSONObject result = new JSONObject();
 		
-		CacheScheduler cache = CacheScheduler.instance();
+		AbstractCacheScheduler cache = AbstractCacheScheduler.Instance.instance();
 		if (cache != null) {
 			for (AbstractEntityCache<?> aec : cache.getCandidates()) {
 				JSONObject candidateObject = new JSONObject();

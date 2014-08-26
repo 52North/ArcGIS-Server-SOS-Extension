@@ -42,17 +42,17 @@ public class NextScheduleDateTest {
 		f.mkdir();
         BDDMockito.given(CommonUtilities.resolveCacheBaseDir()).willReturn(f.getParentFile());
         
-		CacheScheduler.init(null, false);
+        AbstractCacheScheduler.Instance.init(null, false);
 	}
 	
 	@After
 	public void shutdown() {
-		CacheScheduler.instance().shutdown();
+		AbstractCacheScheduler.Instance.instance().shutdown();
 	}
 
 	@Test
 	public void testNextScheduleDateResolving() throws IOException {
-		CacheScheduler cs = CacheScheduler.instance();
+		AbstractCacheScheduler cs = AbstractCacheScheduler.Instance.instance();
 		
 		/*
 		 * before target time. results in the same day

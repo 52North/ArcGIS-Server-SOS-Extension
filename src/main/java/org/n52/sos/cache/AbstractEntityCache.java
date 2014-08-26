@@ -196,7 +196,7 @@ public abstract class AbstractEntityCache<T> {
 	}
 
 	private void scheduleCacheUpdate() {
-		CacheScheduler.instance().forceUpdate();
+		AbstractCacheScheduler.Instance.instance().forceUpdate();
 	}
 
 	private Map<String, T> deserializeCacheFile() throws IOException {
@@ -312,7 +312,7 @@ public abstract class AbstractEntityCache<T> {
 			if (this.hasCacheContent()) {
 				long lastUpdated = this.getSingleInstance().lastUpdated();
 				
-				if (System.currentTimeMillis() - lastUpdated > CacheScheduler.FIFTEEN_MINS_MS) {
+				if (System.currentTimeMillis() - lastUpdated > AbstractCacheScheduler.FIFTEEN_MINS_MS) {
 					return true;
 				}	
 			}
