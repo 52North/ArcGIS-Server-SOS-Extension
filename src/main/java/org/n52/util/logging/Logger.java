@@ -56,7 +56,7 @@ public class Logger {
 		return new Logger(name);
 	}
 	
-	protected final void log(int level, String message, Exception e) {
+	protected final void log(int level, String message, Throwable e) {
 		String concatMessage;
 		if (e != null) {
 			concatMessage = createConcatenatedMessage(message, e);
@@ -67,7 +67,7 @@ public class Logger {
 		log(level, DEFAULT_CODE, concatMessage);
 	}
 	
-	private String createConcatenatedMessage(String message, Exception e) {
+	private String createConcatenatedMessage(String message, Throwable e) {
 		StringBuilder sb = new StringBuilder(message);
 		sb.append(":");
 		sb.append(CommonUtilities.NEW_LINE_CHAR);
@@ -122,7 +122,7 @@ public class Logger {
 		log(WARNING, message, null);
 	}
 	
-	public void warn(String message, Exception e) {
+	public void warn(String message, Throwable e) {
 		log(SEVERE, message, e);
 	}
 
@@ -130,7 +130,7 @@ public class Logger {
 		log(SEVERE, message, null);
 	}
 
-	public void severe(String message, Exception e) {
+	public void severe(String message, Throwable e) {
 		log(SEVERE, message, e);
 	}
 

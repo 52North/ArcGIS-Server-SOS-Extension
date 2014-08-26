@@ -238,6 +238,9 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				LOGGER.info("all caches updated!");					
 			} catch (IOException | CacheException | RuntimeException | SchedulerException e) {
 				LOGGER.warn(e.getMessage(), e);
+			} catch (Throwable t) {
+				LOGGER.severe("Unrecoverable error", t);
+				throw t;
 			}
 			
 		}
