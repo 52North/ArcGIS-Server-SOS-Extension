@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.sos.dataTypes.EnvelopeWrapper;
@@ -90,8 +91,20 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 
 	protected Collection<ObservationOffering> getCollectionFromDAO(AccessGDB geoDB)
 			throws IOException {
-		Collection<ObservationOffering> entities = geoDB.getOfferingAccess().getNetworksAsObservationOfferings();
-		return entities;
+		clearTempCacheFile();
+		
+		geoDB.getOfferingAccess().getNetworksAsObservationOfferingsAsync(new OnOfferingRetrieved() {
+			
+			int count = 0;
+			
+			@Override
+			public void retrieveOffering(ObservationOffering oo) {
+				storeTemporaryEntity(oo);
+				LOGGER.info(String.format("Added ObservationOffering #%s to the cache.", count++));
+			}
+			
+		});
+		return Collections.emptyList();
 	}
 
 	@Override

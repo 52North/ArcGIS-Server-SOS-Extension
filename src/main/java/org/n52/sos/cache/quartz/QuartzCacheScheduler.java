@@ -48,6 +48,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
+import com.esri.arcgis.system.ServerUtilities;
+
 public class QuartzCacheScheduler extends AbstractCacheScheduler {
 	
 	public static Logger LOGGER = Logger.getLogger(QuartzCacheScheduler.class.getName());
@@ -94,12 +96,12 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			}			
 		}
 		
-		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
+		MutableDateTime mdt = new DateTime().plusMinutes(2).toMutableDateTime();
 		DateTime now = new DateTime();
 		
 		try {
 			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
-					ONE_HOUR_MS * 24);
+					ONE_HOUR_MS / 3);
 		} catch (SchedulerException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
@@ -188,6 +190,18 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		}
 	}
 	
+	private String createStackTrace(StackTraceElement[] stackTrace) {
+		StringBuilder sb = new StringBuilder();
+		
+		String sep = System.getProperty("line.separator");
+		for (StackTraceElement ste : stackTrace) {
+			sb.append(ste.toString());
+			sb.append(sep);
+		}
+		
+		return sb.toString();
+	}
+	
 	private abstract class NamedJob implements Job {
 		
 		String uuid = UUID.randomUUID().toString();
@@ -237,13 +251,23 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				
 				LOGGER.info("all caches updated!");					
 			} catch (IOException | CacheException | RuntimeException | SchedulerException e) {
-				LOGGER.warn(e.getMessage(), e);
+//				LOGGER.warn(e.getMessage(), e);
+				try {
+					 ServerUtilities.getServerLogger().addMessage(1, 71337, e.getMessage() + createStackTrace(e.getStackTrace()));
+				} catch (IOException e1) {
+				}
 			} catch (Throwable t) {
-				LOGGER.severe("Unrecoverable error", t);
+//				LOGGER.severe("Unrecoverable error", t);
+				try {
+					 ServerUtilities.getServerLogger().addMessage(1, 71337, t.getMessage() + createStackTrace(t.getStackTrace()));
+				} catch (IOException e1) {
+				}
 				throw t;
 			}
 			
 		}
+		
+		
 
 	}
 	
@@ -293,18 +317,18 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				}
 			}
 			else {
-				LOGGER.warn("Could not find lastSchedulerThread in current stack traces");
+				LOGGER.info("Could not find lastSchedulerThread in current stack traces");
 			}
 			
 			boolean isLocked = true;
 			
 			isLocked = isCurrentyLocked();
 			if (isLocked) {
-				if (target != null && (target.getState() == Thread.State.TIMED_WAITING
-						|| target.getState() == Thread.State.WAITING)) {
-					LOGGER.warn("The cache update may have taken too long. trying to interrupt cache update.");
-					target.interrupt();
-				}
+//				if (target != null && (target.getState() == Thread.State.TIMED_WAITING
+//						|| target.getState() == Thread.State.WAITING)) {
+//					LOGGER.warn("The cache update may have taken too long. trying to interrupt cache update.");
+//					target.interrupt();
+//				}
 				
 				try {
 					if (this.maximumAge != Long.MIN_VALUE) {
@@ -339,18 +363,6 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			
 		}
 
-		private String createStackTrace(StackTraceElement[] stackTrace) {
-			StringBuilder sb = new StringBuilder();
-			
-			String sep = System.getProperty("line.separator");
-			for (StackTraceElement ste : stackTrace) {
-				sb.append(ste.toString());
-				sb.append(sep);
-			}
-			
-			return sb.toString();
-		}
-		
 	}
 	
 	private class LocalJobFactory implements JobFactory {
