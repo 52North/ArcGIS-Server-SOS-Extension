@@ -80,7 +80,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
         		"",
         		AccessGDBImpl.createCommaSeparatedList(subFields),
-        		gdb.getWorkspace());
+        		gdb);
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
@@ -137,7 +137,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             ICursor cursorOffering = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesTime),
             		whereClauseTime.toString(),
             		AccessGDBImpl.createCommaSeparatedList(subFieldsTime),
-            		gdb.getWorkspace());
+            		gdb);
             
             IRow nextRow = cursorOffering.nextRow();
             
@@ -197,7 +197,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             ICursor cursorProp = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesProp),
             		whereClauseProp.toString(),
             		AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
-            		gdb.getWorkspace());
+            		gdb);
             
             fields = (Fields) cursorProp.getFields();
             List<String> obsProps = new ArrayList<String>();
@@ -251,7 +251,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             ICursor cursorFoi = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesFoi),
             		whereClauseFoi.toString(),
             		AccessGDBImpl.createCommaSeparatedList(subFieldsFoi),
-            		gdb.getWorkspace());
+            		gdb);
             
             List<Point> points = new ArrayList<Point>();
             fields = (Fields) cursorFoi.getFields();
@@ -319,7 +319,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             
             // evaluate the database query
             ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
-            		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb.getWorkspace());
+            		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
 
             // convert cursor entries to abstract observations
             Fields fields = (Fields) cursor.getFields();
@@ -367,7 +367,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
                 ICursor cursorOffering = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesTime),
                 		whereClauseTime.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsOff),
-                		gdb.getWorkspace());
+                		gdb);
                 
                 IRow nextRow = cursorOffering.nextRow();
                 
@@ -423,7 +423,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                     // evaluate the database query
                     ICursor cursorProp = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesProp),
                     		whereClauseProp.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
-                    		gdb.getWorkspace());
+                    		gdb);
                     
                     fields = (Fields) cursorProp.getFields();
                     List<String> obsProps = new ArrayList<String>();
@@ -474,7 +474,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                     // evaluate the database query
                     ICursor cursorFoi = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesFoi),
                     		whereClauseFoi.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsFoi),
-                    		gdb.getWorkspace());
+                    		gdb);
                     
                     List<Point> points = new ArrayList<Point>();
                     fields = (Fields) cursorFoi.getFields();

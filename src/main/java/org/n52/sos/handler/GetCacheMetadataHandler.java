@@ -22,6 +22,8 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.n52.ows.ExceptionReport;
 import org.n52.sos.cache.AbstractEntityCache;
 import org.n52.sos.cache.AbstractCacheScheduler;
+import org.n52.sos.cache.DummyCache;
+import org.n52.sos.cache.ObservationOfferingCache;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
 
@@ -54,7 +56,13 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 				candidateObject.put("lastUpdated", format.print(lastUpdate));
 				candidateObject.put("lastUpdatedUnixTimestamp", lastUpdate / 1000);
 				candidateObject.put("lastUpdateDuration", aec.getLastUpdateDuration());
-				result.put(aec.getClass().getSimpleName(), candidateObject);
+				
+				String className = aec.getClass().getSimpleName();
+				if (className.equals(DummyCache.class.getSimpleName())) {
+					className = ObservationOfferingCache.class.getSimpleName();
+				}
+				
+				result.put(className, candidateObject);
 			}
 
 			result.put("currentlyLocked", cache.isCurrentyLocked());

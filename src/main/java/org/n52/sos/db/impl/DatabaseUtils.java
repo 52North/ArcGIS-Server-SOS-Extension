@@ -34,7 +34,7 @@ public class DatabaseUtils {
 	public static int assertMaximumRecordCount(String tables,
 			String whereClause, AccessGDBImpl geoDB)
 			throws ResponseExceedsSizeLimitException {
-		int value = resolveRecordCount(tables, whereClause, geoDB.getWorkspace());
+		int value = resolveRecordCount(tables, whereClause, geoDB);
 		
 		if (value > geoDB.getMaxNumberOfResults()) {
 			throw new ResponseExceedsSizeLimitException(
@@ -45,10 +45,10 @@ public class DatabaseUtils {
 	}
 	
 	public static int resolveRecordCount(String tables,
-			String whereClause, Workspace workspace) {
+			String whereClause, AccessGDBImpl gdb) {
 		try {
 			ICursor countCursor = evaluateQuery(tables, whereClause,
-					"count(*)", workspace);
+					"count(*)", gdb);
 			IRow row;
 			if ((row = countCursor.nextRow()) != null) {
 				Object value = row.getValue(0);
@@ -65,7 +65,12 @@ public class DatabaseUtils {
 		return 0;
 	}
 
-	public static ICursor evaluateQuery(String tables, String whereClause,
+	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
+			String subFields, AccessGDBImpl gdb) throws IOException {
+		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace());
+	}
+
+	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
 			String subFields, Workspace workspace) throws IOException {
 		IQueryDef queryDef = workspace.createQueryDef();
 

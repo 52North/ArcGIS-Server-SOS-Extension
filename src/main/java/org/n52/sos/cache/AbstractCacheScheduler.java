@@ -40,6 +40,8 @@ public abstract class AbstractCacheScheduler {
 	private boolean updateCacheOnStartup;
 	private AccessGDB geoDB;
 
+	private File lockFile;
+
 	public AbstractCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
 		this.geoDB = geoDB;
 		this.updateCacheOnStartup = updateCacheOnStartup;
@@ -84,9 +86,12 @@ public abstract class AbstractCacheScheduler {
 		}
 	}
 
-	protected File resolveCacheLockFile() throws FileNotFoundException {
-		File dir = CommonUtilities.resolveCacheBaseDir();
-		File lockFile = new File(dir, "cache.lock");
+	protected synchronized File resolveCacheLockFile() throws FileNotFoundException {
+		if (lockFile == null) {
+			File dir = CommonUtilities.resolveCacheBaseDir();
+			lockFile = new File(dir, "cache.lock");	
+		}
+		
 		return lockFile;
 	}
 
@@ -146,7 +151,7 @@ public abstract class AbstractCacheScheduler {
 	protected List<AbstractEntityCache<?>> cacheUpdateRequired() throws FileNotFoundException {
 		List<AbstractEntityCache<?>> result = new ArrayList<>();
 		
-		for (AbstractEntityCache<?> cand : candidates) {
+		for (AbstractEntityCache<?> cand : getCandidates()) {
 			if (cand.requiresUpdate()) {
 				result.add(cand);
 			}

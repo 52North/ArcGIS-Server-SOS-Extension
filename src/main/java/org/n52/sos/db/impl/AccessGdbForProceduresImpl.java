@@ -75,7 +75,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         
         // evaluate the database query
         ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
-        		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb.getWorkspace());
+        		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
         
         Fields fields = (Fields) cursor.getFields();
         IRow row;
@@ -116,7 +116,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         // evaluate the database query
         ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
         		whereClause.toString(), AccessGDBImpl.createCommaSeparatedList(subFields),
-        		gdb.getWorkspace());
+        		gdb);
 
         Fields fields = (Fields) cursor.getFields();
         IRow row;
@@ -200,7 +200,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
 		// evaluate the database query
         ICursor cursor = DatabaseUtils.evaluateQuery(fromClause, whereClause.toString(), " DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields),
-        		gdb.getWorkspace());
+        		gdb);
         Fields fields = (Fields) cursor.getFields();
         IRow row;
         while ((row = cursor.nextRow()) != null) {
@@ -351,7 +351,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         ICursor cursor = DatabaseUtils.evaluateQuery(fromClause,
         		AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID + " = '" + networkID + "'"),
         		"DISTINCT "+AccessGDBImpl.createCommaSeparatedList(subFields),
-        		gdb.getWorkspace());
+        		gdb);
         
         Fields fields = (Fields) cursor.getFields();
         IRow row;
@@ -397,7 +397,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         ICursor cursor = DatabaseUtils.evaluateQuery(Table.NETWORK,
         		AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + procedureID + "'",
         		AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID),
-        		gdb.getWorkspace());
+        		gdb);
         
         Fields fields = (Fields) cursor.getFields();
         IRow row;
@@ -418,7 +418,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         ICursor cursor = DatabaseUtils.evaluateQuery(Table.PROCEDURE,
         		AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE) + " = '" + procedureResourceID + "'",
         		AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE),
-        		gdb.getWorkspace());
+        		gdb);
         
         Fields fields = (Fields) cursor.getFields();
         IRow row;
@@ -462,7 +462,8 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 		whereClause.append(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_FK_UNIT));
 		whereClause.append(" IS NOT NULL");
 		
-		ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause.toString(), "DISTINCT ".concat(subFields), gdb.getWorkspace());
+		ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause.toString(),
+				"DISTINCT ".concat(subFields), gdb);
         
         IRow row;
         int count = 0;
@@ -491,7 +492,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 
 	@Override
 	public Map<Integer, Unit> getUnitsOfMeasure() throws IOException {
-		ICursor result = DatabaseUtils.evaluateQuery(Table.UNIT, null, "*", gdb.getWorkspace());
+		ICursor result = DatabaseUtils.evaluateQuery(Table.UNIT, null, "*", gdb);
 
 		Map<Integer, Unit> units = new HashMap<>();
 		IRow row;

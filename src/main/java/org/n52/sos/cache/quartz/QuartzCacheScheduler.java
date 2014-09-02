@@ -17,8 +17,10 @@ package org.n52.sos.cache.quartz;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.State;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
@@ -48,8 +51,6 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-import com.esri.arcgis.system.ServerUtilities;
-
 public class QuartzCacheScheduler extends AbstractCacheScheduler {
 	
 	public static Logger LOGGER = Logger.getLogger(QuartzCacheScheduler.class.getName());
@@ -59,6 +60,17 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 	private Scheduler quartz;
 
 	private LocalJobFactory quartzFactory;
+	
+//	@Override
+//	public List<AbstractEntityCache<?>> getCandidates() {
+//		List<AbstractEntityCache<?>> result = new ArrayList<>();
+//		try {
+//			result.add(new DummyCache());
+//		} catch (FileNotFoundException e) {
+//			LOGGER.warn(e.getMessage(), e);
+//		}
+//		return result;
+//	}
 
 	public QuartzCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
 		super(geoDB, updateCacheOnStartup);
@@ -191,6 +203,10 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 	}
 	
 	private String createStackTrace(StackTraceElement[] stackTrace) {
+		if (stackTrace == null || stackTrace.length == 0) {
+			return "";
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		
 		String sep = System.getProperty("line.separator");
@@ -223,6 +239,73 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		@Override
 		public void execute(JobExecutionContext arg0)
 				throws JobExecutionException {
+			
+			try {
+				schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
+			} catch (SchedulerException e) {
+				writeExceptionFile(e);
+			}
+			
+			/*
+			 * do a cache.lock check now and do it sequentially
+			 */
+			MonitorCacheTask freeTask = new MonitorCacheTask(ONE_HOUR_MS/2);
+			freeTask.execute(null);
+			
+			final AtomicBoolean running = new AtomicBoolean(true);
+			Thread t = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						doCacheUpdate();
+					}
+					catch (RuntimeException e) {
+						LOGGER.warn(e.getMessage(), e);
+					}
+					catch (Throwable t) {
+						LOGGER.warn(t.getMessage(), t);
+						running.getAndSet(false);
+						throw t;
+					}
+					running.getAndSet(false);
+				}
+			});
+			
+			t.setDaemon(true);
+			t.start();
+			
+			long start = System.currentTimeMillis();
+			while (running.get()) {
+				if (System.currentTimeMillis()-start > 1000 * 60 * 10) {
+					LOGGER.warn("update thread taking more than 10 minutes...");
+					Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
+					dumpAllThreads(stacks);
+				}
+				else if (System.currentTimeMillis()-start > 1000 * 60 * 30) {
+					LOGGER.warn("update thread took more than 30 minutes... cancelling");
+					try {
+						freeCacheUpdateLock();
+					} catch (IOException e) {
+						LOGGER.warn(e.getMessage(), e);
+					}
+					return;
+				}
+				else {
+					LOGGER.info("still waiting for update thread to finish...");
+				}
+				
+				try {
+					Thread.sleep(30000);
+				} catch (InterruptedException e) {
+					LOGGER.warn(e.getMessage(), e);
+				}
+			}
+			
+			LOGGER.info("update thread finished...");
+		}
+		
+		private void doCacheUpdate() {
 			/*
 			 * cache updates can take very long. it has been observed
 			 * on some SOE instances that the update got stuck and did
@@ -231,9 +314,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			 * this monitor takes care of cleaning up a staled lock file
 			 * after a certain amount of time
 			 */
-			
 			try {
-				schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
 				
 				if (!retrieveCacheUpdateLock()) {
 					LOGGER.info("chache updating locked. skipping");
@@ -250,21 +331,34 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				freeCacheUpdateLock();
 				
 				LOGGER.info("all caches updated!");					
-			} catch (IOException | CacheException | RuntimeException | SchedulerException e) {
+			} catch (IOException | CacheException | RuntimeException e) {
 //				LOGGER.warn(e.getMessage(), e);
-				try {
-					 ServerUtilities.getServerLogger().addMessage(1, 71337, e.getMessage() + createStackTrace(e.getStackTrace()));
-				} catch (IOException e1) {
-				}
+				writeExceptionFile(e);
 			} catch (Throwable t) {
 //				LOGGER.severe("Unrecoverable error", t);
-				try {
-					 ServerUtilities.getServerLogger().addMessage(1, 71337, t.getMessage() + createStackTrace(t.getStackTrace()));
-				} catch (IOException e1) {
-				}
+				writeExceptionFile(t);
 				throw t;
 			}
-			
+		}
+
+		private void writeExceptionFile(Throwable e) {
+			FileOutputStream fos = null;
+			try {
+				File p = resolveCacheLockFile().getParentFile();
+				fos = new FileOutputStream(new File(p, "exception-"+ UUID.randomUUID().toString().substring(0, 6)+".log"), false);
+				fos.write((e.getClass() +" "+createStackTrace(e.getStackTrace())).getBytes());
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} finally {
+				if (fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 		}
 		
 		
@@ -330,6 +424,9 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 //					target.interrupt();
 //				}
 				
+//				
+//				dumpAllThreads(stacks);
+				
 				try {
 					if (this.maximumAge != Long.MIN_VALUE) {
 						LOGGER.info("Resolving age of cache.lock file");
@@ -388,6 +485,31 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			if (recurring) {
 				this.recurring.add(name);
 			}
+		}
+		
+	}
+
+	protected void dumpAllThreads(Map<Thread, StackTraceElement[]> stacks) {
+		try {
+			String p = resolveCacheLockFile().getParent();
+			FileOutputStream fos = new FileOutputStream(new File(p, "threaddump-"+ UUID.randomUUID().toString().substring(0, 6)+".log"), true);
+			byte[] sep = System.getProperty("line.separator").getBytes();
+			for (Thread t : stacks.keySet()) {
+				fos.write("###### ".getBytes());
+				fos.write(new DateTime().toString().getBytes());
+				fos.write(sep);
+				fos.write((t.getName() +" "+ t.getId() +" "+ t.getState()).getBytes());
+				fos.write(sep);
+				for (StackTraceElement ste : stacks.get(t)) {
+					fos.write(ste.toString().getBytes());
+					fos.write(sep);
+				}
+				fos.write(sep);
+			}
+			fos.flush();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 	}

@@ -15,33 +15,41 @@
  */
 package org.n52.sos.cache;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.n52.oxf.valueDomains.time.ITimePeriod;
 import org.n52.sos.dataTypes.EnvelopeWrapper;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGDB;
+import org.n52.util.logging.Logger;
 
-public class ObservationOfferingCache extends AbstractEntityCache<ObservationOffering> {
+public class DummyCache extends AbstractEntityCache<ObservationOffering> {
+
+	public static Logger LOGGER = Logger.getLogger(DummyCache.class.getName());
+	
+	public DummyCache() throws FileNotFoundException {
+		super();
+	}
 
 	private static final String TOKEN_SEP = "@@";
-	private static ObservationOfferingCache instance;
+	private static DummyCache instance;
 
-	public static synchronized ObservationOfferingCache instance() throws FileNotFoundException {
+	public static synchronized DummyCache instance() throws FileNotFoundException {
 		if (instance == null) {
-			instance = new ObservationOfferingCache();
+			instance = new DummyCache();
 		}
 		
 		return instance;
 	}
 	
-	private ObservationOfferingCache() throws FileNotFoundException {
-		super();
-	}
 
 	@Override
 	protected String getCacheFileName() {
@@ -93,18 +101,24 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 			throws IOException {
 		clearTempCacheFile();
 		
-		geoDB.getOfferingAccess().getNetworksAsObservationOfferingsAsync(new OnOfferingRetrieved() {
+		InputStream res = getClass().getResourceAsStream("/oo-dummy-cache.cache");
+		BufferedReader br = new BufferedReader(new InputStreamReader(res));
+		
+		List<ObservationOffering> result = new ArrayList<>();
+		
+		while (br.ready()) {
+			result.add(deserializeEntity(br.readLine()));
 			
-			int count = 0;
+			LOGGER.info("Added Observation #"+result.size());
 			
-			@Override
-			public void retrieveOffering(ObservationOffering oo) {
-				storeTemporaryEntity(oo);
-				LOGGER.info(String.format("Added ObservationOffering #%s to the cache.", count++));
+			try {
+				Thread.sleep(1000 * 13);
+			} catch (InterruptedException e) {
+				LOGGER.warn(e.getMessage(), e);
 			}
-			
-		});
-		return Collections.emptyList();
+		}
+		
+		return result;
 	}
 
 	@Override

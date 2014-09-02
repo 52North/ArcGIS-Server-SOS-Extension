@@ -85,7 +85,8 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
         JSONObject json = new JSONObject();
 
         try {
-            ICursor cursor = DatabaseUtils.evaluateQuery(tableName, "", "COUNT(" + primaryKeyColumn + ")", workspace);
+            ICursor cursor = DatabaseUtils.evaluateQuery(tableName, "", "COUNT(" + primaryKeyColumn + ")",
+            		workspace);
             
             json.append("Reading count of table:", tableName);
             IRow row;
