@@ -17,7 +17,6 @@ package org.n52.sos.cache.quartz;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.Collections;
@@ -108,12 +107,12 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			}			
 		}
 		
-		MutableDateTime mdt = new DateTime().plusMinutes(2).toMutableDateTime();
+		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
 		DateTime now = new DateTime();
 		
 		try {
 			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
-					ONE_HOUR_MS / 3);
+					ONE_HOUR_MS * 24);
 		} catch (SchedulerException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
@@ -121,7 +120,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		LOGGER.severe("Next scheduled cache update: "+mdt.toString());
 		
 		/*
-		 * start ONE monitoring after 30 minutes and check if the .lock file
+		 * start ONE monitoring after 1 minute and check if the .lock file
 		 * is older than 30 minutes -> an artifact .lock file!!
 		 */
 		try {
@@ -243,7 +242,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			try {
 				schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
 			} catch (SchedulerException e) {
-				writeExceptionFile(e);
+				LOGGER.warn(e.getMessage(), e);
 			}
 			
 			/*
@@ -278,9 +277,9 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			long start = System.currentTimeMillis();
 			while (running.get()) {
 				if (System.currentTimeMillis()-start > 1000 * 60 * 10) {
-					LOGGER.warn("update thread taking more than 10 minutes...");
 					Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
-					dumpAllThreads(stacks);
+					LOGGER.warn("update thread taking more than 10 minutes... StackTrace: "+
+					dumpAllThreads(stacks));
 				}
 				else if (System.currentTimeMillis()-start > 1000 * 60 * 30) {
 					LOGGER.warn("update thread took more than 30 minutes... cancelling");
@@ -332,35 +331,12 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				
 				LOGGER.info("all caches updated!");					
 			} catch (IOException | CacheException | RuntimeException e) {
-//				LOGGER.warn(e.getMessage(), e);
-				writeExceptionFile(e);
+				LOGGER.warn(e.getMessage(), e);
 			} catch (Throwable t) {
-//				LOGGER.severe("Unrecoverable error", t);
-				writeExceptionFile(t);
+				LOGGER.severe("Unrecoverable error", t);
 				throw t;
 			}
 		}
-
-		private void writeExceptionFile(Throwable e) {
-			FileOutputStream fos = null;
-			try {
-				File p = resolveCacheLockFile().getParentFile();
-				fos = new FileOutputStream(new File(p, "exception-"+ UUID.randomUUID().toString().substring(0, 6)+".log"), false);
-				fos.write((e.getClass() +" "+createStackTrace(e.getStackTrace())).getBytes());
-				
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			} finally {
-				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		}
-		
 		
 
 	}
@@ -489,29 +465,24 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		
 	}
 
-	protected void dumpAllThreads(Map<Thread, StackTraceElement[]> stacks) {
-		try {
-			String p = resolveCacheLockFile().getParent();
-			FileOutputStream fos = new FileOutputStream(new File(p, "threaddump-"+ UUID.randomUUID().toString().substring(0, 6)+".log"), true);
-			byte[] sep = System.getProperty("line.separator").getBytes();
-			for (Thread t : stacks.keySet()) {
-				fos.write("###### ".getBytes());
-				fos.write(new DateTime().toString().getBytes());
-				fos.write(sep);
-				fos.write((t.getName() +" "+ t.getId() +" "+ t.getState()).getBytes());
-				fos.write(sep);
-				for (StackTraceElement ste : stacks.get(t)) {
-					fos.write(ste.toString().getBytes());
-					fos.write(sep);
-				}
-				fos.write(sep);
+	protected String dumpAllThreads(Map<Thread, StackTraceElement[]> stacks) {
+		StringBuilder sb = new StringBuilder();
+		String sep = System.getProperty("line.separator");
+		
+		for (Thread t : stacks.keySet()) {
+			sb.append("###### ");
+			sb.append(new DateTime().toString());
+			sb.append(sep);
+			sb.append(t.getName() +" "+ t.getId() +" "+ t.getState());
+			sb.append(sep);
+			for (StackTraceElement ste : stacks.get(t)) {
+				sb.append(ste.toString());
+				sb.append(sep);
 			}
-			fos.flush();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			sb.append(sep);
 		}
 		
+		return sb.toString();
 	}
 
 	

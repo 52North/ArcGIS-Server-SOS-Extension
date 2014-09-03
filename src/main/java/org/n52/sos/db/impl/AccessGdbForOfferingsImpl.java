@@ -100,7 +100,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         }
 
         for (ObservationOffering offering : offerings) {
-            LOGGER.debug("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
+            LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
             
             safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
