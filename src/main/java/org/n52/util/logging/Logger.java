@@ -68,7 +68,7 @@ public class Logger {
 	}
 	
 	private String createConcatenatedMessage(String message, Throwable e) {
-		StringBuilder sb = new StringBuilder(message);
+		StringBuilder sb = new StringBuilder(message == null ? "null" : message);
 		sb.append(":");
 		sb.append(CommonUtilities.NEW_LINE_CHAR);
 		
