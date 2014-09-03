@@ -598,10 +598,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 			throw new ExecutionException(e);
 		}
 		
-		if (nextRow == null) {
-			throw new ExecutionException("Future Result was null", new NullPointerException());
-		}
-
 		return nextRow;
 	}
 
