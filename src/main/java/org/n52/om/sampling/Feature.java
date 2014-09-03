@@ -18,8 +18,6 @@ package org.n52.om.sampling;
 import java.io.IOException;
 import java.net.URI;
 
-import org.n52.gml.Identifier;
-
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.interop.AutomationException;

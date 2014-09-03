@@ -19,70 +19,44 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.Thread.State;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.n52.sos.db.AccessGDB;
-import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
-public class CacheScheduler {
+public class TimerTaskCacheScheduler extends AbstractCacheScheduler {
 	
-	public static Logger LOGGER = Logger.getLogger(CacheScheduler.class.getName());
+	public static Logger LOGGER = Logger.getLogger(TimerTaskCacheScheduler.class.getName());
 
-	private static CacheScheduler instance;
+	private static TimerTaskCacheScheduler instance;
 
 	private static final long ONE_HOUR_MS = 1000 * 60 * 60;
 	public static final long FIFTEEN_MINS_MS = 1000 * 60 * 15;
 	
 	private Timer cacheTimer;
-	private AccessGDB geoDB;
 	
-	private List<AbstractEntityCache<?>> candidates = new ArrayList<>();
-
-	private boolean updateCacheOnStartup;
-
 	public long lastSchedulerThread = Long.MIN_VALUE;
 
 	private Timer monitorTimer;
 
 	public static synchronized void init(AccessGDB geoDB, boolean updateCacheOnStartup) {
 		if (instance == null) {
-			instance = new CacheScheduler(geoDB, updateCacheOnStartup);
+			instance = new TimerTaskCacheScheduler(geoDB, updateCacheOnStartup);
 		}
 	}
 	
-	public static synchronized CacheScheduler instance() {
+	public static synchronized TimerTaskCacheScheduler instance() {
 		return instance;
 	}
 	
-	private CacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
-		this.geoDB = geoDB;
-		this.updateCacheOnStartup = updateCacheOnStartup;
-		
-		/*
-		 * first use the PUMC, others might depend on it
-		 */
-		try {
-			candidates.add(PropertyUnitMappingCache.instance());
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-
-		try {
-			candidates.add(ObservationOfferingCache.instance());
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
+	private TimerTaskCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
+		super(geoDB, updateCacheOnStartup);
 		
 		this.cacheTimer = new Timer(true);
 		this.monitorTimer = new Timer(true);
@@ -112,7 +86,7 @@ public class CacheScheduler {
 		
 		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
 		
-		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(candidates), mdt.toDate(), ONE_HOUR_MS * 24);
+		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(getCandidates()), mdt.toDate(), ONE_HOUR_MS * 24);
 		
 //		Calendar c = new GregorianCalendar();
 //		c.add(Calendar.MINUTE, 5);
@@ -128,43 +102,6 @@ public class CacheScheduler {
 		this.monitorTimer.schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/60);
 	}
 
-	protected MutableDateTime resolveNextScheduleDate(int targetHour, DateTime referenceTime) {
-		/*
-		 * every 4am, starting with next
-		 */
-		MutableDateTime mdt = referenceTime.toMutableDateTime();
-		mdt.setHourOfDay(targetHour);
-		mdt.setMinuteOfHour(0);
-		mdt.setSecondOfMinute(0);
-		
-		if (!referenceTime.isBefore(mdt)) {
-			mdt.addDays(1);
-		}
-		
-		Random random = new Random();
-		mdt.addSeconds(random.nextInt(11)*2);
-		return mdt;
-	}
-	
-	public List<AbstractEntityCache<?>> getCandidates() {
-		return candidates;
-	}
-
-	public boolean isUpdateCacheOnStartup() {
-		return updateCacheOnStartup;
-	}
-
-	private List<AbstractEntityCache<?>> cacheUpdateRequired() throws FileNotFoundException {
-		List<AbstractEntityCache<?>> result = new ArrayList<>();
-		
-		for (AbstractEntityCache<?> cand : candidates) {
-			if (cand.requiresUpdate()) {
-				result.add(cand);
-			}
-		}
-		
-		return result;
-	}
 
 	public void shutdown() {
 		this.cacheTimer.cancel();
@@ -184,21 +121,6 @@ public class CacheScheduler {
 		
 	}
 	
-	private void freeCacheUpdateLock() throws IOException {
-		synchronized (CacheScheduler.class) {
-			File lockFile = resolveCacheLockFile();
-			
-			if (lockFile.exists()) {
-				lockFile.delete();
-			}	
-		}
-	}
-
-	private File resolveCacheLockFile() throws FileNotFoundException {
-		File dir = CommonUtilities.resolveCacheBaseDir();
-		File lockFile = new File(dir, "cache.lock");
-		return lockFile;
-	}
 
 	public void forceUpdate() {
 		if (isCurrentyLocked()) {
@@ -206,42 +128,10 @@ public class CacheScheduler {
 			return;
 		}
 		else {
-			this.cacheTimer.schedule(new UpdateCacheTask(candidates), new Date());		
+			this.cacheTimer.schedule(new UpdateCacheTask(getCandidates()), new Date());		
 		}
 	}
 	
-	public boolean isCurrentyLocked() {
-		synchronized (CacheScheduler.class) {
-			File lockFile;
-			try {
-				lockFile = resolveCacheLockFile();
-			} catch (FileNotFoundException e) {
-				return false;
-			}
-			
-			return lockFile.exists();
-		}
-	}
-	
-	private boolean retrieveCacheUpdateLock() throws IOException {
-		synchronized (CacheScheduler.class) {
-			File lockFile = resolveCacheLockFile();
-			
-			if (!lockFile.exists()) {
-				boolean worked = lockFile.createNewFile();
-				if (worked) {
-					return true;
-				}
-				else {
-					LOGGER.info("Could not create cache.lock file!");
-					return false;
-				}
-			}
-		}
-		
-		return false;
-	}
-
 	
 	private class UpdateCacheTask extends TimerTask {
 
@@ -261,7 +151,7 @@ public class CacheScheduler {
 			 * this monitor takes care of cleaning up a staled lock file
 			 * after a certain amount of time
 			 */
-			CacheScheduler.this.monitorTimer.schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
+			TimerTaskCacheScheduler.this.monitorTimer.schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
 			
 			try {
 				if (!retrieveCacheUpdateLock()) {
@@ -269,11 +159,11 @@ public class CacheScheduler {
 					return;
 				}
 
-				CacheScheduler.this.lastSchedulerThread = Thread.currentThread().getId();
+				TimerTaskCacheScheduler.this.lastSchedulerThread = Thread.currentThread().getId();
 				LOGGER.info("update cache... using thread "+ lastSchedulerThread);
 				
 				for (AbstractEntityCache<?> aec : this.candidates) {
-					aec.updateCache(geoDB);
+					aec.updateCache(getGeoDB());
 				}
 				
 				freeCacheUpdateLock();
@@ -292,11 +182,6 @@ public class CacheScheduler {
 		
 		private long maximumAge = Long.MIN_VALUE;
 
-		/**
-		 * do not take the age of the file into account
-		 */
-		public MonitorCacheTask() {
-		}
 		
 		/**
 		 * @param maximumAge delete only a file that is older than this age
@@ -318,9 +203,9 @@ public class CacheScheduler {
 			/*
 			 * try to find the 
 			 */
-			if (CacheScheduler.this.lastSchedulerThread != Long.MIN_VALUE) {
+			if (TimerTaskCacheScheduler.this.lastSchedulerThread != Long.MIN_VALUE) {
 				for (Thread t : stacks.keySet()) {
-					if (t.getId() == CacheScheduler.this.lastSchedulerThread) {
+					if (t.getId() == TimerTaskCacheScheduler.this.lastSchedulerThread) {
 						target = t;
 						break;
 					}
@@ -363,7 +248,7 @@ public class CacheScheduler {
 							LOGGER.info("cache.lock to young, an update might be in progress.");
 						}
 					}
-					else if (CacheScheduler.this.lastSchedulerThread != Long.MIN_VALUE) {
+					else if (TimerTaskCacheScheduler.this.lastSchedulerThread != Long.MIN_VALUE) {
 						/*
 						 * only free if this CacheScheduler instance (singleton in an SOE instance)
 						 * has already started a cache update. otherwise lastSchedulerThread has

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
@@ -37,7 +38,6 @@ public abstract class AbstractEntityCache<T> {
 	public Logger LOGGER = Logger.getLogger(AbstractEntityCache.class.getName());
 	
 	private File cacheFile;
-	private FileOutputStream fileStream;
 	private Object cacheFileMutex = new Object();
 
 	private long lastUpdateDuration;
@@ -77,6 +77,34 @@ public abstract class AbstractEntityCache<T> {
 	protected abstract Collection<T> getCollectionFromDAO(AccessGDB geoDB) throws IOException;
 	
 	protected abstract AbstractEntityCache<T> getSingleInstance();
+	
+	public void storeTemporaryEntity(T et) {
+		FileOutputStream fs = null;
+		synchronized (cacheFileMutex) {
+			try {
+				fs = new FileOutputStream(getTempCacheFile(), true);
+				storeEntity(UUID.randomUUID().toString(), et, fs);	
+			} catch (FileNotFoundException | CacheException e) {
+				LOGGER.warn(e.getMessage(), e);
+			} finally {
+				try {
+					if (fs != null) {
+						fs.close();
+					}
+				} catch (IOException e) {
+					LOGGER.warn(e.getMessage(), e);
+				}
+			}
+		}
+	}
+	
+	protected void clearTempCacheFile() throws IOException {
+		synchronized (cacheFileMutex) {
+			File f = getTempCacheFile();
+			f.delete();
+			f.createNewFile();
+		}
+	}
 	
 	public synchronized void storeEntity(String id, T entity, FileOutputStream fos) throws CacheException {
 		StringBuilder sb = new StringBuilder();
@@ -125,26 +153,29 @@ public abstract class AbstractEntityCache<T> {
 	}
 	
 	public synchronized void storeEntityCollection(Map<String, T> entities) throws CacheException {
-		File tempCacheFile;
-		try {
-			tempCacheFile = getTempCacheFile();
-			this.fileStream = new FileOutputStream(tempCacheFile);
-		} catch (FileNotFoundException e) {
-			throw new CacheException(e);
-		}
+		File tempCacheFile = getTempCacheFile();
+		if (entities.size() > 0) {
 		
-		
-		LOGGER.info("storing cache to temporary file "+ tempCacheFile.getAbsolutePath());
-		for (String id : entities.keySet()) {
-			storeEntity(id, entities.get(id), this.fileStream);
+			FileOutputStream fileStream;
+			try {
+				fileStream = new FileOutputStream(tempCacheFile);
+			} catch (FileNotFoundException e) {
+				throw new CacheException(e);
+			}
+			
+			
+			LOGGER.info("storing cache to temporary file "+ tempCacheFile.getAbsolutePath());
+			for (String id : entities.keySet()) {
+				storeEntity(id, entities.get(id), fileStream);
+			}
+			
+			try {
+				fileStream.close();
+			} catch (IOException e) {
+				throw new CacheException(e);
+			}
+			fileStream = null;			
 		}
-		
-		try {
-			this.fileStream.close();
-		} catch (IOException e) {
-			throw new CacheException(e);
-		}
-		this.fileStream = null;
 		
 		synchronized (cacheFileMutex) {
 			try {
@@ -158,25 +189,19 @@ public abstract class AbstractEntityCache<T> {
 	}
 	
 	private File getTempCacheFile() {
-		return new File(this.cacheFile.getParent(), getCacheFileName()+".tmp");
+		synchronized (cacheFileMutex) {
+			return new File(this.cacheFile.getParent(), getCacheFileName()+".tmp");
+		}
 	}
 
-	public T getEntity(String id) throws CacheException, CacheNotYetAvailableException {
-		return getEntityCollection().get(id);
-	}
-	
-	public Map<String, T> getEntityCollection() throws CacheException, CacheNotYetAvailableException {
-		return getEntityCollection(null);
-	}
-	
 	public Map<String, T> getEntityCollection(AccessGDB geoDB) throws CacheException, CacheNotYetAvailableException {
+		LOGGER.info("getEntityCollection for cache "+getClass().getSimpleName());
 		synchronized (cacheFileMutex) {
 			if (this.cacheFile == null || !(this.isCacheAvailable() && this.hasCacheContent())) {
 				if (geoDB != null) {
 					try {
 						initializeCacheFile();
 						scheduleCacheUpdate();
-						throw new CacheNotYetAvailableException();
 					} catch (IOException e) {
 						throw new CacheException(e);
 					}
@@ -196,13 +221,24 @@ public abstract class AbstractEntityCache<T> {
 	}
 
 	private void scheduleCacheUpdate() {
-		CacheScheduler.instance().forceUpdate();
+		AbstractCacheScheduler.Instance.instance().forceUpdate();
 	}
 
-	private Map<String, T> deserializeCacheFile() throws IOException {
-		FileInputStream fis = new FileInputStream(this.cacheFile);
-		
-		return deserializeEntityCollection(fis);
+	private Map<String, T> deserializeCacheFile() throws IOException, CacheNotYetAvailableException {
+		synchronized (cacheFileMutex) {
+			FileInputStream fis;
+			if (hasCacheContent()) {
+				fis = new FileInputStream(this.cacheFile);
+			}
+			else if (hasCacheContent(getTempCacheFile())) {
+				fis = new FileInputStream(getTempCacheFile());
+			}
+			else {
+				throw new CacheNotYetAvailableException();
+			}
+			
+			return deserializeEntityCollection(fis);
+		}
 	}
 	
 	protected String readStreamContent(InputStream is) {
@@ -234,14 +270,20 @@ public abstract class AbstractEntityCache<T> {
 	}
 	
 	public boolean hasCacheContent() {
+		return hasCacheContent(cacheFile);
+	}
+	
+	private boolean hasCacheContent(File f) {
 		synchronized (cacheFileMutex) {
-			return cacheFile.exists() && cacheFile.length() > 0;
+			return f.exists() && f.length() > 0;
 		}
 	}
 	
 	public long lastUpdated() {
-		if (isCacheAvailable() && hasCacheContent()) {
-			return cacheFile.lastModified();
+		synchronized (cacheFileMutex) {
+			if (isCacheAvailable() && hasCacheContent()) {
+				return cacheFile.lastModified();
+			}	
 		}
 		return 0;
 	}
@@ -287,7 +329,9 @@ public abstract class AbstractEntityCache<T> {
 	}
 
 	private File getCacheLockFile() {
-		return new File(this.cacheFile.getParent(), this.cacheFile.getName()+".lock");
+		synchronized (cacheFileMutex) {
+			return new File(this.cacheFile.getParent(), this.cacheFile.getName()+".lock");
+		}
 	}
 	
 	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
@@ -312,7 +356,7 @@ public abstract class AbstractEntityCache<T> {
 			if (this.hasCacheContent()) {
 				long lastUpdated = this.getSingleInstance().lastUpdated();
 				
-				if (System.currentTimeMillis() - lastUpdated > CacheScheduler.FIFTEEN_MINS_MS) {
+				if (System.currentTimeMillis() - lastUpdated > AbstractCacheScheduler.FIFTEEN_MINS_MS) {
 					return true;
 				}	
 			}

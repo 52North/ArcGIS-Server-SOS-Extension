@@ -221,7 +221,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         LOGGER.debug("WHERE "+ whereClause);
         
         ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
-        		" DISTINCT TOP 1 ".concat(AccessGDBImpl.createCommaSeparatedList(subFields)), gdb.getWorkspace());
+        		" DISTINCT TOP 1 ".concat(AccessGDBImpl.createCommaSeparatedList(subFields)), gdb);
 
         Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor);
 
@@ -262,7 +262,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         }
         
         ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
-        		" DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields), gdb.getWorkspace());
+        		" DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
 
         Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor);
 
@@ -301,7 +301,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         	ifIsFirstAppendAND(whereClauseParameterAppend, whereClauseParameterAppend.toString().trim().isEmpty());
             whereClauseParameterAppend.append(AccessGDBImpl.createOrClause(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_ID), aggregationTypes));
             
-            c = DatabaseUtils.resolveRecordCount(tables, whereClauseParameterAppend.toString(), gdb.getWorkspace());
+            c = DatabaseUtils.resolveRecordCount(tables, whereClauseParameterAppend.toString(), gdb);
             if (c > 0 && (!checkForMaxRecords || c < gdb.getMaxNumberOfResults())) {
             	return true;
             }

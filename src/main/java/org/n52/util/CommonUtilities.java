@@ -79,7 +79,7 @@ public class CommonUtilities {
 		return sb.toString();
 	}
 
-	public static String convertExceptionToString(Exception e) {
+	public static String convertExceptionToString(Throwable e) {
 		StringBuilder sb = new StringBuilder(e.getMessage());
 		sb.append(":");
 		sb.append(NEW_LINE_CHAR);

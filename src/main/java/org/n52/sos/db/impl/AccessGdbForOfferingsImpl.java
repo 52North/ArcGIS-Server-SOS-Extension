@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimePeriod;
+import org.n52.sos.cache.OnOfferingRetrieved;
 import org.n52.sos.dataTypes.AGSEnvelope;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGdbForOfferings;
@@ -57,8 +58,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
      * @return all offerings from the Geodatabase
      * @throws IOException
      */
-    public synchronized Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException
-    {
+    @Override
+	public void getNetworksAsObservationOfferingsAsync(
+			OnOfferingRetrieved retriever) throws IOException {
         LOGGER.info("getNetworksAsObservationOfferings() is called. "+System.identityHashCode(this));
         
         List<ObservationOffering> offerings = new ArrayList<ObservationOffering>();
@@ -78,7 +80,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
         		"",
         		AccessGDBImpl.createCommaSeparatedList(subFields),
-        		gdb.getWorkspace());
+        		gdb);
 
         // convert cursor entries to abstract observations
         Fields fields = (Fields) cursor.getFields();
@@ -97,9 +99,8 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             offerings.add(offering);
         }
 
-        List<ObservationOffering> offeringsWithoutObservations = new ArrayList<ObservationOffering>();
         for (ObservationOffering offering : offerings) {
-            LOGGER.debug("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
+            LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
             
             safetySleep(200);
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,7 +137,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             ICursor cursorOffering = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesTime),
             		whereClauseTime.toString(),
             		AccessGDBImpl.createCommaSeparatedList(subFieldsTime),
-            		gdb.getWorkspace());
+            		gdb);
             
             IRow nextRow = cursorOffering.nextRow();
             
@@ -145,7 +146,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             
             if (startValue == null || endValue == null) {
             	LOGGER.debug("skipping network");
-            	offeringsWithoutObservations.add(offering);
             	continue;
             }
             else {
@@ -197,7 +197,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             ICursor cursorProp = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesProp),
             		whereClauseProp.toString(),
             		AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
-            		gdb.getWorkspace());
+            		gdb);
             
             fields = (Fields) cursorProp.getFields();
             List<String> obsProps = new ArrayList<String>();
@@ -251,7 +251,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             ICursor cursorFoi = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesFoi),
             		whereClauseFoi.toString(),
             		AccessGDBImpl.createCommaSeparatedList(subFieldsFoi),
-            		gdb.getWorkspace());
+            		gdb);
             
             List<Point> points = new ArrayList<Point>();
             fields = (Fields) cursorFoi.getFields();
@@ -273,13 +273,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             envelope.defineFromPoints(pointArray);
             offering.setObservedArea(new AGSEnvelope(envelope));
             
+            retriever.retrieveOffering(offering);
         }
         
-        offerings.removeAll(offeringsWithoutObservations);
-        
-        LOGGER.info("Networks with observations: "+offerings.size());
-        
-        return offerings;
     }
     
     private void safetySleep(int i) {
@@ -323,7 +319,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
             
             // evaluate the database query
             ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
-            		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb.getWorkspace());
+            		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
 
             // convert cursor entries to abstract observations
             Fields fields = (Fields) cursor.getFields();
@@ -371,7 +367,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
                 ICursor cursorOffering = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesTime),
                 		whereClauseTime.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsOff),
-                		gdb.getWorkspace());
+                		gdb);
                 
                 IRow nextRow = cursorOffering.nextRow();
                 
@@ -427,7 +423,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                     // evaluate the database query
                     ICursor cursorProp = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesProp),
                     		whereClauseProp.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
-                    		gdb.getWorkspace());
+                    		gdb);
                     
                     fields = (Fields) cursorProp.getFields();
                     List<String> obsProps = new ArrayList<String>();
@@ -478,7 +474,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
                     // evaluate the database query
                     ICursor cursorFoi = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tablesFoi),
                     		whereClauseFoi.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsFoi),
-                    		gdb.getWorkspace());
+                    		gdb);
                     
                     List<Point> points = new ArrayList<Point>();
                     fields = (Fields) cursorFoi.getFields();
@@ -511,6 +507,27 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
         }
         return observationOfferingsCache;
     }
+
+
+	@Override
+	public Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException {
+		final List<ObservationOffering> result = new ArrayList<>();
+		
+		OnOfferingRetrieved retriever = new OnOfferingRetrieved() {
+			@Override
+			public void retrieveOffering(ObservationOffering oo) {
+				result.add(oo);
+			}
+		};
+		
+		getNetworksAsObservationOfferingsAsync(retriever);
+		
+        LOGGER.info("Networks with observations: "+result.size());
+        
+        return result;
+	}
+
+
     
     
 }

@@ -36,7 +36,7 @@ import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimeFactory;
 import org.n52.sos.cache.CacheException;
 import org.n52.sos.cache.CacheNotYetAvailableException;
-import org.n52.sos.cache.CacheScheduler;
+import org.n52.sos.cache.AbstractCacheScheduler;
 import org.n52.sos.cache.ObservationOfferingCache;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.dataTypes.Procedure;
@@ -109,7 +109,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     
 	private List<OperationRequestHandler> operationHandlers;
 
-	private CacheScheduler cacheScheduler;
+	private AbstractCacheScheduler cacheScheduler;
 
 	private boolean updateCacheOnStartup;
     
@@ -222,8 +222,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         /*
          * initiate the cache
          */
-        CacheScheduler.init(geoDB, this.updateCacheOnStartup);
-		cacheScheduler = CacheScheduler.instance(); 				
+        cacheScheduler = AbstractCacheScheduler.Instance.init(geoDB, this.updateCacheOnStartup);
         
         LOGGER.info("Construction of SOE finished.");
     }

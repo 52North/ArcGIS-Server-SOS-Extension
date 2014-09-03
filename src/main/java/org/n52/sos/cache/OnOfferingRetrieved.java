@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.db;
+package org.n52.sos.cache;
 
-import java.io.IOException;
-import java.util.Collection;
-
-import org.n52.sos.cache.OnOfferingRetrieved;
 import org.n52.sos.dataTypes.ObservationOffering;
 
-public interface AccessGdbForOfferings {
+public interface OnOfferingRetrieved {
 
-	Collection<ObservationOffering> getNetworksAsObservationOfferings() throws IOException;
-
-	Collection<ObservationOffering> getProceduresAsObservationOfferings() throws IOException;
-
-	void getNetworksAsObservationOfferingsAsync(OnOfferingRetrieved retriever)
-			throws IOException;
+	void retrieveOffering(ObservationOffering oo);
 
 }

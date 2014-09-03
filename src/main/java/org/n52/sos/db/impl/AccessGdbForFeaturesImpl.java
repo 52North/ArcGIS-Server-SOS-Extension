@@ -286,7 +286,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         	
         	int count = DatabaseUtils.resolveRecordCount(tableList,
         			whereClause.toString().concat(isNullWhereClause.toString()),
-        			gdb.getWorkspace());
+        			gdb);
         	
         	if (count > 0) {
         		subFields.remove(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
@@ -303,7 +303,7 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         }
    
         ICursor cursor = DatabaseUtils.evaluateQuery(tableList, whereClause.toString(), AccessGDBImpl.createCommaSeparatedList(subFields),
-        		gdb.getWorkspace());
+        		gdb);
         // evaluate the database query
 
         // convert cursor entries to abstract observations

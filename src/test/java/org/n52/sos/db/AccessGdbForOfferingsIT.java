@@ -46,8 +46,9 @@ public class AccessGdbForOfferingsIT extends EsriTestBase {
         
         System.out.println("start.");
         try {
-            Collection<ObservationOffering> offerings = gdb.getOfferingAccess().getNetworksAsObservationOfferings();
-            
+            Collection<ObservationOffering> offerings = gdb.getOfferingAccess().
+            		getNetworksAsObservationOfferings();
+           
             LOGGER.info("Offerings in JSON: " + JSONEncoder.encodeObservationOfferings(offerings).toString());
             
             // create ServiceDescription:

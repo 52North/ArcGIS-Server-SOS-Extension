@@ -1,0 +1,180 @@
+/**
+ * Copyright (C) 2012 52°North Initiative for Geospatial Open Source Software GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.n52.sos.cache;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+import org.n52.sos.cache.quartz.QuartzCacheScheduler;
+import org.n52.sos.db.AccessGDB;
+import org.n52.util.CommonUtilities;
+import org.n52.util.logging.Logger;
+
+public abstract class AbstractCacheScheduler {
+	
+	private static final Logger LOGGER = Logger.getLogger(AbstractCacheScheduler.class.getName());
+	
+	public static final long ONE_HOUR_MS = 1000 * 60 * 60;
+	public static final long FIFTEEN_MINS_MS = 1000 * 60 * 15;
+	
+	private List<AbstractEntityCache<?>> candidates = new ArrayList<>();
+	private boolean updateCacheOnStartup;
+	private AccessGDB geoDB;
+
+	private File lockFile;
+
+	public AbstractCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
+		this.geoDB = geoDB;
+		this.updateCacheOnStartup = updateCacheOnStartup;
+		
+		/*
+		 * first use the PUMC, others might depend on it
+		 */
+		try {
+			candidates.add(PropertyUnitMappingCache.instance());
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+
+		try {
+			candidates.add(ObservationOfferingCache.instance());
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+	}
+
+	protected AccessGDB getGeoDB() {
+		return this.geoDB;
+	}
+
+	public abstract void shutdown();
+	
+	public List<AbstractEntityCache<?>> getCandidates() {
+		return candidates;
+	}
+
+	public boolean isUpdateCacheOnStartup() {
+		return updateCacheOnStartup;
+	}
+	
+	protected void freeCacheUpdateLock() throws IOException {
+		synchronized (AbstractCacheScheduler.class) {
+			File lockFile = resolveCacheLockFile();
+			
+			if (lockFile.exists()) {
+				lockFile.delete();
+			}	
+		}
+	}
+
+	protected synchronized File resolveCacheLockFile() throws FileNotFoundException {
+		if (lockFile == null) {
+			File dir = CommonUtilities.resolveCacheBaseDir();
+			lockFile = new File(dir, "cache.lock");	
+		}
+		
+		return lockFile;
+	}
+
+	public abstract void forceUpdate();
+	
+	public boolean isCurrentyLocked() {
+		synchronized (AbstractCacheScheduler.class) {
+			File lockFile;
+			try {
+				lockFile = resolveCacheLockFile();
+			} catch (FileNotFoundException e) {
+				return false;
+			}
+			
+			return lockFile.exists();
+		}
+	}
+	
+	protected boolean retrieveCacheUpdateLock() throws IOException {
+		synchronized (AbstractCacheScheduler.class) {
+			File lockFile = resolveCacheLockFile();
+			
+			if (!lockFile.exists()) {
+				boolean worked = lockFile.createNewFile();
+				if (worked) {
+					return true;
+				}
+				else {
+					LOGGER.info("Could not create cache.lock file!");
+					return false;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public MutableDateTime resolveNextScheduleDate(int targetHour, DateTime referenceTime) {
+		/*
+		 * every 4am, starting with next
+		 */
+		MutableDateTime mdt = referenceTime.toMutableDateTime();
+		mdt.setHourOfDay(targetHour);
+		mdt.setMinuteOfHour(0);
+		mdt.setSecondOfMinute(0);
+		
+		if (!referenceTime.isBefore(mdt)) {
+			mdt.addDays(1);
+		}
+		
+		Random random = new Random();
+		mdt.addSeconds(random.nextInt(11)*2);
+		return mdt;
+	}
+	
+
+	protected List<AbstractEntityCache<?>> cacheUpdateRequired() throws FileNotFoundException {
+		List<AbstractEntityCache<?>> result = new ArrayList<>();
+		
+		for (AbstractEntityCache<?> cand : getCandidates()) {
+			if (cand.requiresUpdate()) {
+				result.add(cand);
+			}
+		}
+		
+		return result;
+	}
+	
+	public static class Instance {
+		
+		private static AbstractCacheScheduler instance;
+
+		public static synchronized AbstractCacheScheduler init(AccessGDB geoDB, boolean updateCacheOnStartup) {
+			if (instance == null) {
+				instance = new QuartzCacheScheduler(geoDB, updateCacheOnStartup);
+			}
+			return instance;
+		}
+		
+		public static synchronized AbstractCacheScheduler instance() {
+			return instance;
+		}
+		
+	}
+
+}

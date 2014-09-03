@@ -106,7 +106,13 @@ public class PropertyUnitMappingCache extends
 
 	@Override
 	protected AbstractEntityCache<PropertyUnitMapping> getSingleInstance() {
-		return instance;
+		try {
+			return instance();
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+		
+		return null;
 	}
 	
 	@Override
