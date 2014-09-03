@@ -107,12 +107,12 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			}			
 		}
 		
-		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
+		MutableDateTime mdt = new DateTime().plusMinutes(2).toMutableDateTime();
 		DateTime now = new DateTime();
 		
 		try {
 			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
-					ONE_HOUR_MS * 24);
+					ONE_HOUR_MS / 3);
 		} catch (SchedulerException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
@@ -275,7 +275,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			t.start();
 			
 			long start = System.currentTimeMillis();
-			while (running.get()) {
+			while (running.get() && t.getState() != Thread.State.TERMINATED) {
 				if (System.currentTimeMillis()-start > 1000 * 60 * 10) {
 					Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
 					LOGGER.warn("update thread taking more than 10 minutes... StackTrace: "+
@@ -327,14 +327,18 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 					aec.updateCache(getGeoDB());
 				}
 				
-				freeCacheUpdateLock();
-				
 				LOGGER.info("all caches updated!");					
 			} catch (IOException | CacheException | RuntimeException e) {
 				LOGGER.warn(e.getMessage(), e);
 			} catch (Throwable t) {
 				LOGGER.severe("Unrecoverable error", t);
 				throw t;
+			} finally {
+				try {
+					freeCacheUpdateLock();
+				} catch (IOException e) {
+					LOGGER.warn(e.getMessage(), e);
+				}
 			}
 		}
 		
