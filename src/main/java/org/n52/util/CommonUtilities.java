@@ -80,7 +80,12 @@ public class CommonUtilities {
 	}
 
 	public static String convertExceptionToString(Throwable e) {
-		StringBuilder sb = new StringBuilder(e.getMessage());
+		if (e == null) {
+			return "null";
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(e.getMessage());
 		sb.append(":");
 		sb.append(NEW_LINE_CHAR);
 
