@@ -59,11 +59,12 @@ public class OGCFeatureEncoder extends AbstractEncoder {
     
     public String encodeFeatures(Collection<Feature> featureCollection) throws IOException {
                 
-        StringBuilder allFeatures = new StringBuilder("");
+        StringBuilder allFeatures = new StringBuilder();
         
         for (Feature feature : featureCollection) {
             
-            StringBuilder featureString = new StringBuilder(featureTemplate);
+            StringBuilder featureString = new StringBuilder();
+            featureString.append(featureTemplate);
             
             if (feature.getGmlId() != null) {
             	replace(featureString, FEATURE_GML_ID, "gml:id=\"" + feature.getGmlId() + "\"");

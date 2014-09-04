@@ -80,7 +80,8 @@ public class OGCObservationSWECommonEncoder extends AbstractEncoder {
 
             MultiValueObservation multiValObs = idObsList.get(obsId);
         	
-            StringBuilder observation = new StringBuilder(getObservationTemplate());
+            StringBuilder observation = new StringBuilder();
+            observation.append(getObservationTemplate());
             
             StringBuilder allValues = new StringBuilder();
             for (MeasureResult resultValue : multiValObs.getResult().getValue()) {

@@ -141,7 +141,10 @@ public class Procedure {
 	
 	@Override
     public String toString() {
-    	StringBuilder result = new StringBuilder("[Procedure: " + id + " [features: ");
+    	StringBuilder result = new StringBuilder();
+    	result.append("[Procedure: ");
+    	result.append(id);
+    	result.append(" [features: ");
     	
     	if (this.getFeaturesOfInterest() != null) {
 	    	for (String featureID : this.getFeaturesOfInterest()) {
