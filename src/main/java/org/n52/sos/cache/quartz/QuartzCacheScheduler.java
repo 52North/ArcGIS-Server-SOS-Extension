@@ -276,12 +276,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			
 			long start = System.currentTimeMillis();
 			while (running.get() && t.getState() != Thread.State.TERMINATED) {
-				if (System.currentTimeMillis()-start > 1000 * 60 * 10) {
-					Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
-					LOGGER.warn("update thread taking more than 10 minutes... StackTrace: "+
-					dumpAllThreads(stacks));
-				}
-				else if (System.currentTimeMillis()-start > 1000 * 60 * 30) {
+				if (System.currentTimeMillis()-start > 1000 * 60 * 30) {
 					LOGGER.warn("update thread took more than 30 minutes... cancelling");
 					try {
 						freeCacheUpdateLock();
@@ -290,6 +285,11 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 					}
 					return;
 				}
+				else if (System.currentTimeMillis()-start > 1000 * 60 * 10) {
+					Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
+					LOGGER.warn("update thread taking more than 10 minutes... StackTrace: "+
+					dumpAllThreads(stacks));
+				} 
 				else {
 					LOGGER.info("still waiting for update thread to finish...");
 				}
