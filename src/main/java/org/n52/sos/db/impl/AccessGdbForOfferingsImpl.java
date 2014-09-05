@@ -114,7 +114,6 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 			throw new IOException(e1);
 		}
 
-		List<ObservationOffering> failedNetworks = new ArrayList<>();
 		for (ObservationOffering offering : offerings) {
 			try {
 
@@ -286,17 +285,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
 			}
 			catch (ExecutionException e) {
-				LOGGER.severe("Timeout at queries for network "+offering.getId(), e);
-				failedNetworks.add(offering);
 				futureExecutor.shutdownNow();
 				futureExecutor = Executors.newSingleThreadExecutor();
+				throw new IOException(e);
 			}
 		}
 		
-		if (!failedNetworks.isEmpty()) {
-			LOGGER.warn("Some networks failed to be resolved: "+ failedNetworks.toString());
-		}
-
 	}
 
 	private void safetySleep(int i) {

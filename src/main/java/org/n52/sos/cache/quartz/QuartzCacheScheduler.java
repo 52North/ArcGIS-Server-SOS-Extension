@@ -230,9 +230,26 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 	private class UpdateCacheTask extends NamedJob {
 
 		private List<AbstractEntityCache<?>> candidates;
+		private boolean reschedulingAllowed;
 
+		/**
+		 * Constructor, allowing rescheduling of failed cache updates
+		 * 
+		 * @param candidates the cache candidates
+		 */
 		public UpdateCacheTask(List<AbstractEntityCache<?>> candidates) {
+			this(candidates, true);
+		}
+
+		/**
+		 * @param candidates the cache candidates
+		 * @param reschedulingAllowed if an update fails, allow to reschedule
+		 * another one
+		 */
+		public UpdateCacheTask(List<AbstractEntityCache<?>> candidates,
+				boolean reschedulingAllowed) {
 			this.candidates = candidates;
+			this.reschedulingAllowed = reschedulingAllowed;
 		}
 
 		@Override
@@ -330,6 +347,19 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				LOGGER.info("all caches updated!");					
 			} catch (IOException | CacheException | RuntimeException e) {
 				LOGGER.warn(e.getMessage(), e);
+				
+				/*
+				 * are we allowed to reschedule another update?
+				 * If a (daily) update fails once, we try another
+				 * one after 30 minutes
+				 */
+				if (this.reschedulingAllowed) {
+					try {
+						schedule(new UpdateCacheTask(candidates, false), ONE_HOUR_MS / 2);
+					} catch (SchedulerException e1) {
+						LOGGER.warn(e.getMessage(), e);
+					}
+				}
 			} catch (Throwable t) {
 				LOGGER.severe("Unrecoverable error", t);
 				throw t;
