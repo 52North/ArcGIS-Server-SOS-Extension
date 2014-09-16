@@ -98,14 +98,21 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 			int count = 0;
 			
 			@Override
-			public void retrieveOffering(ObservationOffering oo) {
+			public void retrieveExpectedOfferingsCount(int c) {
+				setMaximumEntries(c);
+			}
+			
+			@Override
+			public void retrieveOffering(ObservationOffering oo, int currentOfferingIndex) {
 				storeTemporaryEntity(oo);
+				setLatestEntryIndex(currentOfferingIndex);
 				LOGGER.info(String.format("Added ObservationOffering #%s to the cache.", count++));
 			}
 			
 		});
 		return Collections.emptyList();
 	}
+
 
 	@Override
 	protected AbstractEntityCache<ObservationOffering> getSingleInstance() {

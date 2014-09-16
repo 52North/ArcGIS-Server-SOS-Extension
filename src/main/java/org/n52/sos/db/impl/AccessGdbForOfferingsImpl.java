@@ -113,8 +113,15 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 		} catch (ExecutionException e1) {
 			throw new IOException(e1);
 		}
+		
+		/*
+		 * tell the retriever how many offerings might come in
+		 */
+		retriever.retrieveExpectedOfferingsCount(offerings.size());
 
+		int currentOffering = 0;
 		for (ObservationOffering offering : offerings) {
+			currentOffering++;
 			try {
 
 				LOGGER.info("Working on offering (id: '" + offering.getId() + "') at index " + offerings.indexOf(offering) + " out of " + offerings.size());
@@ -281,7 +288,7 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 					envelope.defineFromPoints(pointArray);
 					offering.setObservedArea(new AGSEnvelope(envelope));
 
-					retriever.retrieveOffering(offering);
+					retriever.retrieveOffering(offering, currentOffering);
 
 			}
 			catch (ExecutionException e) {
@@ -530,8 +537,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 
 		OnOfferingRetrieved retriever = new OnOfferingRetrieved() {
 			@Override
-			public void retrieveOffering(ObservationOffering oo) {
+			public void retrieveOffering(ObservationOffering oo, int currentOffering) {
 				result.add(oo);
+			}
+
+			@Override
+			public void retrieveExpectedOfferingsCount(int count) {
 			}
 		};
 

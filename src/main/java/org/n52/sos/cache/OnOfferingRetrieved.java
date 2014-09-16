@@ -19,6 +19,8 @@ import org.n52.sos.dataTypes.ObservationOffering;
 
 public interface OnOfferingRetrieved {
 
-	void retrieveOffering(ObservationOffering oo);
+	void retrieveOffering(ObservationOffering oo, int currentOfferingIndex);
+
+	void retrieveExpectedOfferingsCount(int count);
 
 }

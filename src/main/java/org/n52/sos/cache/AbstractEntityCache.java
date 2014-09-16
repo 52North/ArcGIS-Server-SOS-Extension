@@ -41,6 +41,10 @@ public abstract class AbstractEntityCache<T> {
 	private Object cacheFileMutex = new Object();
 
 	private long lastUpdateDuration;
+
+	private int maximumEntries;
+
+	private int latestEntryIndex;
 	
 	
 	
@@ -104,6 +108,16 @@ public abstract class AbstractEntityCache<T> {
 			f.delete();
 			f.createNewFile();
 		}
+	}
+	
+
+	protected void setMaximumEntries(int c) {
+		this.maximumEntries = c;
+	}
+	
+
+	protected void setLatestEntryIndex(int currentOfferingIndex) {
+		this.latestEntryIndex = currentOfferingIndex;
 	}
 	
 	public synchronized void storeEntity(String id, T entity, FileOutputStream fos) throws CacheException {
@@ -290,6 +304,14 @@ public abstract class AbstractEntityCache<T> {
 	
 	public long getLastUpdateDuration() {
 		return lastUpdateDuration;
+	}
+	
+	public int getMaximumEntries() {
+		return maximumEntries;
+	}
+	
+	public int getLatestEntryIndex() {
+		return latestEntryIndex;
 	}
 
 //	public boolean requestUpdateLock() {

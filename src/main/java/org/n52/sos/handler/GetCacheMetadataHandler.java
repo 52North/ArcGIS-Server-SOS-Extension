@@ -56,6 +56,8 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 				candidateObject.put("lastUpdated", format.print(lastUpdate));
 				candidateObject.put("lastUpdatedUnixTimestamp", lastUpdate / 1000);
 				candidateObject.put("lastUpdateDuration", aec.getLastUpdateDuration());
+				candidateObject.put("maximumEntries", aec.getMaximumEntries());
+				candidateObject.put("latestEntryIndex", aec.getLatestEntryIndex());
 				
 				String className = aec.getClass().getSimpleName();
 				if (className.equals(DummyCache.class.getSimpleName())) {
