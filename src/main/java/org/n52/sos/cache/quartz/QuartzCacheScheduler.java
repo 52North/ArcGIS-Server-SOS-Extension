@@ -107,12 +107,12 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			}			
 		}
 		
-		MutableDateTime mdt = new DateTime().plusMinutes(2).toMutableDateTime();
+		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
 		DateTime now = new DateTime();
 		
 		try {
 			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
-					ONE_HOUR_MS / 3);
+					ONE_HOUR_MS * 24);
 		} catch (SchedulerException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
@@ -346,7 +346,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				
 				LOGGER.info("all caches updated!");					
 			} catch (IOException | CacheException | RuntimeException e) {
-				LOGGER.warn(e.getMessage(), e);
+				LOGGER.warn("Cache update cancelled due to exception.", e);
 				
 				/*
 				 * are we allowed to reschedule another update?
@@ -354,6 +354,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				 * one after 30 minutes
 				 */
 				if (this.reschedulingAllowed) {
+					LOGGER.info("rescheduling cache update...");
 					try {
 						schedule(new UpdateCacheTask(candidates, false), ONE_HOUR_MS / 2);
 					} catch (SchedulerException e1) {
