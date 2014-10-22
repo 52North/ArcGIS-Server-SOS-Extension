@@ -40,6 +40,7 @@ import org.n52.util.logging.Logger;
 import com.esri.arcgis.carto.IMapServer3;
 import com.esri.arcgis.carto.IMapServerDataAccess;
 import com.esri.arcgis.datasourcesGDB.SdeWorkspaceFactory;
+import com.esri.arcgis.datasourcesGDB.SqlWorkspace;
 import com.esri.arcgis.geodatabase.Feature;
 import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.Fields;
@@ -82,8 +83,6 @@ public class AccessGDBImpl implements AccessGDB {
 
     private SosSoe sos;
 
-    private Workspace workspace;
-    
     private Properties props;
     
     private int maxNumberOfResults;
@@ -98,6 +97,8 @@ public class AccessGDBImpl implements AccessGDB {
     private InsertGdbForObservations observationInsert;
 
 	private String databaseName;
+
+	private WorkspaceWrapper workspaceWrapper;
 
     /**
      * Creates an AccessObservationGDB object and connects to the DB specified
@@ -121,7 +122,8 @@ public class AccessGDBImpl implements AccessGDB {
         
         // Workspace creation
         IWorkspaceFactory factory = new SdeWorkspaceFactory();// FileGDBWorkspaceFactory();
-        workspace = new Workspace(factory.openFromFile(dbPath, 0));
+        workspaceWrapper = new WorkspaceWrapper();
+        workspaceWrapper.setWorkspace(new Workspace(factory.openFromFile(dbPath, 0)));
     }
     
     /**
@@ -149,7 +151,18 @@ public class AccessGDBImpl implements AccessGDB {
         LOGGER.info("Using dataSource: "+dataSource.getClass());
         FeatureClass fc = new FeatureClass(dataSource);
         resolveDatabaseName(fc);
-        workspace = new Workspace(fc.getWorkspace());
+        Workspace workspace = new Workspace(fc.getWorkspace());
+        this.workspaceWrapper = new WorkspaceWrapper();
+        
+        if (fc.getWorkspace() instanceof SqlWorkspace) {
+        	this.workspaceWrapper.setSqlWorkspace((SqlWorkspace) fc.getWorkspace());
+        	this.workspaceWrapper.setWorkspace(workspace);
+        }
+        else {
+        	this.workspaceWrapper.setWorkspace(workspace);
+        }
+        
+        LOGGER.info("workspace: "+fc.getWorkspace().getClass());
 
         init("/arcGisSos.properties", sos.getMaximumRecordCount());
         
@@ -376,7 +389,7 @@ public class AccessGDBImpl implements AccessGDB {
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
-        IFeatureClass features = workspace.openFeatureClass(Table.FEATUREOFINTEREST);
+        IFeatureClass features = workspaceWrapper.getWorkspace().openFeatureClass(Table.FEATUREOFINTEREST);
         ISpatialFilter spatialQuery = new SpatialFilter();
         spatialQuery.setGeometryByRef(geometry);
         spatialQuery.setGeometryField(features.getShapeFieldName());
@@ -506,8 +519,8 @@ public class AccessGDBImpl implements AccessGDB {
         }
     }
 
-    protected Workspace getWorkspace() {
-    	return workspace;
+    protected WorkspaceWrapper getWorkspace() {
+    	return workspaceWrapper;
     }
     
     protected int getMaxNumberOfResults() {

@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.util.logging.Logger;
 
+import com.esri.arcgis.datasourcesGDB.SqlWorkspace;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
@@ -76,13 +77,21 @@ public class DatabaseUtils {
 	}
 
 	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
-			String subFields, Workspace workspace) throws IOException {
+			String subFields, WorkspaceWrapper workspace) throws IOException {
 		return evaluateQuery(tables, whereClause, subFields, workspace, false);
 	}
 	
 	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
-			String subFields, Workspace workspace, boolean logAtInfoLevel) throws IOException {
-		IQueryDef queryDef = workspace.createQueryDef();
+			String subFields, WorkspaceWrapper workspace, boolean logAtInfoLevel) throws IOException {
+		
+		if (workspace.usesSqlWorkspace()) {
+			return evaluateSqlWorkspaceQuery(tables, whereClause, subFields,
+					workspace.getSqlWorkspace(),
+					logAtInfoLevel);
+		}
+		
+		IQueryDef queryDef;
+		queryDef = workspace.getWorkspace().createQueryDef();
 
 		queryDef.setSubFields(subFields);
 		if (logAtInfoLevel) {
@@ -113,6 +122,31 @@ public class DatabaseUtils {
 		// evaluate the database query
 		ICursor cursor = queryDef.evaluate();
 		return cursor;
+	}
+
+	private static ICursor evaluateSqlWorkspaceQuery(String tables,
+			String whereClause, String subFields, SqlWorkspace workspace,
+			boolean logAtInfoLevel) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT ");
+		sb.append(subFields);
+		
+		sb.append(" FROM ");
+		sb.append(tables);
+		
+		if (whereClause != null && !whereClause.trim().isEmpty()) {
+			sb.append(" WHERE ");
+			sb.append(whereClause);	
+		}
+		
+		if (logAtInfoLevel) {
+			LOGGER.info(sb.toString());
+		}
+		else {
+			LOGGER.debug(sb.toString());
+		}
+		
+		return workspace.openQueryCursor(sb.toString());
 	}
 
 }

@@ -23,6 +23,7 @@ import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.carto.IMapServer3;
 import com.esri.arcgis.carto.IMapServerDataAccess;
+import com.esri.arcgis.datasourcesGDB.SqlWorkspace;
 import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IDataset;
@@ -40,9 +41,11 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
 
     static Logger LOGGER = Logger.getLogger(AccessGdbForAnalysisImpl.class.getName());
 
-    private Workspace workspace;
-    
+
     private DBInspector soe;
+
+
+	private WorkspaceWrapper workspace;
 
     public AccessGdbForAnalysisImpl(DBInspector soe) throws AutomationException, IOException {
         LOGGER.debug("Creating AccessGdbForAnalysisImpl.");
@@ -55,7 +58,18 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
         IMapServerDataAccess mapServerDataAccess = soe.getMapServerDataAccess();
         Object dataSource= mapServerDataAccess.getDataSource(mapName, 0);
         FeatureClass fc = new FeatureClass(dataSource);
-        this.workspace = new Workspace(fc.getWorkspace());
+        Workspace workspace = new Workspace(fc.getWorkspace());
+        
+        this.workspace = new WorkspaceWrapper();
+        
+        if (fc.getWorkspace() instanceof SqlWorkspace) {
+        	this.workspace.setSqlWorkspace((SqlWorkspace) fc.getWorkspace());
+        	this.workspace.setWorkspace(workspace);
+        }
+        else {
+        	this.workspace.setWorkspace(workspace);
+        }
+        
     }
     
     public JSONObject analyzeTable (JSONObject inputObject) throws AutomationException, IOException {
@@ -142,7 +156,7 @@ public class AccessGdbForAnalysisImpl implements AccessGdbForAnalysis {
             JSONObject json = new JSONObject();
             json.append("This function: ", "...reads directly the table names from the DB through ArcGIS Server. This gives you a picture of how the SOE sees your DB.");
             
-            IEnumDataset datasets = this.workspace.getDatasets(esriDatasetType.esriDTAny);
+            IEnumDataset datasets = this.workspace.getWorkspace().getDatasets(esriDatasetType.esriDTAny);
             IDataset dataset = datasets.next();
             
             while (dataset != null) {
