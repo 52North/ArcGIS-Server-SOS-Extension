@@ -60,6 +60,10 @@ public class PropertyUnitMappingCache extends
 			throws CacheException {
 		logger.debug(String.format("Serializing %s mappings", entity.size()));
 
+		if (entity.size() == 0) {
+			throw new CacheException("No entries in PropertyUnitMappings! Check the database query");
+		}
+		
 		StringBuilder sb = new StringBuilder();
 
 		Integer valueFkUnit;
@@ -101,6 +105,7 @@ public class PropertyUnitMappingCache extends
 	@Override
 	protected Collection<PropertyUnitMapping> getCollectionFromDAO(
 			AccessGDB geoDB) throws IOException {
+		logger.info("Retrieving Mappings...");
 		return geoDB.getProcedureAccess().getPropertyUnitMappings();
 	}
 

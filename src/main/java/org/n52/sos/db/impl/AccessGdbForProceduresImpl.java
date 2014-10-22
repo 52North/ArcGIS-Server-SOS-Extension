@@ -463,7 +463,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
 		whereClause.append(" IS NOT NULL");
 		
 		ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause.toString(),
-				"DISTINCT ".concat(subFields), gdb);
+				"DISTINCT ".concat(subFields), gdb, true);
         
         IRow row;
         int count = 0;

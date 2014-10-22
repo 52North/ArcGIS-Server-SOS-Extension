@@ -341,11 +341,16 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				LOGGER.info("update cache... using thread "+ lastSchedulerThread);
 				
 				for (AbstractEntityCache<?> aec : this.candidates) {
-					aec.updateCache(getGeoDB());
+					try {
+						aec.updateCache(getGeoDB());
+					}
+					catch (CacheException e) {
+						LOGGER.warn("Cache update exception for Cache "+aec.getClass().getName(), e);
+					}
 				}
 				
 				LOGGER.info("all caches updated!");					
-			} catch (IOException | CacheException | RuntimeException e) {
+			} catch (IOException | RuntimeException e) {
 				LOGGER.warn("Cache update cancelled due to exception.", e);
 				
 				/*

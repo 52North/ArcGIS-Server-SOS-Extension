@@ -66,23 +66,48 @@ public class DatabaseUtils {
 	}
 
 	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
+			String subFields, AccessGDBImpl gdb, boolean logAtInfoLevel) throws IOException {
+		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace(), logAtInfoLevel);
+	}
+	
+	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
 			String subFields, AccessGDBImpl gdb) throws IOException {
-		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace());
+		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace(), false);
 	}
 
 	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
 			String subFields, Workspace workspace) throws IOException {
+		return evaluateQuery(tables, whereClause, subFields, workspace, false);
+	}
+	
+	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
+			String subFields, Workspace workspace, boolean logAtInfoLevel) throws IOException {
 		IQueryDef queryDef = workspace.createQueryDef();
 
 		queryDef.setSubFields(subFields);
-		LOGGER.debug("SELECT " + queryDef.getSubFields());
+		if (logAtInfoLevel) {
+			LOGGER.info("SELECT " + queryDef.getSubFields());
+		}
+		else {
+			LOGGER.debug("SELECT " + queryDef.getSubFields());
+		}
 
 		queryDef.setTables(tables);
-		LOGGER.debug("FROM " + queryDef.getTables());
+		if (logAtInfoLevel) {
+			LOGGER.info("FROM " + queryDef.getTables());
+		}
+		else {
+			LOGGER.debug("FROM " + queryDef.getTables());
+		}
 
 		if (whereClause != null && !whereClause.isEmpty()) {
 			queryDef.setWhereClause(whereClause);
-			LOGGER.debug("WHERE " + queryDef.getWhereClause());			
+			if (logAtInfoLevel) {
+				LOGGER.info("WHERE " + queryDef.getWhereClause());
+			}
+			else {
+				LOGGER.debug("WHERE " + queryDef.getWhereClause());			
+			}
 		}
 		
 		// evaluate the database query
