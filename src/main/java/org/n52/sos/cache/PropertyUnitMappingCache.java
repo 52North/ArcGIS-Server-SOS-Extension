@@ -37,17 +37,17 @@ public class PropertyUnitMappingCache extends
 	private Map<Integer, Unit> propertyUnitMap = null;
 	private Unit defaultFallbackUnit = new Unit(-1, "n/a", "n/a", "mg/m3", "n/a", "n/a");
 
-	public static synchronized PropertyUnitMappingCache instance()
+	public static synchronized PropertyUnitMappingCache instance(String dbName)
 			throws FileNotFoundException {
 		if (instance == null) {
-			instance = new PropertyUnitMappingCache();
+			instance = new PropertyUnitMappingCache(dbName);
 		}
 
 		return instance;
 	}
 
-	private PropertyUnitMappingCache() throws FileNotFoundException {
-		super();
+	private PropertyUnitMappingCache(String dbName) throws FileNotFoundException {
+		super(dbName);
 	}
 
 	@Override
@@ -111,13 +111,7 @@ public class PropertyUnitMappingCache extends
 
 	@Override
 	protected AbstractEntityCache<PropertyUnitMapping> getSingleInstance() {
-		try {
-			return instance();
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-		
-		return null;
+		return instance;
 	}
 	
 	@Override
@@ -143,8 +137,7 @@ public class PropertyUnitMappingCache extends
 					.getUnitsOfMeasure();
 			logger.debug("Available units: "+units.toString());
 
-			Map<String, PropertyUnitMapping> mappings = PropertyUnitMappingCache
-					.instance().getEntityCollection(gdb);
+			Map<String, PropertyUnitMapping> mappings = instance.getEntityCollection(gdb);
 			logger.debug(String.format("PropertyUnitMapping entries from cache: %s",
 					mappings.size()));
 

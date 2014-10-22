@@ -41,7 +41,7 @@ public class NextScheduleDateTest {
 		PowerMockito.mockStatic(CommonUtilities.class);
 		File f = File.createTempFile("hassss", "da");
 		f.mkdir();
-        BDDMockito.given(CommonUtilities.resolveCacheBaseDir()).willReturn(f.getParentFile());
+        BDDMockito.given(CommonUtilities.resolveCacheBaseDir("test")).willReturn(f.getParentFile());
         
         AbstractCacheScheduler.Instance.init(null, false, new LocalTime("04:00:00"));
 	}

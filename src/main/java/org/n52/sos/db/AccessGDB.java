@@ -43,4 +43,9 @@ public interface AccessGDB {
 	 */
 	boolean isResolveGeometriesFromStations();
 
+	/**
+	 * @return the name of the underlying database
+	 */
+	String getDatabaseName();
+
 }

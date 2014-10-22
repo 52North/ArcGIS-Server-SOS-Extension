@@ -709,7 +709,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         else if (resourceName.matches("observations")) {
             Collection<ObservationOffering> offerings;
 			try {
-				offerings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
+				offerings = ObservationOfferingCache.instance(this.geoDB.getDatabaseName()).getEntityCollection(geoDB).values();
 			} catch (CacheException | CacheNotYetAvailableException e) {
 				throw new NoApplicableCodeException(e);
 			}

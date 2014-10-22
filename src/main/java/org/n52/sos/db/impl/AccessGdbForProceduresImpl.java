@@ -309,7 +309,7 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
      */
     public Collection<Procedure> getProceduresForNetwork(String networkID) throws IOException, NoApplicableCodeException
     {
-    	PropertyUnitMappingCache pumCache = PropertyUnitMappingCache.instance();
+    	PropertyUnitMappingCache pumCache = PropertyUnitMappingCache.instance(gdb.getDatabaseName());
     	Map<Integer, Unit> propertyUnitMap;
 		try {
 			propertyUnitMap = pumCache.resolvePropertyUnitMappings(gdb);

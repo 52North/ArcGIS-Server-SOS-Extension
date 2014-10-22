@@ -70,7 +70,7 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 			result.put("currentlyLocked", cache.isCurrentyLocked());
 			result.put("updateCacheOnStartup", cache.isUpdateCacheOnStartup());
 			try {
-				result.put("cacheBaseDir", CommonUtilities.resolveCacheBaseDir());
+				result.put("cacheBaseDir", CommonUtilities.resolveCacheBaseDir(geoDB.getDatabaseName()));
 			}
 			catch (FileNotFoundException e) {
 				result.put("cacheBaseDir", "n/a");

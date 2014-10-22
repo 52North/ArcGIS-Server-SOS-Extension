@@ -97,6 +97,8 @@ public class AccessGDBImpl implements AccessGDB {
     private AccessGdbForAnalysis analysisAccess;
     private InsertGdbForObservations observationInsert;
 
+	private String databaseName;
+
     /**
      * Creates an AccessObservationGDB object and connects to the DB specified
      * in the arcGisSosLocal.properties file.
@@ -133,8 +135,6 @@ public class AccessGDBImpl implements AccessGDB {
         
         LOGGER.info("Creating AccessGDBImpl.");
         
-        init("/arcGisSos.properties", sos.getMaximumRecordCount());
-        
         long start = System.currentTimeMillis();
         
         this.sos = sos;
@@ -142,10 +142,16 @@ public class AccessGDBImpl implements AccessGDB {
         // Workspace creation
         IMapServer3 ms = (IMapServer3) sos.getMapServerDataAccess();
         String mapName = ms.getDefaultMapName();
+        LOGGER.info("Using mapName: "+mapName);
         IMapServerDataAccess mapServerDataAccess = sos.getMapServerDataAccess();
+        LOGGER.info("Using IMapServerDataAccess: "+mapServerDataAccess);
         Object dataSource= mapServerDataAccess.getDataSource(mapName, 0);
+        LOGGER.info("Using dataSource: "+dataSource.getClass());
         FeatureClass fc = new FeatureClass(dataSource);
+        resolveDatabaseName(fc);
         workspace = new Workspace(fc.getWorkspace());
+
+        init("/arcGisSos.properties", sos.getMaximumRecordCount());
         
 //        // initialize the capabilities
 //        getServiceDescription();
@@ -155,7 +161,14 @@ public class AccessGDBImpl implements AccessGDB {
         LOGGER.info("End of creating AccessGDBImpl. Created in " + delta/1000 + " seconds.");
     }
     
-    /**
+    private void resolveDatabaseName(FeatureClass fc) throws IOException {
+    	String name = fc.getName();
+    	int lastIndex = name.lastIndexOf(".");
+    	this.databaseName = name.substring(0, lastIndex).trim();
+    	LOGGER.info("databaseName = "+this.databaseName);
+	}
+
+	/**
      * initialization of local variables.
      * 
      * @param propsResourceName
@@ -170,7 +183,7 @@ public class AccessGDBImpl implements AccessGDB {
         props.load(AccessGDBImpl.class.getResourceAsStream(propsResourceName));
         
         // init the table names for accessing the geodatabase:
-        Table.initTableNames(props);
+        Table.initTableNames(props, this.databaseName);
 
         // init the field names:
         SubField.initSubfieldNames(props);
@@ -187,6 +200,11 @@ public class AccessGDBImpl implements AccessGDB {
         procedureAccess = new AccessGdbForProceduresImpl(this);
         offeringAccess = new AccessGdbForOfferingsImpl(this);
         observationInsert = new InsertGdbForObservationsImpl(this);
+    }
+    
+    @Override
+    public String getDatabaseName() {
+    	return this.databaseName;
     }
 
     /**

@@ -50,20 +50,34 @@ public abstract class AbstractCacheScheduler {
 		this.updateCacheOnStartup = updateCacheOnStartup;
 		this.cacheUpdateTime = cacheUpdateTime;
 		
+		String dbName;
+		dbName = resolveDatabaseName(geoDB);
+		
 		/*
 		 * first use the PUMC, others might depend on it
 		 */
 		try {
-			candidates.add(PropertyUnitMappingCache.instance());
+			candidates.add(PropertyUnitMappingCache.instance(dbName));
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
 
 		try {
-			candidates.add(ObservationOfferingCache.instance());
+			candidates.add(ObservationOfferingCache.instance(dbName));
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
+	}
+
+	private String resolveDatabaseName(AccessGDB geoDB) {
+		String dbName;
+		if (geoDB != null) {
+			dbName = geoDB.getDatabaseName();
+		}
+		else {
+			dbName = "Airquality_E2a";
+		}
+		return dbName;
 	}
 
 	protected AccessGDB getGeoDB() {
@@ -96,7 +110,7 @@ public abstract class AbstractCacheScheduler {
 
 	protected synchronized File resolveCacheLockFile() throws FileNotFoundException {
 		if (lockFile == null) {
-			File dir = CommonUtilities.resolveCacheBaseDir();
+			File dir = CommonUtilities.resolveCacheBaseDir(resolveDatabaseName(geoDB));
 			lockFile = new File(dir, "cache.lock");	
 		}
 		

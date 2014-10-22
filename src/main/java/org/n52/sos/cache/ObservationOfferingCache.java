@@ -31,16 +31,20 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 	private static final String TOKEN_SEP = "@@";
 	private static ObservationOfferingCache instance;
 
-	public static synchronized ObservationOfferingCache instance() throws FileNotFoundException {
+	public static synchronized ObservationOfferingCache instance(String dbName) throws FileNotFoundException {
 		if (instance == null) {
-			instance = new ObservationOfferingCache();
+			instance = new ObservationOfferingCache(dbName);
 		}
 		
 		return instance;
 	}
 	
-	private ObservationOfferingCache() throws FileNotFoundException {
-		super();
+	public static synchronized ObservationOfferingCache instance() throws FileNotFoundException {
+		return instance;
+	}
+	
+	private ObservationOfferingCache(String dbName) throws FileNotFoundException {
+		super(dbName);
 	}
 
 	@Override
@@ -116,13 +120,7 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 
 	@Override
 	protected AbstractEntityCache<ObservationOffering> getSingleInstance() {
-		try {
-			return instance();
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-		
-		return null;
+		return instance;
 	}
 
 }

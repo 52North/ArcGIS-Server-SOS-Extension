@@ -45,15 +45,18 @@ public abstract class AbstractEntityCache<T> {
 	private int maximumEntries;
 
 	private int latestEntryIndex;
+
+	private String dbName;
 	
 	
 	
-	public AbstractEntityCache() throws FileNotFoundException {
+	public AbstractEntityCache(String dbName) throws FileNotFoundException {
+		this.dbName = dbName;
 		initializeCacheFile();
 	}
 
 	protected void initializeCacheFile() throws FileNotFoundException {
-		File baseDir = CommonUtilities.resolveCacheBaseDir();
+		File baseDir = CommonUtilities.resolveCacheBaseDir(dbName);
 		
 		synchronized (cacheFileMutex) {
 			this.cacheFile = new File(baseDir, getCacheFileName());
