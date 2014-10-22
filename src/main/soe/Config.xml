@@ -38,6 +38,7 @@
 						<contactPersonCountry>Germany</contactPersonCountry>
 						<contactPersonEmail>broering@52north.org</contactPersonEmail>
 						<updateCacheOnStartup>false</updateCacheOnStartup>
+						<cacheUpdateTime>13:00:00</cacheUpdateTime>
 					</Properties>
 					<Info>
 						<DefaultWebCapabilities />

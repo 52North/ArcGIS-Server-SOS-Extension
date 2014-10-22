@@ -26,6 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.MutableDateTime;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.logging.Logger;
@@ -45,9 +46,9 @@ public class TimerTaskCacheScheduler extends AbstractCacheScheduler {
 
 	private Timer monitorTimer;
 
-	public static synchronized void init(AccessGDB geoDB, boolean updateCacheOnStartup) {
+	public static synchronized void init(AccessGDB geoDB, boolean updateCacheOnStartup, LocalTime lt) {
 		if (instance == null) {
-			instance = new TimerTaskCacheScheduler(geoDB, updateCacheOnStartup);
+			instance = new TimerTaskCacheScheduler(geoDB, updateCacheOnStartup, lt);
 		}
 	}
 	
@@ -55,8 +56,8 @@ public class TimerTaskCacheScheduler extends AbstractCacheScheduler {
 		return instance;
 	}
 	
-	private TimerTaskCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
-		super(geoDB, updateCacheOnStartup);
+	private TimerTaskCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup, LocalTime lt) {
+		super(geoDB, updateCacheOnStartup, lt);
 		
 		this.cacheTimer = new Timer(true);
 		this.monitorTimer = new Timer(true);
@@ -84,7 +85,7 @@ public class TimerTaskCacheScheduler extends AbstractCacheScheduler {
 			}			
 		}
 		
-		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
+		MutableDateTime mdt = resolveNextScheduleDate(lt, new DateTime());
 		
 		this.cacheTimer.scheduleAtFixedRate(new UpdateCacheTask(getCandidates()), mdt.toDate(), ONE_HOUR_MS * 24);
 		

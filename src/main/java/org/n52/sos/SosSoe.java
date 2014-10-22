@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.joda.time.LocalTime;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
 import org.n52.ows.ExceptionReport;
@@ -112,6 +113,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 	private AbstractCacheScheduler cacheScheduler;
 
 	private boolean updateCacheOnStartup;
+
+	private LocalTime cacheUpdateTime;
     
     /**
      * constructs a new server object extension
@@ -202,6 +205,18 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             }
             LOGGER.info("Update cache on startup? "+ this.updateCacheOnStartup +" object: "+ updateCache);
             
+            Object cacheUpdateTime = propertySet.getProperty("cacheUpdateTime");
+            if (cacheUpdateTime != null) {
+            	try {
+            		this.cacheUpdateTime = new LocalTime(cacheUpdateTime.toString());
+            	}
+            	catch (Exception e) {
+            		LOGGER.warn("Using fallback cache update Time - Could not parse cacheUpdateTime: "+cacheUpdateTime.toString(), e);
+            		this.cacheUpdateTime = new LocalTime("04:00:00");
+            	}
+            }
+            LOGGER.info("Cache update time: "+ this.cacheUpdateTime +" object: "+ cacheUpdateTime);
+            
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
@@ -222,7 +237,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         /*
          * initiate the cache
          */
-        cacheScheduler = AbstractCacheScheduler.Instance.init(geoDB, this.updateCacheOnStartup);
+        cacheScheduler = AbstractCacheScheduler.Instance.init(geoDB, this.updateCacheOnStartup, this.cacheUpdateTime);
         
         LOGGER.info("Construction of SOE finished.");
     }

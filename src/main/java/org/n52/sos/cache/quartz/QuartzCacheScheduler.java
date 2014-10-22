@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.MutableDateTime;
 import org.n52.sos.cache.AbstractEntityCache;
 import org.n52.sos.cache.CacheException;
@@ -71,8 +72,8 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 //		return result;
 //	}
 
-	public QuartzCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
-		super(geoDB, updateCacheOnStartup);
+	public QuartzCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup, LocalTime cacheUpdateTime) {
+		super(geoDB, updateCacheOnStartup, cacheUpdateTime);
 		
 		try {
 			this.quartz = new StdSchedulerFactory().getScheduler();
@@ -107,7 +108,7 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			}			
 		}
 		
-		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
+		MutableDateTime mdt = resolveNextScheduleDate(this.getCacheUpdateTime(), new DateTime());
 		DateTime now = new DateTime();
 		
 		try {

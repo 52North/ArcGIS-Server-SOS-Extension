@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.MutableDateTime;
 import org.junit.After;
 import org.junit.Assert;
@@ -42,7 +43,7 @@ public class NextScheduleDateTest {
 		f.mkdir();
         BDDMockito.given(CommonUtilities.resolveCacheBaseDir()).willReturn(f.getParentFile());
         
-        AbstractCacheScheduler.Instance.init(null, false);
+        AbstractCacheScheduler.Instance.init(null, false, new LocalTime("04:00:00"));
 	}
 	
 	@After
@@ -59,7 +60,7 @@ public class NextScheduleDateTest {
 		 */
 		DateTime referenceTime = new DateTime("2014-07-25T01:30:59.999+02:00");
 		
-		MutableDateTime result = cs.resolveNextScheduleDate(4, referenceTime);
+		MutableDateTime result = cs.resolveNextScheduleDate(new LocalTime("04:00:00"), referenceTime);
 		
 		Assert.assertTrue(result.getHourOfDay() == 4);
 		Assert.assertTrue(result.getMinuteOfHour() == 0);
@@ -71,7 +72,7 @@ public class NextScheduleDateTest {
 		 */
 		referenceTime = new DateTime("2014-07-25T03:59:59.999+02:00");
 		
-		result = cs.resolveNextScheduleDate(4, referenceTime);
+		result = cs.resolveNextScheduleDate(new LocalTime("04:00:00"), referenceTime);
 		
 		Assert.assertTrue(result.getHourOfDay() == 4);
 		Assert.assertTrue(result.getMinuteOfHour() == 0);
@@ -83,7 +84,7 @@ public class NextScheduleDateTest {
 		 */
 		referenceTime = new DateTime("2014-07-25T04:59:59.999+02:00");
 		
-		result = cs.resolveNextScheduleDate(4, referenceTime);
+		result = cs.resolveNextScheduleDate(new LocalTime("04:00:00"), referenceTime);
 		
 		Assert.assertTrue(result.getHourOfDay() == 4);
 		Assert.assertTrue(result.getMinuteOfHour() == 0);
@@ -96,7 +97,7 @@ public class NextScheduleDateTest {
 		 */
 		referenceTime = new DateTime("2014-07-31T04:59:59.999+02:00");
 		
-		result = cs.resolveNextScheduleDate(4, referenceTime);
+		result = cs.resolveNextScheduleDate(new LocalTime("04:00:00"), referenceTime);
 		
 		MutableDateTime mutableRef = referenceTime.toMutableDateTime();
 		mutableRef.addDays(1);
@@ -111,7 +112,7 @@ public class NextScheduleDateTest {
 		/*
 		 * EXACTLY the target schedule time. results in the next day
 		 */
-		result = cs.resolveNextScheduleDate(4, referenceTime);
+		result = cs.resolveNextScheduleDate(new LocalTime("04:00:00"), referenceTime);
 		
 		mutableRef = referenceTime.toMutableDateTime();
 		mutableRef.addDays(1);
