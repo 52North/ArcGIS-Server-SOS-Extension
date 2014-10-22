@@ -16,7 +16,6 @@
 package org.n52.sos.cache.quartz;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.Collections;
@@ -90,18 +89,19 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		}
 		else {
 			try {
-				List<AbstractEntityCache<?>> requiresUpdates = cacheUpdateRequired();
-				if (!requiresUpdates.isEmpty()) {
-					LOGGER.info(String.format("Cache update required for: %s", requiresUpdates.toString()));
-					/*
-					 * now
-					 */
-					schedule(new UpdateCacheTask(requiresUpdates), 0);	
-				}
-				else {
-					LOGGER.info("No cache update required. Last update not longer ago than minutes "+FIFTEEN_MINS_MS/(1000*60));
-				}
-			} catch (FileNotFoundException | SchedulerException e) {
+				schedule(new UpdateCacheTask(getCandidates()), 0);
+//				List<AbstractEntityCache<?>> requiresUpdates = cacheUpdateRequired();
+//				if (!requiresUpdates.isEmpty()) {
+//					LOGGER.info(String.format("Cache update required for: %s", requiresUpdates.toString()));
+//					/*
+//					 * now
+//					 */
+//					schedule(new UpdateCacheTask(requiresUpdates), 0);	
+//				}
+//				else {
+//					LOGGER.info("No cache update required. Last update not longer ago than minutes "+FIFTEEN_MINS_MS/(1000*60));
+//				}
+			} catch (SchedulerException e) {
 				LOGGER.warn(e.getMessage(), e);
 				LOGGER.warn("could not initialize cache. disabling scheduled updates.");
 				return;

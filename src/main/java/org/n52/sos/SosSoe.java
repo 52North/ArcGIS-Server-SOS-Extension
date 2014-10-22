@@ -431,7 +431,12 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String outputFormat,
             String requestProperties,
             String[] responseProperties) throws IOException, AutomationException {
+    	if (this.cacheScheduler.isCurrentyLocked()) {
+    		throw new IOException("A database maintenance is currently in progress. Please come back in a few minutes");
+    	}
+    	
     	LOGGER.debug("Starting to handle REST request...");
+    	
 //        LOGGER.info("capabilities: " + capabilities);
 //        LOGGER.info("resourceName: " + resourceName);
 //        LOGGER.info("operationName: " + operationName);
