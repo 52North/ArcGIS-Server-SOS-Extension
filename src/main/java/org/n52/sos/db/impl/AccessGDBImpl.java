@@ -398,10 +398,9 @@ public class AccessGDBImpl implements AccessGDB {
         IFeatureCursor featureCursor = features.search(spatialQuery, true);
 
         IFeature feature = featureCursor.nextFeature();
-        Fields fields = (Fields) featureCursor.getFields();
         List<String> featureList = new ArrayList<String>();
         while (feature != null) {
-            featureList.add((String)feature.getValue(fields.findField(SubField.FEATUREOFINTEREST_ID)));
+            featureList.add((String)feature.getValue(0));
             feature = featureCursor.nextFeature();
         }
 

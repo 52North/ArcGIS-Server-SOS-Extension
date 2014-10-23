@@ -307,15 +307,13 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         // evaluate the database query
 
         // convert cursor entries to abstract observations
-        Fields fields = (Fields) cursor.getFields();
-
         IRow row;
         int count = 0;
         while ((row = cursor.nextRow()) != null && count < gdb.getMaxNumberOfResults()) {
             count++;
             Feature feature;
 			try {
-				feature = createFeature(row, fields, shapeFromStations);
+				feature = createFeature(row, subFields, shapeFromStations);
 			} catch (URISyntaxException e) {
 				throw new IOException(e);
 			}
@@ -332,29 +330,29 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
     /**
      * This method creates a {@link AQDSample} of a given {@link IRow} and it's {@link Fields}
      */
-    protected AQDSample createFeature(IRow row, Fields fields, boolean shapeFromStations) throws IOException, URISyntaxException
+    protected AQDSample createFeature(IRow row, List<String> fields, boolean shapeFromStations) throws IOException, URISyntaxException
     {	
         // gml identifier
-        String gmlId = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
+        String gmlId = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_ID)));
         
         // resource URI
         URI resourceUri = null;
-        String resource = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
+        String resource = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
         if (resource != null) {
         	resourceUri = new URI(resource);
         }
 
         // local ID
-        int localId = (Integer) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST)));
+        int localId = (Integer) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST)));
         
         // shape
         Point point = null;
         Object shape;
 		if (!shapeFromStations) {
-        	shape = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+        	shape = row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
         }
         else {
-        	shape = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_SHAPE)));
+        	shape = row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_SHAPE)));
         }
         
         if (shape instanceof Point) {
@@ -364,19 +362,19 @@ public class AccessGdbForFeaturesImpl implements AccessGdbForFeatures {
         }
         
         // inletHeight
-        Double inletHeight = (Double) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT)));
+        Double inletHeight = (Double) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_INLETHEIGHT)));
         if (inletHeight == null) {
             inletHeight = Constants.FEATURE_INLET_HEIGHT;
         }
         
         // buildingDistance
-        Double buildingDistance = (Double) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE)));
+        Double buildingDistance = (Double) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_BUILDINGDISTANCE)));
         if (buildingDistance == null) {
             buildingDistance = Constants.FEATURE_BUILDING_DISTANCE;
         }
         
         // kerbDistance
-        Double kerbDistance = (Double) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE)));
+        Double kerbDistance = (Double) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_KERBDISTANCE)));
         if (kerbDistance == null) {
             kerbDistance = Constants.FEATURE_KERB_DISTANCE;
         }

@@ -24,7 +24,6 @@ import com.esri.arcgis.datasourcesGDB.SqlWorkspace;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
-import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.interop.AutomationException;
 
 public class DatabaseUtils {

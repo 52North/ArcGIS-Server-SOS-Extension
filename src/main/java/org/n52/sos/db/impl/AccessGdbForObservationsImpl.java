@@ -39,7 +39,6 @@ import org.n52.sos.handler.GetObservationOperationHandler;
 import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
-import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.interop.AutomationException;
@@ -223,7 +222,7 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
         		" DISTINCT TOP 1 ".concat(AccessGDBImpl.createCommaSeparatedList(subFields)), gdb);
 
-        Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor);
+        Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor, subFields);
 
         return idObsMap;
 	}
@@ -264,21 +263,19 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
         ICursor cursor = DatabaseUtils.evaluateQuery(tables, whereClause,
         		" DISTINCT " + AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
 
-        Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor);
+        Map<String, MultiValueObservation> idObsMap = createObservationsFromCursor(cursor, subFields);
 
         return idObsMap;
     }
 
 	private Map<String, MultiValueObservation> createObservationsFromCursor(
-			ICursor cursor) throws IOException {
+			ICursor cursor, List<String> fields) throws IOException {
 		// convert cursor entries to abstract observations
-        Fields fields = (Fields) cursor.getFields();
-
         // map that associates an observation-ID with an observation:
         Map<String, MultiValueObservation> idObsMap = new HashMap<String, MultiValueObservation>();
         IRow row;
 		while ((row = cursor.nextRow()) != null) {
-            String obsID = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
+            String obsID = row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
 
             if (!idObsMap.containsKey(obsID)) {
                 MultiValueObservation multiValObs = createMultiValueObservation(row, fields);
@@ -361,63 +358,63 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
     // /////////////////////////////
 
     protected MultiValueObservation createMultiValueObservation(IRow row,
-            Fields fields) throws IOException
+            List<String> fields) throws IOException
     {
         // Identifier
-        String obsID = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
+        String obsID = row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_ID))).toString();
         Identifier obsIdentifier = new Identifier(null, obsID);
 
         // procedure
-        String procID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
+        String procID = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_RESOURCE)));
         if (procID == null) {
             procID = Constants.NULL_VALUE;
         }
 
         // observed property
-        String obsPropID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+        String obsPropID = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
         if (obsPropID == null) {
             obsPropID = Constants.NULL_VALUE;
         }
 
         // featureOfInterest
-        String featureID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
+        String featureID = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_RESOURCE)));
         if (featureID == null) {
             featureID = Constants.NULL_VALUE;
         }
         
         // samplingFeature
-        String samplingPointID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE)));
+        String samplingPointID = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_RESOURCE)));
         // in case "resource" field is null, "id" field is used:
         if (samplingPointID == null || samplingPointID.equals("")) {
-            samplingPointID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID)));
+            samplingPointID = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_ID)));
         }
 
         // unit ID
-        String unitID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_ID)));
+        String unitID = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_ID)));
         if (unitID == null) {
             unitID = Constants.NULL_VALUE;
         }
         
         // unit notation
-        String unitNotation = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
+        String unitNotation = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_NOTATION)));
         if (unitNotation == null) {
             unitNotation = Constants.NULL_VALUE;
         }
         
         // unit notation
-        String unitLabel = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_LABEL)));
+        String unitLabel = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.UNIT, SubField.UNIT_LABEL)));
         if (unitLabel == null) {
         	unitLabel = Constants.NULL_VALUE;
         }
         
         // aggregation type
-        String aggregationType = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION)));
+        String aggregationType = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_DEFINITION)));
         if (aggregationType == null) {
             aggregationType = Constants.NULL_VALUE;
         }
         
         // result time
-        Date resultDate = (Date) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME)));
+        Date resultDate = (Date) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_RESULTTIME)));
         ITimePosition resultTimePos = TimeConverter.createTimeFromDate(resultDate, null);
 
         return new MultiValueObservation(obsIdentifier, procID, obsPropID, featureID, samplingPointID, unitID, unitNotation, unitLabel, aggregationType, resultTimePos);
@@ -432,36 +429,36 @@ public class AccessGdbForObservationsImpl implements AccessGdbForObservations {
      * @throws AutomationException
      */
     protected MeasureResult createResultValue(IRow row,
-            Fields fields) throws AutomationException, IOException
+            List<String> fields) throws AutomationException, IOException
     {
         // start time
-        Date startDate = (Date) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_BEGIN)));
+        Date startDate = (Date) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_BEGIN)));
         ITimePosition startTimePos = TimeConverter.createTimeFromDate(startDate, null);
 
         // end time
-        Date endDate = (Date) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)));
+        Date endDate = (Date) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_DATETIME_END)));
         ITimePosition endTimePos = TimeConverter.createTimeFromDate(endDate, null);
 
         // validity
-        String validity = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)));
+        String validity = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.VALIDITY, SubField.VALIDITY_NOTATION)));
         if (validity == null) {
             validity = Constants.NULL_VALUE;
         }
 
         // verification
-        String verification = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION)));
+        String verification = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.VERIFICATION, SubField.VERIFICATION_NOTATION)));
         if (verification == null) {
             verification = Constants.NULL_VALUE;
         }
         
         //aggregationType
-        String aggregationType = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION)));
+        String aggregationType = (String) row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.AGGREGATIONTYPE, SubField.AGGREGATIONTYPE_NOTATION)));
         if (aggregationType == null) {
         	aggregationType = Constants.NULL_VALUE;
         }
 
         // result
-        Object numValue = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC)));
+        Object numValue = row.getValue(fields.indexOf(AccessGDBImpl.concatTableAndField(Table.VALUE, SubField.VALUE_VALUE_NUMERIC)));
         Double value = (Double) numValue;
 
         return new MeasureResult(startTimePos, endTimePos, validity, verification, aggregationType, value);
