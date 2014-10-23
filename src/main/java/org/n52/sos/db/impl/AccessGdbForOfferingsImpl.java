@@ -36,7 +36,6 @@ import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGdbForOfferings;
 import org.n52.util.logging.Logger;
 
-import com.esri.arcgis.geodatabase.Fields;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IRow;
 import com.esri.arcgis.geometry.Envelope;
@@ -94,14 +93,12 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 		}
 
 		// convert cursor entries to abstract observations
-		Fields fields = (Fields) cursor.getFields();
-
 		IRow row;
 		try {
 			while ((row = retrieveNextRow(cursor)) != null) {
 
 				// We will use the 'network identifier' as the 'offering id' and 'offering name'  
-				String networkIdentifier = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID)));
+				String networkIdentifier = (String) row.getValue(subFields.indexOf(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID)));
 				// offering name
 				String name = networkIdentifier;
 				// offering id
@@ -217,10 +214,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 				// evaluate the database query
 				ICursor cursorProp = retrieveCursor(tablesProp, whereClauseProp, subFieldsProp);
 
-				fields = (Fields) cursorProp.getFields();
 				List<String> obsProps = new ArrayList<String>();
 				while ((row = retrieveNextRow(cursorProp)) != null) {
-					String obsPropID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+					String obsPropID = (String) row.getValue(subFieldsProp.indexOf(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
 					if (! obsProps.contains(obsPropID)) {
 						obsProps.add(obsPropID);
 					}
@@ -269,16 +265,21 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 					ICursor cursorFoi = retrieveCursor(tablesFoi, whereClauseFoi, subFieldsFoi);
 
 					List<Point> points = new ArrayList<Point>();
-					fields = (Fields) cursorFoi.getFields();
 					while ((row = retrieveNextRow(cursorFoi)) != null) {
-						Object shape = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
-						if (shape instanceof Point) {
+						Object shape = row.getValue(subFieldsFoi.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+						if (shape != null && shape instanceof Point) {
 							points.add((Point) shape);
 						} else {
-							throw new IllegalArgumentException("Could not cast a shape in offering " + offering.getId() + " to a Point");
+							LOGGER.debug("Could not cast a shape in offering " + offering.getId() + " to a Point. Shape object class: "+(shape==null?"null":shape.getClass()));
+							continue;
 						}
 					}
 
+					if (points.size() == 0) {
+						LOGGER.debug("No points in offering " + offering.getId());
+						continue;
+					}
+					
 					Point[] pointArray = new Point[points.size()];
 					for (int j = 0; j < pointArray.length; j++) {
 						pointArray[j] = points.get(j);
@@ -344,15 +345,13 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 					"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
 
 			// convert cursor entries to abstract observations
-			Fields fields = (Fields) cursor.getFields();
-
 			IRow row;
 			while ((row = cursor.nextRow()) != null) {
 
 				// We will use the 'procedure identifier' also as the 'offering id' and 'offering name', since there is only one procedure per offering.  
 				//
 				// procedure identifier
-				String procedureIdentifier = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID)));
+				String procedureIdentifier = (String) row.getValue(subFields.indexOf(AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID)));
 				// offering name
 				String name = procedureIdentifier;
 				// offering id
@@ -447,10 +446,9 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 							whereClauseProp.toString(), AccessGDBImpl.createCommaSeparatedList(subFieldsProp),
 							gdb);
 
-					fields = (Fields) cursorProp.getFields();
 					List<String> obsProps = new ArrayList<String>();
 					while ((row = cursorProp.nextRow()) != null) {
-						String obsPropID = (String) row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
+						String obsPropID = (String) row.getValue(subFieldsProp.indexOf(AccessGDBImpl.concatTableAndField(Table.PROPERTY, SubField.PROPERTY_ID)));
 						obsProps.add(obsPropID);
 					}
 
@@ -499,9 +497,8 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 							gdb);
 
 					List<Point> points = new ArrayList<Point>();
-					fields = (Fields) cursorFoi.getFields();
 					while ((row = cursorFoi.nextRow()) != null) {
-						Object shape = row.getValue(fields.findField(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+						Object shape = row.getValue(subFieldsFoi.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
 						if (shape instanceof Point) {
 							points.add((Point) shape);
 						} else {

@@ -77,17 +77,12 @@ public class AccessGdbForProceduresImpl implements AccessGdbForProcedures {
         ICursor cursor = DatabaseUtils.evaluateQuery(AccessGDBImpl.createCommaSeparatedList(tables),
         		"", AccessGDBImpl.createCommaSeparatedList(subFields), gdb);
         
-        Fields fields = (Fields) cursor.getFields();
         IRow row;
         List<String> procedureIdList = new ArrayList<String>();
         String key;
         while ((row = cursor.nextRow()) != null) {
-        	for (int i = 0; i < fields.getFieldCount(); i++) {
-				LOGGER.info("row field at index "+i+": "+fields.getField(i).getName());
-			}
         	key = AccessGDBImpl.concatTableAndField(Table.PROCEDURE, SubField.PROCEDURE_ID);
-        	LOGGER.info("Trying to find field: "+key);
-            String procedureId = row.getValue(fields.findField(key)).toString();
+            String procedureId = row.getValue(subFields.indexOf(key)).toString();
             
             procedureIdList.add(procedureId);
         }
