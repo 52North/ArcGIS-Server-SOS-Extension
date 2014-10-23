@@ -154,27 +154,68 @@ public class AccessGDBImpl implements AccessGDB {
         Workspace workspace = new Workspace(fc.getWorkspace());
         this.workspaceWrapper = new WorkspaceWrapper();
         
+//        logConnectionProperties(fc.getWorkspace());
+        
         if (fc.getWorkspace() instanceof SqlWorkspace) {
         	this.workspaceWrapper.setSqlWorkspace((SqlWorkspace) fc.getWorkspace());
         	this.workspaceWrapper.setWorkspace(workspace);
         }
         else {
+//        	SqlWorkspaceFactory fac = new SqlWorkspaceFactory();
+//        	SqlWorkspace sqlW = (SqlWorkspace) fac.open(fc.getWorkspace().getConnectionProperties(), fc.getWorkspace().getType());
+//        	workspace = new Workspace(sqlW);
+//        	this.workspaceWrapper.setSqlWorkspace(sqlW);
         	this.workspaceWrapper.setWorkspace(workspace);
         }
         
-        LOGGER.info("workspace: "+fc.getWorkspace().getClass());
+        LOGGER.info("workspace: "+this.workspaceWrapper.toString());
 
         init("/arcGisSos.properties", sos.getMaximumRecordCount());
         
-//        // initialize the capabilities
-//        getServiceDescription();
-//        offeringAccess.getObservationOfferings();
         long delta = System.currentTimeMillis() - start;
         
         LOGGER.info("End of creating AccessGDBImpl. Created in " + delta/1000 + " seconds.");
     }
     
-    private void resolveDatabaseName(FeatureClass fc) throws IOException {
+//    private void logConnectionProperties(IWorkspace workspace) throws IOException {
+//    	Object[] target1 = new Object[1];
+//    	Object[] target2 = new Object[1];
+//    	workspace.getConnectionProperties().getAllProperties(target1, target2);
+//
+//    	int i = 0;
+//    	for (Object object : target1) {
+//    		LOGGER.info(i +"a="+createPresentation(object));
+//    		i++;
+//		}
+//    	
+//    	i = 0;
+//    	for (Object object : target2) {
+//    		LOGGER.info(i +"b="+createPresentation(object));
+//    		i++;
+//		}
+//	}
+//
+//	private String createPresentation(Object object) {
+//		StringBuilder sb = new StringBuilder();
+//		if (object == null) {
+//			return "n/a";
+//		}
+//		if (object instanceof CharSequence) {
+//			return object.toString();
+//		}
+//		if (object instanceof Object[]) {
+//			sb.append("[");
+//			for (Object o : (Object[]) object) {
+//				sb.append(o);
+//				sb.append(", ");
+//			}
+//			sb.append("]");
+//			return sb.toString();
+//		}
+//		return object.toString();
+//	}
+
+	private void resolveDatabaseName(FeatureClass fc) throws IOException {
     	String name = fc.getName();
     	int lastIndex = name.lastIndexOf(".");
     	this.databaseName = name.substring(0, lastIndex).trim();
