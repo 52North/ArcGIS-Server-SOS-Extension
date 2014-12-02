@@ -16,12 +16,13 @@
 package org.n52.sos.dataTypes;
 
 import org.n52.oxf.valueDomains.time.ITimePeriod;
+import org.n52.sos.cache.CacheEntity;
 
 
 /**
  * @author <a href="mailto:broering@52north.org">Arne Broering</a>
  */
-public class ObservationOffering {
+public class ObservationOffering implements CacheEntity {
 
     /**
      * identifier of the offering
@@ -74,6 +75,11 @@ public class ObservationOffering {
     {
         return id;
     }
+    
+	@Override
+	public String getItemId() {
+		return getId();
+	}
 
     public String getName()
     {

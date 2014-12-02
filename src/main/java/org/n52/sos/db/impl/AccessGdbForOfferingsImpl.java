@@ -223,78 +223,79 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 				}
 
 				// copy obsProps list to String Array:
-					String[] obsPropsArray = new String[obsProps.size()];
-					int i=0;
-					for (Iterator<String> iterator = obsProps.iterator(); iterator.hasNext();) {
-						obsPropsArray[i++] = (String) iterator.next();
-					}
+				String[] obsPropsArray = new String[obsProps.size()];
+				int i=0;
+				for (Iterator<String> iterator = obsProps.iterator(); iterator.hasNext();) {
+					obsPropsArray[i++] = (String) iterator.next();
+				}
 
-					offering.setObservedProperties(obsPropsArray);
+				offering.setObservedProperties(obsPropsArray);
 
-					safetySleep(200);
-					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					// set envelope through feature positions
+				safetySleep(200);
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// set envelope through feature positions
 
-					// set tables
-					List<String> tablesFoi = new ArrayList<String>();
-					tablesFoi.add(Table.FEATUREOFINTEREST);
-					tablesFoi.add(Table.OBSERVATION);
-					tablesFoi.add(Table.SAMPLINGPOINT);
-					tablesFoi.add(Table.STATION);
-					tablesFoi.add(Table.NETWORK);
+				// set tables
+				List<String> tablesFoi = new ArrayList<String>();
+				tablesFoi.add(Table.FEATUREOFINTEREST);
+				tablesFoi.add(Table.OBSERVATION);
+				tablesFoi.add(Table.SAMPLINGPOINT);
+				tablesFoi.add(Table.STATION);
+				tablesFoi.add(Table.NETWORK);
 
-					// set sub fields
-					List<String> subFieldsFoi = new ArrayList<String>();
-					subFieldsFoi.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
+				// set sub fields
+				List<String> subFieldsFoi = new ArrayList<String>();
+				subFieldsFoi.add(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE));
 
-					// create the where clause with joins and constraints
-					StringBuilder whereClauseFoi = new StringBuilder();
-					whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
-					whereClauseFoi.append(" AND ");
-					whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
-					whereClauseFoi.append(" AND ");
-					whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
-					whereClauseFoi.append(" AND ");
-					whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
-					whereClauseFoi.append(" AND ");
-					whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
-					//                LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
+				// create the where clause with joins and constraints
+				StringBuilder whereClauseFoi = new StringBuilder();
+				whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_FEATUREOFINTEREST) + " = " + AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_PK_FEATUREOFINTEREST));
+				whereClauseFoi.append(" AND ");
+				whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.OBSERVATION, SubField.OBSERVATION_FK_SAMPLINGPOINT) + " = " + AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_PK_SAMPLINGPOINT));
+				whereClauseFoi.append(" AND ");
+				whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.SAMPLINGPOINT, SubField.SAMPLINGPOINT_FK_STATION) + " = " + AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_PK_STATION));
+				whereClauseFoi.append(" AND ");
+				whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.STATION, SubField.STATION_FK_NETWORK_GID) + " = " + AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_PK_NETWOK));
+				whereClauseFoi.append(" AND ");
+				whereClauseFoi.append(AccessGDBImpl.concatTableAndField(Table.NETWORK, SubField.NETWORK_ID) + " = '" + offering.getId() + "'");
+				//                LOGGER.info("Where clause := " + queryDefFoi.getWhereClause());
 
-					LOGGER.debug(String.format("Evaluating FOI query for network: '%s'", offering.getId()));
-					// evaluate the database query
-					ICursor cursorFoi = retrieveCursor(tablesFoi, whereClauseFoi, subFieldsFoi);
+				LOGGER.debug(String.format("Evaluating FOI query for network: '%s'", offering.getId()));
+				// evaluate the database query
+				ICursor cursorFoi = retrieveCursor(tablesFoi, whereClauseFoi, subFieldsFoi);
 
-					List<Point> points = new ArrayList<Point>();
-					while ((row = retrieveNextRow(cursorFoi)) != null) {
-						Object shape = row.getValue(subFieldsFoi.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
-						if (shape != null && shape instanceof Point) {
-							points.add((Point) shape);
-						} else {
-							LOGGER.debug("Could not cast a shape in offering " + offering.getId() + " to a Point. Shape object class: "+(shape==null?"null":shape.getClass()));
-							continue;
-						}
-					}
-
-					if (points.size() == 0) {
-						LOGGER.debug("No points in offering " + offering.getId());
+				List<Point> points = new ArrayList<Point>();
+				while ((row = retrieveNextRow(cursorFoi)) != null) {
+					Object shape = row.getValue(subFieldsFoi.indexOf(AccessGDBImpl.concatTableAndField(Table.FEATUREOFINTEREST, SubField.FEATUREOFINTEREST_SHAPE)));
+					if (shape != null && shape instanceof Point) {
+						points.add((Point) shape);
+					} else {
+						LOGGER.debug("Could not cast a shape in offering " + offering.getId() + " to a Point. Shape object class: "+(shape==null?"null":shape.getClass()));
 						continue;
 					}
-					
-					Point[] pointArray = new Point[points.size()];
-					for (int j = 0; j < pointArray.length; j++) {
-						pointArray[j] = points.get(j);
-					}
+				}
 
-					Envelope envelope = new Envelope();
-					envelope.defineFromPoints(pointArray);
-					offering.setObservedArea(new AGSEnvelope(envelope));
+				if (points.size() == 0) {
+					LOGGER.debug("No points in offering " + offering.getId());
+					continue;
+				}
+				
+				Point[] pointArray = new Point[points.size()];
+				for (int j = 0; j < pointArray.length; j++) {
+					pointArray[j] = points.get(j);
+				}
 
-					retriever.retrieveOffering(offering, currentOffering);
+				Envelope envelope = new Envelope();
+				envelope.defineFromPoints(pointArray);
+				offering.setObservedArea(new AGSEnvelope(envelope));
+
+				retriever.retrieveOffering(offering, currentOffering);
 
 			}
 			catch (ExecutionException e) {
 				futureExecutor.shutdownNow();
 				futureExecutor = Executors.newSingleThreadExecutor();
+				LOGGER.warn("Exception caught, cancelling cache update", e);				
 				throw new IOException(e);
 			}
 		}

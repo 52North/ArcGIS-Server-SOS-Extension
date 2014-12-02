@@ -13,23 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.sos.dataTypes;
+package org.n52.sos.cache;
 
-import java.util.HashMap;
-import java.util.UUID;
+public interface CacheEntity {
 
-import org.n52.sos.cache.CacheEntity;
-
-public class PropertyUnitMapping extends HashMap<Integer, Integer> implements CacheEntity {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public String getItemId() {
-		return UUID.randomUUID().toString();
-	}
-
+	public String getItemId();
+	
 }
