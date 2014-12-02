@@ -430,4 +430,6 @@ public abstract class AbstractEntityCache<T extends CacheEntity> {
 		return false;
 	}
 
+	public abstract void cancelCurrentExecution();
+
 }

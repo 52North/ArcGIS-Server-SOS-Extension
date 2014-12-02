@@ -182,4 +182,8 @@ public class PropertyUnitMappingCache extends
 		}
 	}
 
+	@Override
+	public void cancelCurrentExecution() {
+	}
+
 }

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeoutException;
 import org.n52.oxf.valueDomains.time.ITimePosition;
 import org.n52.oxf.valueDomains.time.TimePeriod;
 import org.n52.sos.cache.OnOfferingRetrieved;
+import org.n52.sos.cache.OnOfferingRetrieved.RetrievingCancelledException;
 import org.n52.sos.dataTypes.AGSEnvelope;
 import org.n52.sos.dataTypes.ObservationOffering;
 import org.n52.sos.db.AccessGdbForOfferings;
@@ -289,7 +290,13 @@ public class AccessGdbForOfferingsImpl implements AccessGdbForOfferings {
 				envelope.defineFromPoints(pointArray);
 				offering.setObservedArea(new AGSEnvelope(envelope));
 
-				retriever.retrieveOffering(offering, currentOffering);
+				try {
+					retriever.retrieveOffering(offering, currentOffering);
+				}
+				catch (RetrievingCancelledException e) {
+					LOGGER.warn("retrieval mechanism cancelled. stopping cache update", e);
+					break;
+				}
 
 			}
 			catch (ExecutionException e) {

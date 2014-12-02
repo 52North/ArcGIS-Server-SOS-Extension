@@ -116,10 +116,10 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		DateTime now = new DateTime();
 		
 		try {
-			schedule(new UpdateCacheTask(getCandidates()), ONE_HOUR_MS,
-					ONE_HOUR_MS);
-//			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
-//					ONE_HOUR_MS * 24);
+//			schedule(new UpdateCacheTask(getCandidates()), ONE_HOUR_MS,
+//					ONE_HOUR_MS);
+			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
+					ONE_HOUR_MS * 24);
 		} catch (SchedulerException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
@@ -330,6 +330,9 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		
 		@Override
 		public void cancelExecution() {
+			for (AbstractEntityCache<?> aec : this.candidates) {
+				aec.cancelCurrentExecution();
+			}
 			this.running.getAndSet(false);
 			cancelUpdateThread(updateThread);
 		}

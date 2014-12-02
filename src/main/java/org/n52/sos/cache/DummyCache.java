@@ -126,4 +126,9 @@ public class DummyCache extends AbstractEntityCache<ObservationOffering> {
 		return instance;
 	}
 
+
+	@Override
+	public void cancelCurrentExecution() {
+	}
+
 }
