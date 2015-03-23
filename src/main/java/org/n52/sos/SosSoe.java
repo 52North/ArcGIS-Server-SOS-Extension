@@ -49,6 +49,7 @@ import org.n52.sos.encoder.JSONObservationEncoder;
 import org.n52.sos.handler.OGCOperationRequestHandler;
 import org.n52.sos.handler.OperationRequestHandler;
 import org.n52.util.ExceptionSupporter;
+import org.n52.util.VersionInfo;
 import org.n52.util.logging.Logger;
 
 import com.esri.arcgis.carto.IMapServer3;
@@ -136,6 +137,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
     {
     	Logger.init(ServerUtilities.getServerLogger());
         LOGGER.info("Start initializing SOE");
+        LOGGER.info(new VersionInfo().toString());
         
         this.mapServerDataAccess = (IMapServerDataAccess) soh.getServerObject();
         
