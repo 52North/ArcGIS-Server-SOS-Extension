@@ -23,7 +23,8 @@ import java.util.Properties;
  */
 public class Table {
 
-    public static String OBSERVATION;
+    private static final CharSequence DATABASE_PLACEHOLDER = "@@database_name@@";
+	public static String OBSERVATION;
     public static String VALUE;
     public static String PROPERTY;
     public static String PROCEDURE;
@@ -38,21 +39,22 @@ public class Table {
 
     /**
      * initializes the table names from Properties.
+     * @param databaseName 
      */
-    public static void initTableNames(Properties props)
+    public static void initTableNames(Properties props, String databaseName)
     {
-        OBSERVATION = props.getProperty("database.table.OBSERVATION");
-        VALUE = props.getProperty("database.table.VALUE");
-        PROPERTY = props.getProperty("database.table.PROPERTY");
-        PROCEDURE = props.getProperty("database.table.PROCEDURE");
-        FEATUREOFINTEREST = props.getProperty("database.table.FEATUREOFINTEREST");
-        SAMPLINGPOINT = props.getProperty("database.table.SAMPLINGPOINT");
-        STATION = props.getProperty("database.table.STATION");
-        NETWORK = props.getProperty("database.table.NETWORK");
-        UNIT = props.getProperty("database.table.UNIT");
-        AGGREGATIONTYPE = props.getProperty("database.table.AGGREGATIONTYPE");
-        VALIDITY = props.getProperty("database.table.VALIDITY");
-        VERIFICATION = props.getProperty("database.table.VERIFICATION");
+        OBSERVATION = props.getProperty("database.table.OBSERVATION").replace(DATABASE_PLACEHOLDER, databaseName);
+        VALUE = props.getProperty("database.table.VALUE").replace(DATABASE_PLACEHOLDER, databaseName);
+        PROPERTY = props.getProperty("database.table.PROPERTY").replace(DATABASE_PLACEHOLDER, databaseName);
+        PROCEDURE = props.getProperty("database.table.PROCEDURE").replace(DATABASE_PLACEHOLDER, databaseName);
+        FEATUREOFINTEREST = props.getProperty("database.table.FEATUREOFINTEREST").replace(DATABASE_PLACEHOLDER, databaseName);
+        SAMPLINGPOINT = props.getProperty("database.table.SAMPLINGPOINT").replace(DATABASE_PLACEHOLDER, databaseName);
+        STATION = props.getProperty("database.table.STATION").replace(DATABASE_PLACEHOLDER, databaseName);
+        NETWORK = props.getProperty("database.table.NETWORK").replace(DATABASE_PLACEHOLDER, databaseName);
+        UNIT = props.getProperty("database.table.UNIT").replace(DATABASE_PLACEHOLDER, databaseName);
+        AGGREGATIONTYPE = props.getProperty("database.table.AGGREGATIONTYPE").replace(DATABASE_PLACEHOLDER, databaseName);
+        VALIDITY = props.getProperty("database.table.VALIDITY").replace(DATABASE_PLACEHOLDER, databaseName);
+        VERIFICATION = props.getProperty("database.table.VERIFICATION").replace(DATABASE_PLACEHOLDER, databaseName);
     }
     
     public static boolean hasTableName(String name) {

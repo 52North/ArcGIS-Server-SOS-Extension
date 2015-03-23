@@ -56,6 +56,8 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 				candidateObject.put("lastUpdated", format.print(lastUpdate));
 				candidateObject.put("lastUpdatedUnixTimestamp", lastUpdate / 1000);
 				candidateObject.put("lastUpdateDuration", aec.getLastUpdateDuration());
+				candidateObject.put("maximumEntries", aec.getMaximumEntries());
+				candidateObject.put("latestEntryIndex", aec.getLatestEntryIndex());
 				
 				String className = aec.getClass().getSimpleName();
 				if (className.equals(DummyCache.class.getSimpleName())) {
@@ -68,7 +70,7 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 			result.put("currentlyLocked", cache.isCurrentyLocked());
 			result.put("updateCacheOnStartup", cache.isUpdateCacheOnStartup());
 			try {
-				result.put("cacheBaseDir", CommonUtilities.resolveCacheBaseDir());
+				result.put("cacheBaseDir", CommonUtilities.resolveCacheBaseDir(geoDB.getDatabaseName()));
 			}
 			catch (FileNotFoundException e) {
 				result.put("cacheBaseDir", "n/a");

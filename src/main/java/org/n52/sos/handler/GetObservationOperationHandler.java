@@ -167,7 +167,8 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
     protected String constructInvokedURL(String[] offerings,
 			String[] featuresOfInterest, String[] observedProperties,
 			String[] procedures, String spatialFilter, String temporalFilter, String responseFormat) {
-        StringBuilder invokedURL = new StringBuilder(this.sosUrlExtension);
+        StringBuilder invokedURL = new StringBuilder();
+        invokedURL.append(this.sosUrlExtension);
         invokedURL.append("/GetObservation");
         invokedURL.append("?service=").append(SERVICE);
         invokedURL.append("&request=").append(getOperationName());
@@ -201,7 +202,8 @@ public class GetObservationOperationHandler extends OGCOperationRequestHandler {
 	}
 
 	private String createCommaSeperatedList(String[] offerings) {
-		StringBuilder sb = new StringBuilder(offerings[0]);
+		StringBuilder sb = new StringBuilder();
+		sb.append(offerings[0]);
 		
 		if (offerings.length == 1) return sb.toString();
 		

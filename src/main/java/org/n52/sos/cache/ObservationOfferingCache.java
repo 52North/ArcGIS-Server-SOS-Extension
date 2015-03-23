@@ -31,16 +31,22 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 	private static final String TOKEN_SEP = "@@";
 	private static ObservationOfferingCache instance;
 
-	public static synchronized ObservationOfferingCache instance() throws FileNotFoundException {
+	public static synchronized ObservationOfferingCache instance(String dbName) throws FileNotFoundException {
 		if (instance == null) {
-			instance = new ObservationOfferingCache();
+			instance = new ObservationOfferingCache(dbName);
 		}
 		
 		return instance;
 	}
 	
-	private ObservationOfferingCache() throws FileNotFoundException {
-		super();
+	public static synchronized ObservationOfferingCache instance() throws FileNotFoundException {
+		return instance;
+	}
+
+	private boolean cancelled;
+	
+	private ObservationOfferingCache(String dbName) throws FileNotFoundException {
+		super(dbName);
 	}
 
 	@Override
@@ -88,9 +94,15 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 		
 		return new ObservationOffering(id, name, props, proc, env, time);
 	}
+	
+	@Override
+	protected boolean mergeWithPreviousEntries() {
+		return true;
+	}
 
 	protected Collection<ObservationOffering> getCollectionFromDAO(AccessGDB geoDB)
 			throws IOException {
+		this.cancelled = false;
 		clearTempCacheFile();
 		
 		geoDB.getOfferingAccess().getNetworksAsObservationOfferingsAsync(new OnOfferingRetrieved() {
@@ -98,24 +110,34 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 			int count = 0;
 			
 			@Override
-			public void retrieveOffering(ObservationOffering oo) {
+			public void retrieveExpectedOfferingsCount(int c) {
+				setMaximumEntries(c);
+			}
+			
+			@Override
+			public void retrieveOffering(ObservationOffering oo, int currentOfferingIndex) throws RetrievingCancelledException {
 				storeTemporaryEntity(oo);
+				setLatestEntryIndex(currentOfferingIndex);
 				LOGGER.info(String.format("Added ObservationOffering #%s to the cache.", count++));
+				
+				if (cancelled) {
+					throw new RetrievingCancelledException("Cache update cancelled due to shutdown.");
+				}
 			}
 			
 		});
 		return Collections.emptyList();
 	}
 
+
 	@Override
 	protected AbstractEntityCache<ObservationOffering> getSingleInstance() {
-		try {
-			return instance();
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-		
-		return null;
+		return instance;
+	}
+
+	@Override
+	public void cancelCurrentExecution() {
+		this.cancelled = true;
 	}
 
 }

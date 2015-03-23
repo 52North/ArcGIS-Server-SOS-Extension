@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.MutableDateTime;
 import org.n52.sos.cache.quartz.QuartzCacheScheduler;
 import org.n52.sos.db.AccessGDB;
@@ -42,24 +43,41 @@ public abstract class AbstractCacheScheduler {
 
 	private File lockFile;
 
-	public AbstractCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
+	private LocalTime cacheUpdateTime;
+
+	public AbstractCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup, LocalTime cacheUpdateTime) {
 		this.geoDB = geoDB;
 		this.updateCacheOnStartup = updateCacheOnStartup;
+		this.cacheUpdateTime = cacheUpdateTime;
+		
+		String dbName;
+		dbName = resolveDatabaseName(geoDB);
 		
 		/*
 		 * first use the PUMC, others might depend on it
 		 */
 		try {
-			candidates.add(PropertyUnitMappingCache.instance());
+			candidates.add(PropertyUnitMappingCache.instance(dbName));
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
 
 		try {
-			candidates.add(ObservationOfferingCache.instance());
+			candidates.add(ObservationOfferingCache.instance(dbName));
 		} catch (FileNotFoundException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
+	}
+
+	private String resolveDatabaseName(AccessGDB geoDB) {
+		String dbName;
+		if (geoDB != null) {
+			dbName = geoDB.getDatabaseName();
+		}
+		else {
+			dbName = "Airquality_E2a";
+		}
+		return dbName;
 	}
 
 	protected AccessGDB getGeoDB() {
@@ -76,6 +94,10 @@ public abstract class AbstractCacheScheduler {
 		return updateCacheOnStartup;
 	}
 	
+	public LocalTime getCacheUpdateTime() {
+		return this.cacheUpdateTime;
+	}
+	
 	protected void freeCacheUpdateLock() throws IOException {
 		synchronized (AbstractCacheScheduler.class) {
 			File lockFile = resolveCacheLockFile();
@@ -88,7 +110,7 @@ public abstract class AbstractCacheScheduler {
 
 	protected synchronized File resolveCacheLockFile() throws FileNotFoundException {
 		if (lockFile == null) {
-			File dir = CommonUtilities.resolveCacheBaseDir();
+			File dir = CommonUtilities.resolveCacheBaseDir(resolveDatabaseName(geoDB));
 			lockFile = new File(dir, "cache.lock");	
 		}
 		
@@ -129,14 +151,14 @@ public abstract class AbstractCacheScheduler {
 		return false;
 	}
 	
-	public MutableDateTime resolveNextScheduleDate(int targetHour, DateTime referenceTime) {
+	public MutableDateTime resolveNextScheduleDate(LocalTime localTime, DateTime referenceTime) {
 		/*
 		 * every 4am, starting with next
 		 */
 		MutableDateTime mdt = referenceTime.toMutableDateTime();
-		mdt.setHourOfDay(targetHour);
-		mdt.setMinuteOfHour(0);
-		mdt.setSecondOfMinute(0);
+		mdt.setHourOfDay(localTime.getHourOfDay());
+		mdt.setMinuteOfHour(localTime.getMinuteOfHour());
+		mdt.setSecondOfMinute(localTime.getSecondOfMinute());
 		
 		if (!referenceTime.isBefore(mdt)) {
 			mdt.addDays(1);
@@ -164,9 +186,9 @@ public abstract class AbstractCacheScheduler {
 		
 		private static AbstractCacheScheduler instance;
 
-		public static synchronized AbstractCacheScheduler init(AccessGDB geoDB, boolean updateCacheOnStartup) {
+		public static synchronized AbstractCacheScheduler init(AccessGDB geoDB, boolean updateCacheOnStartup, LocalTime cacheUpdateTime) {
 			if (instance == null) {
-				instance = new QuartzCacheScheduler(geoDB, updateCacheOnStartup);
+				instance = new QuartzCacheScheduler(geoDB, updateCacheOnStartup, cacheUpdateTime);
 			}
 			return instance;
 		}

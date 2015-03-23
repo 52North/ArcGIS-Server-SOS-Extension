@@ -37,17 +37,17 @@ public class PropertyUnitMappingCache extends
 	private Map<Integer, Unit> propertyUnitMap = null;
 	private Unit defaultFallbackUnit = new Unit(-1, "n/a", "n/a", "mg/m3", "n/a", "n/a");
 
-	public static synchronized PropertyUnitMappingCache instance()
+	public static synchronized PropertyUnitMappingCache instance(String dbName)
 			throws FileNotFoundException {
 		if (instance == null) {
-			instance = new PropertyUnitMappingCache();
+			instance = new PropertyUnitMappingCache(dbName);
 		}
 
 		return instance;
 	}
 
-	private PropertyUnitMappingCache() throws FileNotFoundException {
-		super();
+	private PropertyUnitMappingCache(String dbName) throws FileNotFoundException {
+		super(dbName);
 	}
 
 	@Override
@@ -60,6 +60,10 @@ public class PropertyUnitMappingCache extends
 			throws CacheException {
 		logger.debug(String.format("Serializing %s mappings", entity.size()));
 
+		if (entity.size() == 0) {
+			throw new CacheException("No entries in PropertyUnitMappings! Check the database query");
+		}
+		
 		StringBuilder sb = new StringBuilder();
 
 		Integer valueFkUnit;
@@ -101,18 +105,13 @@ public class PropertyUnitMappingCache extends
 	@Override
 	protected Collection<PropertyUnitMapping> getCollectionFromDAO(
 			AccessGDB geoDB) throws IOException {
+		logger.info("Retrieving Mappings...");
 		return geoDB.getProcedureAccess().getPropertyUnitMappings();
 	}
 
 	@Override
 	protected AbstractEntityCache<PropertyUnitMapping> getSingleInstance() {
-		try {
-			return instance();
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-		
-		return null;
+		return instance;
 	}
 	
 	@Override
@@ -138,8 +137,7 @@ public class PropertyUnitMappingCache extends
 					.getUnitsOfMeasure();
 			logger.debug("Available units: "+units.toString());
 
-			Map<String, PropertyUnitMapping> mappings = PropertyUnitMappingCache
-					.instance().getEntityCollection(gdb);
+			Map<String, PropertyUnitMapping> mappings = instance.getEntityCollection(gdb);
 			logger.debug(String.format("PropertyUnitMapping entries from cache: %s",
 					mappings.size()));
 
@@ -182,6 +180,10 @@ public class PropertyUnitMappingCache extends
 			logger.debug("default fallback: "+ max);
 			defaultFallbackUnit = max;
 		}
+	}
+
+	@Override
+	public void cancelCurrentExecution() {
 	}
 
 }

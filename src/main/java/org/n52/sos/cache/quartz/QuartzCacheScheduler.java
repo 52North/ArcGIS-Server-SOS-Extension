@@ -16,20 +16,22 @@
 package org.n52.sos.cache.quartz;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.MutableDateTime;
 import org.n52.sos.cache.AbstractEntityCache;
 import org.n52.sos.cache.CacheException;
@@ -59,6 +61,8 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 	private Scheduler quartz;
 
 	private LocalJobFactory quartzFactory;
+
+	private Deque<NamedJob> shutdownHooks = new ConcurrentLinkedDeque<>();
 	
 //	@Override
 //	public List<AbstractEntityCache<?>> getCandidates() {
@@ -71,8 +75,8 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 //		return result;
 //	}
 
-	public QuartzCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup) {
-		super(geoDB, updateCacheOnStartup);
+	public QuartzCacheScheduler(AccessGDB geoDB, boolean updateCacheOnStartup, LocalTime cacheUpdateTime) {
+		super(geoDB, updateCacheOnStartup, cacheUpdateTime);
 		
 		try {
 			this.quartz = new StdSchedulerFactory().getScheduler();
@@ -89,28 +93,31 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		}
 		else {
 			try {
-				List<AbstractEntityCache<?>> requiresUpdates = cacheUpdateRequired();
-				if (!requiresUpdates.isEmpty()) {
-					LOGGER.info(String.format("Cache update required for: %s", requiresUpdates.toString()));
-					/*
-					 * now
-					 */
-					schedule(new UpdateCacheTask(requiresUpdates), 0);	
-				}
-				else {
-					LOGGER.info("No cache update required. Last update not longer ago than minutes "+FIFTEEN_MINS_MS/(1000*60));
-				}
-			} catch (FileNotFoundException | SchedulerException e) {
+				schedule(new UpdateCacheTask(getCandidates()), 0);
+//				List<AbstractEntityCache<?>> requiresUpdates = cacheUpdateRequired();
+//				if (!requiresUpdates.isEmpty()) {
+//					LOGGER.info(String.format("Cache update required for: %s", requiresUpdates.toString()));
+//					/*
+//					 * now
+//					 */
+//					schedule(new UpdateCacheTask(requiresUpdates), 0);	
+//				}
+//				else {
+//					LOGGER.info("No cache update required. Last update not longer ago than minutes "+FIFTEEN_MINS_MS/(1000*60));
+//				}
+			} catch (SchedulerException e) {
 				LOGGER.warn(e.getMessage(), e);
 				LOGGER.warn("could not initialize cache. disabling scheduled updates.");
 				return;
 			}			
 		}
 		
-		MutableDateTime mdt = resolveNextScheduleDate(4, new DateTime());
+		MutableDateTime mdt = resolveNextScheduleDate(this.getCacheUpdateTime(), new DateTime());
 		DateTime now = new DateTime();
 		
 		try {
+//			schedule(new UpdateCacheTask(getCandidates()), ONE_HOUR_MS,
+//					ONE_HOUR_MS);
 			schedule(new UpdateCacheTask(getCandidates()), mdt.getMillis() - now.getMillis(),
 					ONE_HOUR_MS * 24);
 		} catch (SchedulerException e) {
@@ -196,6 +203,9 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 		try {
 			this.quartz.shutdown();
 			freeCacheUpdateLock();
+			for (NamedJob s : this.shutdownHooks) {
+				s.cancelExecution();
+			}
 		} catch (IOException | SchedulerException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
@@ -225,25 +235,46 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			return uuid;
 		}
 		
+		public abstract void cancelExecution();
+		
 	}
 	
 	private class UpdateCacheTask extends NamedJob {
 
 		private List<AbstractEntityCache<?>> candidates;
+		private boolean reschedulingAllowed;
+		private AtomicBoolean running;
+		private Thread updateThread;
 
+		/**
+		 * Constructor, allowing rescheduling of failed cache updates
+		 * 
+		 * @param candidates the cache candidates
+		 */
 		public UpdateCacheTask(List<AbstractEntityCache<?>> candidates) {
+			this(candidates, true);
+		}
+
+		/**
+		 * @param candidates the cache candidates
+		 * @param reschedulingAllowed if an update fails, allow to reschedule
+		 * another one
+		 */
+		public UpdateCacheTask(List<AbstractEntityCache<?>> candidates,
+				boolean reschedulingAllowed) {
 			this.candidates = candidates;
+			this.reschedulingAllowed = reschedulingAllowed;
 		}
 
 		@Override
 		public void execute(JobExecutionContext arg0)
 				throws JobExecutionException {
-			
-			try {
-				schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
-			} catch (SchedulerException e) {
-				LOGGER.warn(e.getMessage(), e);
-			}
+			QuartzCacheScheduler.this.shutdownHooks.add(this);
+//			try {
+//				schedule(new MonitorCacheTask(ONE_HOUR_MS/2), ONE_HOUR_MS/2);
+//			} catch (SchedulerException e) {
+//				LOGGER.warn(e.getMessage(), e);
+//			}
 			
 			/*
 			 * do a cache.lock check now and do it sequentially
@@ -251,8 +282,8 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 			MonitorCacheTask freeTask = new MonitorCacheTask(ONE_HOUR_MS/2);
 			freeTask.execute(null);
 			
-			final AtomicBoolean running = new AtomicBoolean(true);
-			Thread t = new Thread(new Runnable() {
+			running = new AtomicBoolean(true);
+			updateThread = new Thread(new Runnable() {
 				
 				@Override
 				public void run() {
@@ -271,39 +302,69 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				}
 			});
 			
-			t.setDaemon(true);
-			t.start();
+			updateThread.setDaemon(true);
+			updateThread.start();
 			
 			long start = System.currentTimeMillis();
-			while (running.get()) {
-				if (System.currentTimeMillis()-start > 1000 * 60 * 10) {
-					Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
-					LOGGER.warn("update thread taking more than 10 minutes... StackTrace: "+
-					dumpAllThreads(stacks));
-				}
-				else if (System.currentTimeMillis()-start > 1000 * 60 * 30) {
-					LOGGER.warn("update thread took more than 30 minutes... cancelling");
-					try {
-						freeCacheUpdateLock();
-					} catch (IOException e) {
-						LOGGER.warn(e.getMessage(), e);
-					}
-					return;
+			while (running.get() && updateThread.getState() != Thread.State.TERMINATED) {
+				if (System.currentTimeMillis()-start > 1000 * 60 * 30) {
+					cancelUpdateThread(updateThread);
+					break;
 				}
 				else {
 					LOGGER.info("still waiting for update thread to finish...");
 				}
 				
 				try {
-					Thread.sleep(30000);
+					Thread.sleep(60000);
 				} catch (InterruptedException e) {
 					LOGGER.warn(e.getMessage(), e);
 				}
 			}
 			
 			LOGGER.info("update thread finished...");
+			logNextFireTime();
+			
+			QuartzCacheScheduler.this.shutdownHooks.remove(this);
 		}
 		
+		@Override
+		public void cancelExecution() {
+			for (AbstractEntityCache<?> aec : this.candidates) {
+				aec.cancelCurrentExecution();
+			}
+			this.running.getAndSet(false);
+			cancelUpdateThread(updateThread);
+		}
+		
+		private void cancelUpdateThread(Thread t) {
+			Map<Thread, StackTraceElement[]> stacks = Collections.singletonMap(t, t.getStackTrace());
+			
+			LOGGER.warn("update thread took more than 30 minutes... cancelling.  StackTrace: "+
+			dumpAllThreads(stacks));
+			
+			try {
+				t.interrupt();
+				freeCacheUpdateLock();
+			} catch (IOException e) {
+				LOGGER.warn(e.getMessage(), e);
+			}			
+		}
+
+		private void logNextFireTime() {
+			try {
+				List<? extends Trigger> detail = quartz.getTriggersOfJob(new JobKey(getName()));
+				if (detail != null && !detail.isEmpty()) {
+					Date next = detail.get(0).getNextFireTime();
+					if (next != null) {
+						LOGGER.info("Next scheduled cache update: " +next);
+					}
+				}
+			} catch (SchedulerException e) {
+				LOGGER.warn(e.getMessage(), e);
+			}
+		}
+
 		private void doCacheUpdate() {
 			/*
 			 * cache updates can take very long. it has been observed
@@ -324,17 +385,40 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				LOGGER.info("update cache... using thread "+ lastSchedulerThread);
 				
 				for (AbstractEntityCache<?> aec : this.candidates) {
-					aec.updateCache(getGeoDB());
+					try {
+						aec.updateCache(getGeoDB());
+					}
+					catch (CacheException e) {
+						LOGGER.warn("Cache update exception for Cache "+aec.getClass().getName(), e);
+					}
 				}
 				
-				freeCacheUpdateLock();
-				
 				LOGGER.info("all caches updated!");					
-			} catch (IOException | CacheException | RuntimeException e) {
-				LOGGER.warn(e.getMessage(), e);
+			} catch (IOException | RuntimeException e) {
+				LOGGER.warn("Cache update cancelled due to exception.", e);
+				
+				/*
+				 * are we allowed to reschedule another update?
+				 * If a (daily) update fails once, we try another
+				 * one after 30 minutes
+				 */
+				if (this.reschedulingAllowed) {
+					LOGGER.info("rescheduling cache update...");
+					try {
+						schedule(new UpdateCacheTask(candidates, false), ONE_HOUR_MS / 2);
+					} catch (SchedulerException e1) {
+						LOGGER.warn(e.getMessage(), e);
+					}
+				}
 			} catch (Throwable t) {
 				LOGGER.severe("Unrecoverable error", t);
 				throw t;
+			} finally {
+				try {
+					freeCacheUpdateLock();
+				} catch (IOException e) {
+					LOGGER.warn(e.getMessage(), e);
+				}
 			}
 		}
 		
@@ -434,6 +518,10 @@ public class QuartzCacheScheduler extends AbstractCacheScheduler {
 				LOGGER.info("No stale cache.lock file found.");
 			}
 			
+		}
+		
+		@Override
+		public void cancelExecution() {
 		}
 
 	}

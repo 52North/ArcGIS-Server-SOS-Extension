@@ -68,7 +68,8 @@ public class Logger {
 	}
 	
 	private String createConcatenatedMessage(String message, Throwable e) {
-		StringBuilder sb = new StringBuilder(message);
+		StringBuilder sb = new StringBuilder();
+		sb.append(message);
 		sb.append(":");
 		sb.append(CommonUtilities.NEW_LINE_CHAR);
 		
@@ -88,7 +89,7 @@ public class Logger {
 		//
 		// log to console (for local debugging):
 		//
-		System.out.println("Class: '" + this.name + "' - Code: '" + code + "' - Level: '" + level + "' - Message: '" + message + "'");
+//		System.out.println("Class: '" + this.name + "' - Code: '" + code + "' - Level: '" + level + "' - Message: '" + message + "'");
 		
 		//
 		// log through ArcGIS Server:

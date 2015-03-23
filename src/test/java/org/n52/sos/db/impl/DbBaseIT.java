@@ -61,9 +61,9 @@ public class DbBaseIT extends EsriTestBase {
     @Test
     public void testConnection() {
         try {
-            LOGGER.info("Workspace name: " + gdb.getWorkspace().getName());
+            LOGGER.info("Workspace name: " + gdb.getWorkspace().getWorkspace().getName());
             
-            IEnumDatasetName datasetNames = gdb.getWorkspace().getDatasetNames(esriDatasetType.esriDTAny);
+            IEnumDatasetName datasetNames = gdb.getWorkspace().getWorkspace().getDatasetNames(esriDatasetType.esriDTAny);
             
             LOGGER.info("Print dataset names:");
             IDatasetName dName = datasetNames.next();
@@ -108,7 +108,7 @@ public class DbBaseIT extends EsriTestBase {
      * helper method that returns true if a tableName is used as a datasetName in the DB.
      */
     private boolean checkPresenceOfTable(String tableName) throws AutomationException, IOException {
-        IEnumDatasetName datasetNames = gdb.getWorkspace().getDatasetNames(esriDatasetType.esriDTAny);
+        IEnumDatasetName datasetNames = gdb.getWorkspace().getWorkspace().getDatasetNames(esriDatasetType.esriDTAny);
         IDatasetName dName = datasetNames.next();
         while(dName != null) {
             String dNameString = dName.getName();
@@ -159,7 +159,7 @@ public class DbBaseIT extends EsriTestBase {
      * helper method that returns true if a subfieldName is used by a dataset in the DB.
      */
     private boolean checkPresenceOfSubfield(String subfieldName) throws AutomationException, IOException {
-        IEnumDataset datasets = gdb.getWorkspace().getDatasets(esriDatasetType.esriDTAny);
+        IEnumDataset datasets = gdb.getWorkspace().getWorkspace().getDatasets(esriDatasetType.esriDTAny);
         IDataset dataset = datasets.next();
         
         while (dataset != null) {
@@ -167,14 +167,14 @@ public class DbBaseIT extends EsriTestBase {
             int typeID = dataset.getType();
             
             if (typeID == esriDatasetType.esriDTTable) {
-                ITable table = gdb.getWorkspace().openTable(dataset.getName());
+                ITable table = gdb.getWorkspace().getWorkspace().openTable(dataset.getName());
                 IFields fields = table.getFields();
                 if (fields.findField(subfieldName) != -1) {
                     return true;
                 } 
             }
             else if (typeID == esriDatasetType.esriDTFeatureClass) {
-                IFeatureClass featureClass = gdb.getWorkspace().openFeatureClass(dataset.getName());
+                IFeatureClass featureClass = gdb.getWorkspace().getWorkspace().openFeatureClass(dataset.getName());
                 IFields fields = featureClass.getFields();
                 if (fields.findField(subfieldName) != -1) {
                     return true;

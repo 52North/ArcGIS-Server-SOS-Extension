@@ -63,16 +63,17 @@ public class OGCProcedureEncoder extends AbstractEncoder {
      */
     public String encodeNetwork_SensorML101(Map<String, Collection<Procedure>> mapOfProceduresPerNetwork) throws IOException {
         
-    	StringBuilder sensorML = new StringBuilder("");
+    	StringBuilder sensorML = new StringBuilder();
     	
     	for (String networkID : mapOfProceduresPerNetwork.keySet()) {
     	
-        	StringBuilder systemSensorML = new StringBuilder(systemTemplate101);
+        	StringBuilder systemSensorML = new StringBuilder();
+        	systemSensorML.append(systemTemplate101);
     		replace(systemSensorML, SYSTEM_NETWORK_ID, networkID);
     		
     		Collection<Procedure> proceduresOfNetwork = mapOfProceduresPerNetwork.get(networkID);
     		
-    		StringBuilder networkSensorML = new StringBuilder("");
+    		StringBuilder networkSensorML = new StringBuilder();
     		networkSensorML.append("<swes:description><swes:SensorDescription><swes:data><SensorML version=\"1.0.1\"><member>");
     		networkSensorML.append(encodeNetwork(proceduresOfNetwork, systemSensorML.toString()));
     		networkSensorML.append("</member></SensorML></swes:data></swes:SensorDescription></swes:description>");
@@ -80,7 +81,8 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     		sensorML.append(networkSensorML);
     	}
     	
-    	StringBuilder response = new StringBuilder(responseTemplate101);
+    	StringBuilder response = new StringBuilder();
+    	response.append(responseTemplate101);
         replace(response, RESPONSE_PROCEDURES, sensorML.toString());
     	
         return response.toString();
@@ -93,14 +95,14 @@ public class OGCProcedureEncoder extends AbstractEncoder {
     		Collection<Procedure> procedureCollection,  
     		String systemTemplate) throws IOException {
         
-    	StringBuilder allComponents = new StringBuilder("");
+    	StringBuilder allComponents = new StringBuilder();
     	
     	if (procedureCollection.size() > 0) {
     		allComponents.append("<components><ComponentList>");
         	
 	        for (Procedure procedure : procedureCollection) {
 	        	
-	        	StringBuilder componentEnvelope = new StringBuilder("");
+	        	StringBuilder componentEnvelope = new StringBuilder();
 	        	componentEnvelope.append("<component name=\"" + procedure.getId() + "\">");
 	        	componentEnvelope.append(encodeSingleProcedure(procedure));
 	        	componentEnvelope.append("</component>");
@@ -111,7 +113,8 @@ public class OGCProcedureEncoder extends AbstractEncoder {
 	        allComponents.append("</ComponentList></components>");
     	}
         
-        StringBuilder systemString = new StringBuilder(systemTemplate);
+        StringBuilder systemString = new StringBuilder();
+        systemString.append(systemTemplate);
         replace(systemString, SYSTEM_COMPONENTS, allComponents.toString());  
         
         return systemString;
@@ -123,10 +126,10 @@ public class OGCProcedureEncoder extends AbstractEncoder {
      */
     public String encodeComponents_SensorML101(Collection<Procedure> procedureCollection) throws IOException {
     	
-    	StringBuilder allProcedures = new StringBuilder("");
+    	StringBuilder allProcedures = new StringBuilder();
         for (Procedure procedure : procedureCollection) {
         	
-        	StringBuilder envelopedSingleProcedure = new StringBuilder("");
+        	StringBuilder envelopedSingleProcedure = new StringBuilder();
         	envelopedSingleProcedure.append("<swes:description><swes:SensorDescription><swes:data><SensorML version=\"1.0.1\"><member>");
         	envelopedSingleProcedure.append(encodeSingleProcedure(procedure));
         	envelopedSingleProcedure.append("</member></SensorML></swes:data></swes:SensorDescription></swes:description>");
@@ -134,7 +137,8 @@ public class OGCProcedureEncoder extends AbstractEncoder {
             allProcedures.append(envelopedSingleProcedure);
         }
         
-        StringBuilder response = new StringBuilder(responseTemplate101);
+        StringBuilder response = new StringBuilder();
+        response.append(responseTemplate101);
         replace(response, RESPONSE_PROCEDURES, allProcedures.toString());
         
         return response.toString();
@@ -144,7 +148,8 @@ public class OGCProcedureEncoder extends AbstractEncoder {
      * Helper method to encode a Procedure as a SensorML 1.0.1 Component.
      */
     private String encodeSingleProcedure(Procedure procedure) {
-    	StringBuilder componentString = new StringBuilder(componentTemplate101);
+    	StringBuilder componentString = new StringBuilder();
+    	componentString.append(componentTemplate101);
         
         replace(componentString, COMPONENT_PROCEDURE_ID, procedure.getId());        
         replace(componentString, COMPONENT_PROCEDURE_RESOURCE, procedure.getResource());

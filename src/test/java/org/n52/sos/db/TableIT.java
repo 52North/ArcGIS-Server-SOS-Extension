@@ -41,7 +41,7 @@ public class TableIT {
     @Test
     public void testInitTableNames()
     {
-        Table.initTableNames(props);
+        Table.initTableNames(props, "Airquality_E2a.DBO");
 
         if (Table.OBSERVATION == null) {
             fail();

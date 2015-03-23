@@ -80,7 +80,12 @@ public class CommonUtilities {
 	}
 
 	public static String convertExceptionToString(Throwable e) {
-		StringBuilder sb = new StringBuilder(e.getMessage());
+		if (e == null) {
+			return "null";
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(e.getMessage());
 		sb.append(":");
 		sb.append(NEW_LINE_CHAR);
 
@@ -102,7 +107,7 @@ public class CommonUtilities {
         out.close();
     }
 	
-	public static File resolveCacheBaseDir() throws FileNotFoundException {
+	public static File resolveCacheBaseDir(String forDatabaseName) throws FileNotFoundException {
 		String res = CommonUtilities.class.getResource("").toExternalForm();
 		
 		String prefix = "jar:file:/";
@@ -119,11 +124,11 @@ public class CommonUtilities {
 					if (sosSoeCache != null) {
 						logger.debug("Cache base dir: "+ sosSoeCache.getAbsolutePath());
 						if (!sosSoeCache.exists() && sosSoeCache.mkdir()) {
-							return sosSoeCache;
+							return createDatabaseCacheFolder(sosSoeCache, forDatabaseName);
 						}
 						else {
 							if (sosSoeCache.isDirectory()) {
-								return sosSoeCache;
+								return createDatabaseCacheFolder(sosSoeCache, forDatabaseName);
 							}
 						}
 					}
@@ -133,6 +138,20 @@ public class CommonUtilities {
 		}
 		
 		throw new FileNotFoundException("Could not resolve the cache directory.");
+	}
+
+	private static File createDatabaseCacheFolder(File sosSoeCache,
+			String forDatabaseName) throws FileNotFoundException {
+		File target = new File(sosSoeCache, forDatabaseName);
+		if (!target.exists()) {
+			if (!target.mkdir()) {
+				throw new FileNotFoundException("database subfolder could not be created! "+target);
+			}
+		}
+		else if (!target.isDirectory()) {
+			throw new FileNotFoundException("database subfolder path is not a directory! "+target);
+		}
+		return target;
 	}
 	
     

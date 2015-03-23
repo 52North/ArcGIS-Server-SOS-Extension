@@ -41,9 +41,9 @@ public class PropertyUnitMappingCacheTest {
 		PowerMockito.mockStatic(CommonUtilities.class);
 		File f = File.createTempFile("hassss", "da");
 		f.mkdir();
-        BDDMockito.given(CommonUtilities.resolveCacheBaseDir()).willReturn(f.getParentFile());
+        BDDMockito.given(CommonUtilities.resolveCacheBaseDir("test")).willReturn(f.getParentFile());
 		
-		PropertyUnitMappingCache pumc = PropertyUnitMappingCache.instance();
+		PropertyUnitMappingCache pumc = PropertyUnitMappingCache.instance("test");
 		
 		Map<String, PropertyUnitMapping> result = pumc.deserializeEntityCollection(new ByteArrayInputStream(line.getBytes()));
 		

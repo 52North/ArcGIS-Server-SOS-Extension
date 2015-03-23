@@ -35,16 +35,16 @@ public class DummyCache extends AbstractEntityCache<ObservationOffering> {
 
 	public static Logger LOGGER = Logger.getLogger(DummyCache.class.getName());
 	
-	public DummyCache() throws FileNotFoundException {
-		super();
+	public DummyCache(String dbName) throws FileNotFoundException {
+		super(dbName);
 	}
 
 	private static final String TOKEN_SEP = "@@";
 	private static DummyCache instance;
 
-	public static synchronized DummyCache instance() throws FileNotFoundException {
+	public static synchronized DummyCache instance(String dbName) throws FileNotFoundException {
 		if (instance == null) {
-			instance = new DummyCache();
+			instance = new DummyCache(dbName);
 		}
 		
 		return instance;
@@ -123,13 +123,12 @@ public class DummyCache extends AbstractEntityCache<ObservationOffering> {
 
 	@Override
 	protected AbstractEntityCache<ObservationOffering> getSingleInstance() {
-		try {
-			return instance();
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-		
-		return null;
+		return instance;
+	}
+
+
+	@Override
+	public void cancelCurrentExecution() {
 	}
 
 }

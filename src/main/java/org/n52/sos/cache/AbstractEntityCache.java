@@ -23,17 +23,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.UUID;
 
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
 import org.n52.util.logging.Logger;
 
-public abstract class AbstractEntityCache<T> {
+public abstract class AbstractEntityCache<T extends CacheEntity> {
 	
 	public Logger LOGGER = Logger.getLogger(AbstractEntityCache.class.getName());
 	
@@ -41,15 +41,22 @@ public abstract class AbstractEntityCache<T> {
 	private Object cacheFileMutex = new Object();
 
 	private long lastUpdateDuration;
+
+	private int maximumEntries;
+
+	private int latestEntryIndex;
+
+	private String dbName;
 	
 	
 	
-	public AbstractEntityCache() throws FileNotFoundException {
+	public AbstractEntityCache(String dbName) throws FileNotFoundException {
+		this.dbName = dbName;
 		initializeCacheFile();
 	}
 
 	protected void initializeCacheFile() throws FileNotFoundException {
-		File baseDir = CommonUtilities.resolveCacheBaseDir();
+		File baseDir = CommonUtilities.resolveCacheBaseDir(dbName);
 		
 		synchronized (cacheFileMutex) {
 			this.cacheFile = new File(baseDir, getCacheFileName());
@@ -83,7 +90,7 @@ public abstract class AbstractEntityCache<T> {
 		synchronized (cacheFileMutex) {
 			try {
 				fs = new FileOutputStream(getTempCacheFile(), true);
-				storeEntity(UUID.randomUUID().toString(), et, fs);	
+				storeEntity(et.getItemId(), et, fs);	
 			} catch (FileNotFoundException | CacheException e) {
 				LOGGER.warn(e.getMessage(), e);
 			} finally {
@@ -104,6 +111,16 @@ public abstract class AbstractEntityCache<T> {
 			f.delete();
 			f.createNewFile();
 		}
+	}
+	
+
+	protected void setMaximumEntries(int c) {
+		this.maximumEntries = c;
+	}
+	
+
+	protected void setLatestEntryIndex(int currentOfferingIndex) {
+		this.latestEntryIndex = currentOfferingIndex;
 	}
 	
 	public synchronized void storeEntity(String id, T entity, FileOutputStream fos) throws CacheException {
@@ -141,12 +158,11 @@ public abstract class AbstractEntityCache<T> {
 	}
 	
 	public synchronized void storeEntityCollection(Collection<T> entities) throws CacheException {
-		int c = 0;
 		
 		Map<String, T> result = new HashMap<>();
 		
 		for (T t : entities) {
-			result.put(Integer.toString(c++), t);
+			result.put(t.getItemId(), t);
 		}
 		
 		storeEntityCollection(result);
@@ -154,6 +170,20 @@ public abstract class AbstractEntityCache<T> {
 	
 	public synchronized void storeEntityCollection(Map<String, T> entities) throws CacheException {
 		File tempCacheFile = getTempCacheFile();
+		
+		if (entities.isEmpty()) {
+			LOGGER.info("reloading entities from cache file");
+			try {
+				entities = deserializeEntityCollection(new FileInputStream(tempCacheFile));
+			} catch (FileNotFoundException e) {
+				LOGGER.warn("could not access the temp cache file contents", e);
+			}
+		}
+		
+		if (mergeWithPreviousEntries()) {
+			mergePreviousEntries(entities, cacheFile);
+		}
+		
 		if (entities.size() > 0) {
 		
 			FileOutputStream fileStream;
@@ -174,20 +204,41 @@ public abstract class AbstractEntityCache<T> {
 			} catch (IOException e) {
 				throw new CacheException(e);
 			}
-			fileStream = null;			
-		}
-		
-		synchronized (cacheFileMutex) {
-			try {
-				LOGGER.info("replacing target cache file "+ cacheFile.getAbsolutePath());
-				Files.copy(tempCacheFile.toPath(), this.cacheFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				tempCacheFile.delete();
-			} catch (IOException e) {
-				throw new CacheException(e);
+			fileStream = null;
+			
+			synchronized (cacheFileMutex) {
+				try {
+					LOGGER.info("replacing target cache file "+ cacheFile.getAbsolutePath());
+					Files.copy(tempCacheFile.toPath(), this.cacheFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					tempCacheFile.delete();
+				} catch (IOException e) {
+					throw new CacheException(e);
+				}
 			}
 		}
+		
 	}
 	
+	private void mergePreviousEntries(Map<String, T> entities,
+			File fileToMerge) {
+		try {
+			Map<String, T> oldEntries = deserializeEntityCollection(new FileInputStream(fileToMerge));
+			
+			for (String key : oldEntries.keySet()) {
+				if (!entities.containsKey(key)) {
+					entities.put(key, oldEntries.get(key));
+				}
+			}
+			
+		} catch (FileNotFoundException e) {
+			LOGGER.warn("Could not read previous cache file", e);
+		}
+	}
+
+	protected boolean mergeWithPreviousEntries() {
+		return false;
+	}
+
 	private File getTempCacheFile() {
 		synchronized (cacheFileMutex) {
 			return new File(this.cacheFile.getParent(), getCacheFileName()+".tmp");
@@ -291,6 +342,14 @@ public abstract class AbstractEntityCache<T> {
 	public long getLastUpdateDuration() {
 		return lastUpdateDuration;
 	}
+	
+	public int getMaximumEntries() {
+		return maximumEntries;
+	}
+	
+	public int getLatestEntryIndex() {
+		return latestEntryIndex;
+	}
 
 //	public boolean requestUpdateLock() {
 //		File f = getCacheLockFile();
@@ -336,19 +395,22 @@ public abstract class AbstractEntityCache<T> {
 	
 	public void updateCache(AccessGDB geoDB) throws CacheException, IOException {
 		AbstractEntityCache<T> instance = getSingleInstance();
-//		if (!instance.requestUpdateLock()) {
-//			LOGGER.info("cache is currently already updating: "+ this.getClass().getSimpleName());
-//			return;
-//		}
 		
 		LOGGER.info("Getting DAO data for "+ this.getClass().getSimpleName());
 		long start = System.currentTimeMillis();
-		Collection<T> entities = getCollectionFromDAO(geoDB);
-		instance.storeEntityCollection(entities);
+		
+		try {
+			Collection<T> entities = getCollectionFromDAO(geoDB);
+			instance.storeEntityCollection(entities);
+		}
+		catch (IOException e) {
+			LOGGER.warn("Cache instance update error: ", e);
+			instance.storeEntityCollection(new ArrayList<T>(0));
+		}
+		
 		this.lastUpdateDuration = System.currentTimeMillis() - start;
 		LOGGER.info("Update for "+ this.getClass().getSimpleName() +" took ms: "+this.lastUpdateDuration);
 		
-//		instance.freeUpdateLock();		
 	}
 
 	public boolean requiresUpdate() {
@@ -367,5 +429,7 @@ public abstract class AbstractEntityCache<T> {
 		
 		return false;
 	}
+
+	public abstract void cancelCurrentExecution();
 
 }

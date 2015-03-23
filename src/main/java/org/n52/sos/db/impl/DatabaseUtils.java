@@ -20,10 +20,10 @@ import java.io.IOException;
 import org.n52.ows.ResponseExceedsSizeLimitException;
 import org.n52.util.logging.Logger;
 
+import com.esri.arcgis.datasourcesGDB.SqlWorkspace;
 import com.esri.arcgis.geodatabase.ICursor;
 import com.esri.arcgis.geodatabase.IQueryDef;
 import com.esri.arcgis.geodatabase.IRow;
-import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.interop.AutomationException;
 
 public class DatabaseUtils {
@@ -66,28 +66,86 @@ public class DatabaseUtils {
 	}
 
 	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
+			String subFields, AccessGDBImpl gdb, boolean logAtInfoLevel) throws IOException {
+		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace(), logAtInfoLevel);
+	}
+	
+	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
 			String subFields, AccessGDBImpl gdb) throws IOException {
-		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace());
+		return evaluateQuery(tables, whereClause, subFields, gdb.getWorkspace(), false);
 	}
 
 	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
-			String subFields, Workspace workspace) throws IOException {
-		IQueryDef queryDef = workspace.createQueryDef();
+			String subFields, WorkspaceWrapper workspace) throws IOException {
+		return evaluateQuery(tables, whereClause, subFields, workspace, false);
+	}
+	
+	public static synchronized ICursor evaluateQuery(String tables, String whereClause,
+			String subFields, WorkspaceWrapper workspace, boolean logAtInfoLevel) throws IOException {
+		
+		if (workspace.usesSqlWorkspace()) {
+			return evaluateSqlWorkspaceQuery(tables, whereClause, subFields,
+					workspace.getSqlWorkspace(),
+					logAtInfoLevel);
+		}
+		
+		IQueryDef queryDef;
+		queryDef = workspace.getWorkspace().createQueryDef();
 
 		queryDef.setSubFields(subFields);
-		LOGGER.debug("SELECT " + queryDef.getSubFields());
+		if (logAtInfoLevel) {
+			LOGGER.info("SELECT " + queryDef.getSubFields());
+		}
+		else {
+			LOGGER.debug("SELECT " + queryDef.getSubFields());
+		}
 
 		queryDef.setTables(tables);
-		LOGGER.debug("FROM " + queryDef.getTables());
+		if (logAtInfoLevel) {
+			LOGGER.info("FROM " + queryDef.getTables());
+		}
+		else {
+			LOGGER.debug("FROM " + queryDef.getTables());
+		}
 
 		if (whereClause != null && !whereClause.isEmpty()) {
 			queryDef.setWhereClause(whereClause);
-			LOGGER.debug("WHERE " + queryDef.getWhereClause());			
+			if (logAtInfoLevel) {
+				LOGGER.info("WHERE " + queryDef.getWhereClause());
+			}
+			else {
+				LOGGER.debug("WHERE " + queryDef.getWhereClause());			
+			}
 		}
 		
 		// evaluate the database query
 		ICursor cursor = queryDef.evaluate();
 		return cursor;
+	}
+
+	private static ICursor evaluateSqlWorkspaceQuery(String tables,
+			String whereClause, String subFields, SqlWorkspace workspace,
+			boolean logAtInfoLevel) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT ");
+		sb.append(subFields);
+		
+		sb.append(" FROM ");
+		sb.append(tables);
+		
+		if (whereClause != null && !whereClause.trim().isEmpty()) {
+			sb.append(" WHERE ");
+			sb.append(whereClause);	
+		}
+		
+		if (logAtInfoLevel) {
+			LOGGER.info(sb.toString());
+		}
+		else {
+			LOGGER.debug(sb.toString());
+		}
+		
+		return workspace.openQueryCursor(sb.toString());
 	}
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.joda.time.LocalTime;
 import org.n52.om.observation.MultiValueObservation;
 import org.n52.om.sampling.Feature;
 import org.n52.ows.ExceptionReport;
@@ -112,6 +113,8 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
 	private AbstractCacheScheduler cacheScheduler;
 
 	private boolean updateCacheOnStartup;
+
+	private LocalTime cacheUpdateTime;
     
     /**
      * constructs a new server object extension
@@ -202,6 +205,18 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             }
             LOGGER.info("Update cache on startup? "+ this.updateCacheOnStartup +" object: "+ updateCache);
             
+            Object cacheUpdateTime = propertySet.getProperty("cacheUpdateTime");
+            if (cacheUpdateTime != null) {
+            	try {
+            		this.cacheUpdateTime = new LocalTime(cacheUpdateTime.toString());
+            	}
+            	catch (Exception e) {
+            		LOGGER.warn("Using fallback cache update Time - Could not parse cacheUpdateTime: "+cacheUpdateTime.toString(), e);
+            		this.cacheUpdateTime = new LocalTime("04:00:00");
+            	}
+            }
+            LOGGER.info("Cache update time: "+ this.cacheUpdateTime +" object: "+ cacheUpdateTime);
+            
         } catch (Exception e) {
             LOGGER.severe("There was a problem while reading properties: \n" + e.getLocalizedMessage() + "\n" + ExceptionSupporter.createStringFromStackTrace(e));
             throw new IOException(e);
@@ -222,7 +237,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         /*
          * initiate the cache
          */
-        cacheScheduler = AbstractCacheScheduler.Instance.init(geoDB, this.updateCacheOnStartup);
+        cacheScheduler = AbstractCacheScheduler.Instance.init(geoDB, this.updateCacheOnStartup, this.cacheUpdateTime);
         
         LOGGER.info("Construction of SOE finished.");
     }
@@ -416,7 +431,12 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
             String outputFormat,
             String requestProperties,
             String[] responseProperties) throws IOException, AutomationException {
+    	if (this.cacheScheduler.isCurrentyLocked()) {
+    		throw new IOException("A database maintenance is currently in progress. Please come back in a few minutes");
+    	}
+    	
     	LOGGER.debug("Starting to handle REST request...");
+    	
 //        LOGGER.info("capabilities: " + capabilities);
 //        LOGGER.info("resourceName: " + resourceName);
 //        LOGGER.info("operationName: " + operationName);
@@ -694,7 +714,7 @@ implements IServerObjectExtension, IObjectConstruct, ISosTransactionalSoap, IRES
         else if (resourceName.matches("observations")) {
             Collection<ObservationOffering> offerings;
 			try {
-				offerings = ObservationOfferingCache.instance().getEntityCollection(geoDB).values();
+				offerings = ObservationOfferingCache.instance(this.geoDB.getDatabaseName()).getEntityCollection(geoDB).values();
 			} catch (CacheException | CacheNotYetAvailableException e) {
 				throw new NoApplicableCodeException(e);
 			}
