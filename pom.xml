@@ -9,7 +9,7 @@
 	<artifactId>52n-arcgis-sos</artifactId>
 	<name>52°North ArcGIS SOS SOE</name>
 	<packaging>jar</packaging>
-	<version>1.1.0</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<description>Sensor Observation Service (SOS) extension for ArcGIS Server</description>
 	<inceptionYear>2012</inceptionYear>
 	<url>http://52north.org/communities/sensorweb/sosSOE</url>
