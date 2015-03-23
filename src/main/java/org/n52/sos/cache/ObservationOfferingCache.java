@@ -42,6 +42,8 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 	public static synchronized ObservationOfferingCache instance() throws FileNotFoundException {
 		return instance;
 	}
+
+	private boolean cancelled;
 	
 	private ObservationOfferingCache(String dbName) throws FileNotFoundException {
 		super(dbName);
@@ -92,9 +94,15 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 		
 		return new ObservationOffering(id, name, props, proc, env, time);
 	}
+	
+	@Override
+	protected boolean mergeWithPreviousEntries() {
+		return true;
+	}
 
 	protected Collection<ObservationOffering> getCollectionFromDAO(AccessGDB geoDB)
 			throws IOException {
+		this.cancelled = false;
 		clearTempCacheFile();
 		
 		geoDB.getOfferingAccess().getNetworksAsObservationOfferingsAsync(new OnOfferingRetrieved() {
@@ -107,10 +115,14 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 			}
 			
 			@Override
-			public void retrieveOffering(ObservationOffering oo, int currentOfferingIndex) {
+			public void retrieveOffering(ObservationOffering oo, int currentOfferingIndex) throws RetrievingCancelledException {
 				storeTemporaryEntity(oo);
 				setLatestEntryIndex(currentOfferingIndex);
 				LOGGER.info(String.format("Added ObservationOffering #%s to the cache.", count++));
+				
+				if (cancelled) {
+					throw new RetrievingCancelledException("Cache update cancelled due to shutdown.");
+				}
 			}
 			
 		});
@@ -121,6 +133,11 @@ public class ObservationOfferingCache extends AbstractEntityCache<ObservationOff
 	@Override
 	protected AbstractEntityCache<ObservationOffering> getSingleInstance() {
 		return instance;
+	}
+
+	@Override
+	public void cancelCurrentExecution() {
+		this.cancelled = true;
 	}
 
 }

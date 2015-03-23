@@ -15,6 +15,8 @@
  */
 package org.n52.sos.db.impl;
 
+import java.io.IOException;
+
 import com.esri.arcgis.datasourcesGDB.SqlWorkspace;
 import com.esri.arcgis.geodatabase.Workspace;
 
@@ -43,6 +45,32 @@ public class WorkspaceWrapper {
 		return workspace;
 	}
 	
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Uses SqlWorkspace? ");
+		sb.append(usesSqlWorkspace());
+		sb.append("; SqlWorkspace = ");
+		sb.append(this.sqlWorkspace == null ? "n/a" : this.sqlWorkspace.getClass());
+		sb.append("; Workspace = ");
+		sb.append(this.workspace == null ? "n/a" : this.workspace.getClass());
+		sb.append("; Workspace (child) = ");
+		if (this.workspace != null) {
+			try {
+				sb.append(this.workspace.getWorkspace());
+				sb.append(" - ");
+				sb.append(this.workspace.getWorkspace() == null ? "n/a" : this.workspace.getWorkspace().getClass());	
+			}
+			catch (IOException e) {
+			}
+		}
+		else {
+			sb.append("n/a");
+		}
+		
+		return sb.toString();
+	}
 	
 
 }

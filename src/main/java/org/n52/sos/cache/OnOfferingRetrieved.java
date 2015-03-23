@@ -19,8 +19,20 @@ import org.n52.sos.dataTypes.ObservationOffering;
 
 public interface OnOfferingRetrieved {
 
-	void retrieveOffering(ObservationOffering oo, int currentOfferingIndex);
+	void retrieveOffering(ObservationOffering oo, int currentOfferingIndex) throws RetrievingCancelledException;
 
 	void retrieveExpectedOfferingsCount(int count);
 
+	public static class RetrievingCancelledException extends Exception {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public RetrievingCancelledException(String m) {
+			super(m);
+		}
+		
+	}
 }
