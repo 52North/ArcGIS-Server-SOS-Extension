@@ -22,21 +22,21 @@
 					<Description>${extension.description} - version ${TIME}</Description>
 					<Properties>
 						<urlSosExtension>http://myServer/arcgis/rest/services/myMapServer/MapServer/exts/${soe.name}</urlSosExtension>
-						<title>AirQualitySOS</title>
-						<description>Air quality observation across Europe</description>
-						<keywords>Air quality, CO, O3, Carbon Monoxide, Ozone</keywords>
+						<title>SOS-SOE</title>
+						<description>Sensor Observation Service 2.0 Extension</description>
+						<keywords>OGC, SWE, SOS</keywords>
 						<providerName>52North</providerName>
 						<providerSite>http://52north.org</providerSite>
-						<contactPersonName>Arne Broring</contactPersonName>
+						<contactPersonName>Matthes Rieke</contactPersonName>
 						<contactPersonPosition>Project Manager</contactPersonPosition>
-						<contactPersonPhone>+4925139637132</contactPersonPhone>
+						<contactPersonPhone>+4925139637151</contactPersonPhone>
 						<contactPersonFax></contactPersonFax>
 						<contactPersonAddress>Martin-Luther-King-Weg 24</contactPersonAddress>
 						<contactPersonCity>Muenster</contactPersonCity>
 						<contactPersonAdminArea></contactPersonAdminArea>
 						<contactPersonPostalCode>48155</contactPersonPostalCode>
 						<contactPersonCountry>Germany</contactPersonCountry>
-						<contactPersonEmail>broering@52north.org</contactPersonEmail>
+						<contactPersonEmail>m.rieke@52north.org</contactPersonEmail>
 						<updateCacheOnStartup>false</updateCacheOnStartup>
 						<cacheUpdateTime>13:00:00</cacheUpdateTime>
 					</Properties>
