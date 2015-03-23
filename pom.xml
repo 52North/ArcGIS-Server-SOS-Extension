@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>52-North</artifactId>
 		<groupId>org.n52</groupId>
@@ -10,7 +9,7 @@
 	<artifactId>52n-arcgis-sos</artifactId>
 	<name>52°North ArcGIS SOS SOE</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<description>Sensor Observation Service (SOS) extension for ArcGIS Server</description>
 	<inceptionYear>2012</inceptionYear>
 	<url>http://52north.org/communities/sensorweb/sosSOE</url>
@@ -502,9 +501,7 @@
 								<phase>install</phase>
 								<configuration>
 									<target>
-										<copy
-											file="${project.build.directory}/${project.build.finalName}-soe-assembly.jar"
-											tofile="${project.build.directory}/${soe.final.name}" />
+										<copy file="${project.build.directory}/${project.build.finalName}-soe-assembly.jar" tofile="${project.build.directory}/${soe.final.name}" />
 									</target>
 								</configuration>
 								<goals>
