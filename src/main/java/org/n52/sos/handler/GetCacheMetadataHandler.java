@@ -26,6 +26,7 @@ import org.n52.sos.cache.DummyCache;
 import org.n52.sos.cache.ObservationOfferingCache;
 import org.n52.sos.db.AccessGDB;
 import org.n52.util.CommonUtilities;
+import org.n52.util.VersionInfo;
 
 import com.esri.arcgis.server.json.JSONObject;
 
@@ -76,6 +77,8 @@ public class GetCacheMetadataHandler implements OperationRequestHandler {
 				result.put("cacheBaseDir", "n/a");
 			}
 		}
+		
+		result.put("VersionInfo", new VersionInfo().toString());
 		
 		return result.toString().getBytes();
 	}
