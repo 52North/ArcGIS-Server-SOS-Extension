@@ -6,7 +6,7 @@
 	<Date>${TIME}</Date>
 	<Author />
 	<Company>52North GmbH</Company>
-	<Version>1.0</Version>
+	<Version>${project.version}</Version>
 	<Targets>
 		<Target name="server" version="10.1" />
 	</Targets>
