@@ -1,3 +1,7 @@
+# ARCHIVED
+
+This project is no longer maintained and will not receive any further updates. If you plan to continue using it, please be aware that future security issues will not be addressed.
+
 # ArcGIS-Server-SOS-Extension
 
 The Sensor Observation Service (SOS) extension for ArcGIS Server (10.1) is implemented as a 'Server Object Extension' (SOE).
